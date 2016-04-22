@@ -1,0 +1,65 @@
+{
+    "BAMs" :
+    {
+      "MCF10A" :
+      {
+        "Input" :
+        {
+          "WT" :
+          {
+            "High" : [],
+            "Low" : []
+          },
+          "TGFb" :
+          {
+            "High" : [],
+            "Low" : []
+          },
+          "shH2AZ" :
+          {
+            "High" : [],
+            "Low" : []
+          }
+        },
+        "H2AZ" :
+        {
+          "WT" :
+          {
+            "High" : [],
+            "Low" : []
+          },
+          "TGFb" :
+          {
+            "High" : [],
+            "Low" : []
+          },
+          "shH2AZ" :
+          {
+            "High" : [],
+            "Low" : []
+          },
+        },
+      },
+      "MCF10CA1a" :
+      {
+        "Input" :
+        {
+          "WT" :
+          {
+            "High" : [],
+            "Low" : []
+          },
+        },
+        "H2AZ" :
+        {
+          "WT" :
+          {
+            "High" : [],
+            "Low" : []
+          },
+        },
+      },
+    },
+  "processed_dir" : "processed_data",
+  "data_dir" : "bam"
+}
