@@ -5,6 +5,8 @@ __date__ = "2016-03-01"
 # vim: syntax=python tabstop=4 expandtab
 # coding: utf-8
 
+from snakemake.exceptions import MissingInputException
+
 
 """
 Rules for running deepTools analysis on ChIP-Seq data

@@ -1,65 +1,33 @@
 {
-    "BAMs" :
-    {
-      "MCF10A" :
-      {
-        "Input" :
-        {
-          "WT" :
-          {
-            "High" : [],
-            "Low" : []
-          },
-          "TGFb" :
-          {
-            "High" : [],
-            "Low" : []
-          },
-          "shH2AZ" :
-          {
-            "High" : [],
-            "Low" : []
-          }
-        },
-        "H2AZ" :
-        {
-          "WT" :
-          {
-            "High" : [],
-            "Low" : []
-          },
-          "TGFb" :
-          {
-            "High" : [],
-            "Low" : []
-          },
-          "shH2AZ" :
-          {
-            "High" : [],
-            "Low" : []
-          },
-        },
-      },
-      "MCF10CA1a" :
-      {
-        "Input" :
-        {
-          "WT" :
-          {
-            "High" : [],
-            "Low" : []
-          },
-        },
-        "H2AZ" :
-        {
-          "WT" :
-          {
-            "High" : [],
-            "Low" : []
-          },
-        },
-      },
-    },
+  "unit" : ["A_H2AZ_H_r1_R1",
+            "A_H2AZ_H_r2_R1",
+            "A_H2AZ_L_r1_R1",
+            "A_H2AZ_L_r2_R1",
+            "A_Inp_H_r1_R1",
+            "A_Inp_H_r2_R1",
+            "A_Inp_L_r1_R1",
+            "A_Inp_L_r2_R1",
+            "A_shH2AZ_Inp_H_r1_R1",
+            "A_shH2AZ_Inp_H_r2_R1",
+            "A_shH2AZ_Inp_L_r1_R1",
+            "A_shH2AZ_Inp_L_r2_R1",
+            "A_TGFb_H2AZ_H_r1_R1",
+            "A_TGFb_H2AZ_H_r2_R1",
+            "A_TGFb_H2AZ_L_r1_R1",
+            "A_TGFb_H2AZ_L_r2_R1",
+            "A_TGFb_Inp_H_r1_R1",
+            "A_TGFb_Inp_H_r2_R1",
+            "A_TGFb_Inp_L_r1_R1",
+            "A_TGFb_Inp_L_r2_R1",
+            "CA1a_H2AZ_H_r1_R1",
+            "CA1a_H2AZ_H_r2_R1",
+            "CA1a_H2AZ_L_r1_R1",
+            "CA1a_H2AZ_L_r2_R1",
+            "CA1a_Inp_H_r1_R1",
+            "CA1a_Inp_H_r2_R1",
+            "CA1a_Inp_L_r1_R1",
+            "CA1a_Inp_L_r2_R1"],
   "processed_dir" : "processed_data",
-  "data_dir" : "bam"
+  "data_dir" : "bam",
+  "alignment_quality" : "20"
 }
