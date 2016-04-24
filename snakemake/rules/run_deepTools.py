@@ -34,10 +34,11 @@ rule multiBamSummary:
         "deepTools/results.npz"
     shell:
         """
-        {params.deepTools_dir}/multiBamSummary bins --bamfiles {input} \
-                                                    --numberOfProcessors max \
-                                                    --centerReads \
-                                                    --outFileName {output}
+        {params.deepTools_dir}/multiBamSummary BED-file --BED seqCapTargets_hg38.bed \
+                                                        --bamfiles {input} \
+                                                        --numberOfProcessors max \
+                                                        --centerReads \
+                                                        --outFileName {output}
         """
 
 rule plotCorrelation_heatmap:
