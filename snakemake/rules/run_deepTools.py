@@ -29,19 +29,12 @@ rule multiBamSummary:
     params:
         deepTools_dir = config["deepTools_dir"]
     input:
-        expand("./processed_data/duplicates_marked/{unit}.DeDup.sorted.fastq_q20.bam", samples = config["units"])
+        expand("./processed_data/duplicates_marked/{units}.DeDup.sorted.fastq_q20.bam", samples = config["units"])
     output:
         "deepTools/results.npz"
     shell:
         """
-        {params.deepTools_dir}/multiBamSummary bins --bamfiles {input[0]} \
-                                                               {input[1]} \
-                                                               {input[2]} \
-                                                               {input[3]} \
-                                                               {input[4]} \
-                                                               {input[5]} \
-                                                               {input[6]} \
-                                                               {input[7]} \
+        {params.deepTools_dir}/multiBamSummary bins --bamfiles {input} \
                                                     --numberOfProcessors max \
                                                     --centerReads \
                                                     --outFileName {output}
