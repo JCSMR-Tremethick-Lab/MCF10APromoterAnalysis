@@ -63,8 +63,7 @@ rule plotCorrelation_heatmap:
 
 rule plotPCA:
     params:
-        deepTools_dir = config["deepTools_dir"],
-        samples = config["samples"]
+        deepTools_dir = config["deepTools_dir"]
     input:
         "deepTools/results.npz"
     output:
