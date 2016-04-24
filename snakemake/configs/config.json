@@ -1,5 +1,5 @@
 {
-  "unit" : ["A_H2AZ_H_r1_R1",
+  "units" : ["A_H2AZ_H_r1_R1",
             "A_H2AZ_H_r2_R1",
             "A_H2AZ_L_r1_R1",
             "A_H2AZ_L_r2_R1",
@@ -29,5 +29,6 @@
             "CA1a_Inp_L_r2_R1"],
   "processed_dir" : "processed_data",
   "data_dir" : "bam",
-  "alignment_quality" : "20"
+  "alignment_quality" : "20",
+  "deepTools_dir" : "~/miniconda2/envs/deepTools/bin"
 }

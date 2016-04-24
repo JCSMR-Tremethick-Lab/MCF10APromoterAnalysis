@@ -66,18 +66,6 @@ rule bam_index:
     shell:
         "cd processed_data/duplicates_marked && samtools index ../.{input}"
 
-# rule bam_quality_filter:
-#     version:
-#         "0.1"
-#     params:
-#         qual = config["alignment_quality"]
-#     input:
-#         "./processed_data/{unit}.bam"
-#     output:
-#         "./processed_data/quality_filtered/{unit}.Q{qual}.bam"
-#     shell:
-#         "samtools view -b -h -q {params.qual} {input} > {output}"
-
 rule bam_rmdup:
     version:
         "0.1"
