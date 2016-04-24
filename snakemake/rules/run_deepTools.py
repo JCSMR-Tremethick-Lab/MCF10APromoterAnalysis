@@ -91,19 +91,12 @@ rule plotFingerprint:
     params:
         deepTools_dir = config["deepTools_dir"]
     input:
-        expand("./processed_data/{dup}/{units}.DeDup.sorted.fastq_q20.bam", samples = config["units"])
+        expand("./processed_data/duplicates_removed/{units}.DeDup.sorted.fastq_q20.bam", samples = config["units"])
     output:
-        "deepTools/plotFingerprint/{dup}_fingerprints.png"
+        "deepTools/plotFingerprint/duplicates_removed_fingerprints.png"
     shell:
         """
-        {params.deepTools_dir}/plotFingerprint --bamfiles {input[0]} \
-                                                          {input[1]} \
-                                                          {input[2]} \
-                                                          {input[3]} \
-                                                          {input[4]} \
-                                                          {input[5]} \
-                                                          {input[6]} \
-                                                          {input[7]} \
+        {params.deepTools_dir}/plotFingerprint --bamfiles {input} \
                                                --numberOfProcessors max \
                                                --centerReads \
                                                --plotTitle "Library complexity" \
