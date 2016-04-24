@@ -29,7 +29,7 @@ rule multiBamSummary:
     params:
         deepTools_dir = config["deepTools_dir"]
     input:
-        expand("./processed_data/duplicates_marked/{units}.DeDup.sorted.fastq_q20.bam", samples = config["units"])
+        expand("./processed_data/duplicates_marked/{units}.DeDup.sorted.fastq_q20.bam", units = config["units"])
     output:
         "deepTools/results.npz"
     shell:
