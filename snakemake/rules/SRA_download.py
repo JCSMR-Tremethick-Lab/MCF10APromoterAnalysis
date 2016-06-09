@@ -33,6 +33,6 @@ rule download_sra:
             cd SRA/sra; wget {input}
         """
 
-rule download_sra:
+rule download:
     input:
         expand("SRA/sra/{sra_ids}.sra", sra_ids = ["SRR786494", "SRR786495"])
