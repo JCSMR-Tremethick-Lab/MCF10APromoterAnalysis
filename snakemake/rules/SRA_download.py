@@ -14,23 +14,24 @@ For use, include in your workflow.
 
 from snakemake.exceptions import MissingInputException
 import snakemake.utils
+import wget
 
 
 def make_sra_urls(wildcards):
     url_prefix = "ftp://ftp-trace.ncbi.nih.gov/sra/sra-instant/reads/ByRun/sra"
     url = []
     for i in wildcards["sra_ids"]:
+        print(str(i))
         url.append(url_prefix + "/" + i[0:3] + "/" + i[0:6] + "/" + i + "/" + i + ".sra")
-    return(url)
 
 rule download_sra:
     input:
         make_sra_urls
     output:
-        "/SRA/sra/{sra_ids}.sra"
+        "SRA/sra/{sra_ids}.sra"
     shell:
         """
-            cd SRA/sra; wget {input}
+            wget {input} --output-file {output}
         """
 
 rule download:
