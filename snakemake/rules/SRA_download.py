@@ -20,9 +20,9 @@ import wget
 def make_sra_urls(wildcards):
     url_prefix = "ftp://ftp-trace.ncbi.nih.gov/sra/sra-instant/reads/ByRun/sra"
     url = []
-    for i in wildcards["sra_ids"]:
-        print(str(i))
-        url.append(url_prefix + "/" + i[0:3] + "/" + i[0:6] + "/" + i + "/" + i + ".sra")
+    i = wildcards["sra_ids"]:
+    print(str(i))
+    url.append(url_prefix + "/" + i[0:3] + "/" + i[0:6] + "/" + i + "/" + i + ".sra")
 
 rule download_sra:
     input:
