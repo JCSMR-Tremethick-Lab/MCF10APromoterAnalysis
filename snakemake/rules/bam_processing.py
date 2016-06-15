@@ -105,6 +105,6 @@ rule index_merged_bam:
     input:
         rules.bam_merge.output
     output:
-        protected("./{processed_dir}/{genome_version}/duplicates_removed/merged/{sample}.Q{qual}.sorted.DeDup.bam.bai")
+        protected("./{processed_dir}/{genome_version}/duplicates_removed/{sample}.Q{qual}.sorted.DeDup.bam.bai")
     shell:
         "samtools index {input} {output}"
