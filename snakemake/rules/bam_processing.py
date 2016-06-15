@@ -31,7 +31,7 @@ rule all:
 
 rule bam_merge_dummy:
     input:
-        expand("./{processed_dir}/duplicates_removed/merged/{sample}.Q20.DeDup.sorted.bam", sample = config["sample"], processed_dir = config["processed_dir"])
+        expand("./{processed_dir}/{genome_version}/duplicates_removed/{sample}.Q20.DeDup.sorted.bam", sample = config["sample"], processed_dir = config["processed_dir"], genome_version = "hg38")
 
 
 rule bam_sort:
