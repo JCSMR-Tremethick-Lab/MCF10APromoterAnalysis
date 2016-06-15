@@ -14,7 +14,7 @@ For usage, include this in your workflow.
 def bam_merge_input(wildcards):
     fn = []
     for i in config["sample"][wildcards.sample]:
-        fn.append("./" + wildcards.processed_dir + "/" + wildcards.genome_version + "/duplicates_removed/" + i + ".Q" + wildcards.qual + ".sorted.DeDup.bam")
+        fn.append("./" + wildcards.processed_dir + "/" + wildcards.genome_version + "/duplicates_removed/" + i + ".DeDup.sorted.fastq_q20.bam")
     return(fn)
 
 wrapper_dir = "/home/skurscheid/Development/snakemake-wrappers/bio"
