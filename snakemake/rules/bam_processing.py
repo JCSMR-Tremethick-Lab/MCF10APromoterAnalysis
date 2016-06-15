@@ -33,7 +33,6 @@ rule bam_merge_dummy:
     input:
         expand("./{processed_dir}/{genome_version}/duplicates_removed/{sample}.Q20.DeDup.sorted.bam", sample = config["sample"], processed_dir = config["processed_dir"], genome_version = "hg38")
 
-
 rule bam_sort:
     version:
         "0.1"
@@ -94,6 +93,6 @@ rule bam_merge:
     input:
         bam_merge_input
     output:
-        protected("./{processed_dir}/{genome_version}/duplicates_removed/merged/{sample}.Q20.DeDup.sorted.bam")
+        protected("./{processed_dir}/{genome_version}/duplicates_removed/{sample}.Q20.DeDup.sorted.bam")
     wrapper:
         "file://" + wrapper_dir + "/samtools/merge/wrapper.py"
