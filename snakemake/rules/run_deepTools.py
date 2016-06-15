@@ -15,10 +15,11 @@ For usage, include this in your workflow.
 
 rule all:
     input:
-        "deepTools/results.npz",
+        "processed_data/hg38/deepTools/results.npz",
         # expand("deepTools/bamPEFragmentSize/{samples}_histogram.png", samples = config["units"]),
-        "deepTools/plotCorrelation/heatmap_SpearmanCorr_readCounts.png",
-        "deepTools/plotPCA/PCA_readCounts.png"
+        "processed_data/hg38/deepTools/plotCorrelation/heatmap_SpearmanCorr_readCounts.png",
+        "processed_data/hg38/deepTools/plotPCA/PCA_readCounts.png",
+        expand("{processed_dir}/{genome_version}/deepTools/bamCoverage/{sample}.bw", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"])
         # expand("deepTools/plotFingerprint/{dup}_fingerprints.{dup_suff}.png", dup = "duplicates_removed", dup_suff = "DeDup"),
         # expand("./deepTools/bamCompare/{chip}_vs_Input.{norm}.bw", chip = ("H2AZ", "H2ABbd"), norm = ("SES", "readCount")),
         # expand("deepTools/computeMatrix_referencePoint/{region}.{sample}.{norm}.{type}", region = ("ctaGenes", "allGenes", "ctaGenesExpressed"), sample = ("H2ABbd_vs_Input", "H2AZ_vs_Input"), norm = ("SES", "readCount"), type = ("matrix.gz", "matrix")),
@@ -109,20 +110,21 @@ rule bamCoverage_MNase:
     params:
         deepTools_dir = config["deepTools_dir"]
     input:
-        "processed_data/duplicates_removed/{units}.DeDup.sorted.fastq_q20.bam"
+        "{processed_dir}/{genome_version}/duplicates_removed/{sample}.DeDup.sorted.fastq_q20.bam"
     output:
-        "deepTools/bamCoverage/{units}.bw"
+        "{processed_dir}/{genome_version}/deepTools/bamCoverage/{sample}.bw"
     shell:
         """
         {params.deepTools_dir}/bamCoverage --bam {input} \
                                            --outFileName {output} \
                                            --outFileFormat bigwig \
                                            --MNase \
-                                           --binSize 1 \
-                                           --numberOfProcessors max \
+                                           --binSize 10 \
+                                           --numberOfProcessors 4 \
                                            --normalizeUsingRPKM \
-                                           --smoothLength 10 \
-                                           --centerReads
+                                           --smoothLength 20 \
+                                           --centerReads \
+                                           --skipNonCoveredRegions
         """
 
 # rule bamCompare:
