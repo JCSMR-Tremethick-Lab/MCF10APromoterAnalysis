@@ -31,7 +31,9 @@ rule all:
 
 rule bam_merge_dummy:
     input:
-        expand("./{processed_dir}/{genome_version}/duplicates_removed/{sample}.Q20.DeDup.sorted.bam", sample = config["sample"], processed_dir = config["processed_dir"], genome_version = "hg38")
+        expand("./{processed_dir}/{genome_version}/duplicates_removed/{sample}.Q20.DeDup.sorted.bam", sample = config["sample"], processed_dir = config["processed_dir"], genome_version = "hg38"),
+        expand("./{processed_dir}/{genome_version}/duplicates_removed/merged/{sample}.Q20.DeDup.sorted.bam.bai", sample = config["sample"], processed_dir = config["processed_dir"], genome_version = "hg38")
+
 
 rule bam_sort:
     version:
@@ -90,9 +92,19 @@ rule bam_rmdup:
         "samtools rmdup {input} {output[0]}; samtools index {output[0]} {output[1]}"
 
 rule bam_merge:
+    version:
+        0.1
     input:
         bam_merge_input
     output:
         protected("./{processed_dir}/{genome_version}/duplicates_removed/{sample}.Q20.DeDup.sorted.bam")
     wrapper:
         "file://" + wrapper_dir + "/samtools/merge/wrapper.py"
+
+rule index_merged_bam:
+    input:
+        rules.bam_merge.output
+    output:
+        protected("./{processed_dir}/{genome_version}/duplicates_removed/merged/{sample}.Q{qual}.sorted.DeDup.bam.bai")
+    shell:
+        "samtools index {input} {output}"
