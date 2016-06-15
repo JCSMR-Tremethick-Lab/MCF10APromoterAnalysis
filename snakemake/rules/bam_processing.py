@@ -26,8 +26,13 @@ from snakemake.exceptions import MissingInputException
 
 # rules
 rule all:
- input:
-     expand("./processed_data/duplicates_removed/{unit}.DeDup.sorted.fastq_q20.bam", unit = config["units"]),
+    input:
+        expand("./processed_data/duplicates_removed/{unit}.DeDup.sorted.fastq_q20.bam", unit = config["units"])
+
+rule bam_merge_dummy:
+    input:
+        expand("./{processed_dir}/duplicates_removed/merged/{sample}.Q20.DeDup.sorted.bam", sample = config["sample"], processed_dir = config["processed_dir"])
+
 
 rule bam_sort:
     version:
