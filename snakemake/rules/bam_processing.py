@@ -11,6 +11,14 @@ Rules for processing SAM/BAM files
 For usage, include this in your workflow.
 """
 
+def bam_merge_input(wildcards):
+    fn = []
+    for i in config["sample"][wildcards.sample]:
+        fn.append("./" + wildcards.processed_dir + "/" + wildcards.genome_version + "/duplicates_removed/" + i + ".Q" + wildcards.qual + ".sorted.DeDup.bam")
+    return(fn)
+
+wrapper_dir = "/home/skurscheid/Development/snakemake-wrappers/bio"
+
 # import other packages
 import os
 import fnmatch
@@ -76,3 +84,11 @@ rule bam_rmdup:
         "./processed_data/duplicates_removed/{unit}.DeDup.sorted.fastq_q20.bam.bai"
     shell:
         "samtools rmdup {input} {output[0]}; samtools index {output[0]} {output[1]}"
+
+rule bam_merge:
+    input:
+        bam_merge_input
+    output:
+        protected("./{processed_dir}/duplicates_removed/merged/{sample}.Q20.DeDup.sorted.bam")
+    wrapper:
+        "file://" + wrapper_dir + "/samtools/merge/wrapper.py"
