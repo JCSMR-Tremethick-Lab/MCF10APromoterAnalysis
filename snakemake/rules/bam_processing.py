@@ -94,6 +94,6 @@ rule bam_merge:
     input:
         bam_merge_input
     output:
-        protected("./{processed_dir}/duplicates_removed/merged/{sample}.Q20.DeDup.sorted.bam")
+        protected("./{processed_dir}/{genome_version}/duplicates_removed/merged/{sample}.Q20.DeDup.sorted.bam")
     wrapper:
         "file://" + wrapper_dir + "/samtools/merge/wrapper.py"
