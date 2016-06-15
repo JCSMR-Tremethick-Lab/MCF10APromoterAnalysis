@@ -110,7 +110,7 @@ rule bamCoverage_MNase:
     params:
         deepTools_dir = config["deepTools_dir"]
     input:
-        "{processed_dir}/{genome_version}/duplicates_removed/{sample}.DeDup.sorted.fastq_q20.bam"
+        "{processed_dir}/{genome_version}/duplicates_removed/{sample}.Q20.DeDup.sorted.bam"
     output:
         "{processed_dir}/{genome_version}/deepTools/bamCoverage/{sample}.bw"
     shell:
