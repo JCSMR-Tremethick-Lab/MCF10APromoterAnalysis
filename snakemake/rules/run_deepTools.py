@@ -20,8 +20,8 @@ rule all:
         "processed_data/hg38/deepTools/plotCorrelation/heatmap_SpearmanCorr_readCounts.png",
         "processed_data/hg38/deepTools/plotPCA/PCA_readCounts.png",
         expand("{processed_dir}/{genome_version}/deepTools/bamCoverage/{sample}.bw", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"]),
-        expand("{processed_dir}/{genome_version}/deepTools/computeMatrix_referencePoint/{region}.{sample}.matrix.gz", genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up"]),
-        expand("{processed_dir}/{genome_version}/deepTools/computeMatrix_referencePoint/{region}.{sample}.matrix", genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up"])
+        expand("{processed_dir}/{genome_version}/deepTools/computeMatrix_referencePoint/{region}.{sample}.matrix.gz", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up"]),
+        expand("{processed_dir}/{genome_version}/deepTools/computeMatrix_referencePoint/{region}.{sample}.matrix", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up"])
         # expand("deepTools/plotFingerprint/{dup}_fingerprints.{dup_suff}.png", dup = "duplicates_removed", dup_suff = "DeDup"),
         # expand("./deepTools/bamCompare/{chip}_vs_Input.{norm}.bw", chip = ("H2AZ", "H2ABbd"), norm = ("SES", "readCount")),
         # expand("deepTools/computeMatrix_referencePoint/{region}.{sample}.{norm}.{type}", region = ("ctaGenes", "allGenes", "ctaGenesExpressed"), sample = ("H2ABbd_vs_Input", "H2AZ_vs_Input"), norm = ("SES", "readCount"), type = ("matrix.gz", "matrix")),
