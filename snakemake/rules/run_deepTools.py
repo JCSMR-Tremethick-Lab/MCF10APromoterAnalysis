@@ -159,9 +159,9 @@ rule plotProfile:
     input:
         "{processed_dir}/{genome_version}/deepTools/computeMatrix_referencePoint/{region}.{sample}.matrix.gz"
     output:
-        figure = "{processed_dir}/{genome_version}/deepTools/plotProfile/profile.{region}.{sample}.{norm}.pdf",
-        data = "{processed_dir}/{genome_version}/deepTools/plotProfile/profile.{region}.{sample}.{norm}.data",
-        regions = "{processed_dir}/{genome_version}/deepTools/plotProfile/profile.{region}.{sample}.{norm}.bed"
+        figure = "{processed_dir}/{genome_version}/deepTools/plotProfile/profile.{region}.{sample}.pdf",
+        data = "{processed_dir}/{genome_version}/deepTools/plotProfile/profile.{region}.{sample}.data",
+        regions = "{processed_dir}/{genome_version}/deepTools/plotProfile/profile.{region}.{sample}.bed"
     shell:
         """
             {params.deepTools_dir}/plotProfile --matrixFile {input} \
