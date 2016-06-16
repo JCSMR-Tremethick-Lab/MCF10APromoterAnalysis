@@ -20,11 +20,11 @@ rule all:
         "processed_data/hg38/deepTools/plotCorrelation/heatmap_SpearmanCorr_readCounts.png",
         "processed_data/hg38/deepTools/plotPCA/PCA_readCounts.png",
         expand("{processed_dir}/{genome_version}/deepTools/bamCoverage/{sample}.bw", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"]),
-        expand("{processed_dir}/{genome_version}/deepTools/computeMatrix_referencePoint/{region}.{sample}.matrix.gz", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up"]),
-        expand("{processed_dir}/{genome_version}/deepTools/computeMatrix_referencePoint/{region}.{sample}.matrix", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up"]),
-        expand("{processed_dir}/{genome_version}/deepTools/plotProfile/profile.{region}.{sample}.pdf", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up"]),
-        expand("{processed_dir}/{genome_version}/deepTools/plotProfile/profile.{region}.{sample}.data", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up"]),
-        expand("{processed_dir}/{genome_version}/deepTools/plotProfile/profile.{region}.{sample}.bed", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up"])
+        expand("{processed_dir}/{genome_version}/deepTools/computeMatrix_referencePoint/{region}.{sample}.matrix.gz", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up", "seqCapTargets_hg38"]),
+        expand("{processed_dir}/{genome_version}/deepTools/computeMatrix_referencePoint/{region}.{sample}.matrix", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up", "seqCapTargets_hg38"]),
+        expand("{processed_dir}/{genome_version}/deepTools/plotProfile/profile.{region}.{sample}.pdf", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up", "seqCapTargets_hg38"]),
+        expand("{processed_dir}/{genome_version}/deepTools/plotProfile/profile.{region}.{sample}.data", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up", "seqCapTargets_hg38"]),
+        expand("{processed_dir}/{genome_version}/deepTools/plotProfile/profile.{region}.{sample}.bed", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up", "seqCapTargets_hg38"])
 
 rule multiBamSummary:
     params:
