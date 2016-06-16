@@ -120,7 +120,7 @@ rule bamCoverage_MNase:
                                            --outFileFormat bigwig \
                                            --MNase \
                                            --binSize 10 \
-                                           --numberOfProcessors 4 \
+                                           --numberOfProcessors 8 \
                                            --normalizeUsingRPKM \
                                            --smoothLength 20 \
                                            --centerReads \
