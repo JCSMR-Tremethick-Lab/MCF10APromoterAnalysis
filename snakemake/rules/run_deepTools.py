@@ -21,12 +21,10 @@ rule all:
         "processed_data/hg38/deepTools/plotPCA/PCA_readCounts.png",
         expand("{processed_dir}/{genome_version}/deepTools/bamCoverage/{sample}.bw", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"]),
         expand("{processed_dir}/{genome_version}/deepTools/computeMatrix_referencePoint/{region}.{sample}.matrix.gz", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up"]),
-        expand("{processed_dir}/{genome_version}/deepTools/computeMatrix_referencePoint/{region}.{sample}.matrix", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up"])
-        # expand("deepTools/plotFingerprint/{dup}_fingerprints.{dup_suff}.png", dup = "duplicates_removed", dup_suff = "DeDup"),
-        # expand("./deepTools/bamCompare/{chip}_vs_Input.{norm}.bw", chip = ("H2AZ", "H2ABbd"), norm = ("SES", "readCount")),
-        # expand("deepTools/computeMatrix_referencePoint/{region}.{sample}.{norm}.{type}", region = ("ctaGenes", "allGenes", "ctaGenesExpressed"), sample = ("H2ABbd_vs_Input", "H2AZ_vs_Input"), norm = ("SES", "readCount"), type = ("matrix.gz", "matrix")),
-        # expand("deepTools/computeMatrix_scaleRegions/{region}.{sample}.{norm}.{type}", region = ("ctaGenes", "allGenes", "ctaGenesExpressed"), sample = ("H2ABbd_vs_Input", "H2AZ_vs_Input"), norm = ("SES", "readCount"), type = ("matrix.gz", "matrix")),
-        # expand("deepTools/plotHeatmap/{matrix_dir}/heatmap.{region}.{sample}.{norm}.{type}", region = ("ctaGenes", "allGenes", "ctaGenesExpressed"), matrix_dir = ("computeMatrix_referencePoint"), sample = ("H2ABbd_vs_Input", "H2AZ_vs_Input"), norm = ("SES", "readCount"), type = ("pdf", "data", "bed", "matrix"))
+        expand("{processed_dir}/{genome_version}/deepTools/computeMatrix_referencePoint/{region}.{sample}.matrix", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up"]),
+        expand("{processed_dir}/{genome_version}/deepTools/plotProfile/profile.{region}.{sample}.pdf", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up"]),
+        expand("{processed_dir}/{genome_version}/deepTools/plotProfile/profile.{region}.{sample}.data", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up"]),
+        expand("{processed_dir}/{genome_version}/deepTools/plotProfile/profile.{region}.{sample}.bed", processed_dir = config["processed_dir"], genome_version = "hg38", sample = config["sample"], region = ["EMT_markers", "EMT_markers_down", "EMT_markers_up"])
 
 rule multiBamSummary:
     params:
@@ -128,6 +126,73 @@ rule bamCoverage_MNase:
                                            --centerReads \
                                            --skipNonCoveredRegions
         """
+rule computeMatrix_referencePoint:
+    version:
+        0.2
+    params:
+        deepTools_dir = config["deepTools_dir"]
+    input:
+        file = "{processed_dir}/{genome_version}/deepTools/bamCoverage/{sample}.bw",
+        region = "{processed_dir}/{genome_version}/deepTools/regionFiles/{region}.bed"
+    output:
+        matrix_gz = "{processed_dir}/{genome_version}/deepTools/computeMatrix_referencePoint/{region}.{sample}.matrix.gz",
+        matrix = "{processed_dir}/{genome_version}/deepTools/computeMatrix_referencePoint/{region}.{sample}.matrix"
+    shell:
+        """
+        {params.deepTools_dir}/computeMatrix reference-point \
+                                             --referencePoint TSS \
+                                             --regionsFileName {input.region} \
+                                             --scoreFileName {input.file} \
+                                             --upstream 1500 \
+                                             --downstream 1500 \
+                                             --missingDataAsZero \
+                                             --skipZeros \
+                                             --outFileName {output.matrix_gz} \
+                                             --outFileNameMatrix {output.matrix}
+        """
+
+rule plotProfile:
+    version:
+        0.1
+    params:
+        deepTools_dir = config["deepTools_dir"]
+    input:
+        "{processed_dir}/{genome_version}/deepTools/computeMatrix_referencePoint/{region}.{sample}.matrix.gz"
+    output:
+        figure = "{processed_dir}/{genome_version}/deepTools/plotProfile/profile.{region}.{sample}.{norm}.pdf",
+        data = "{processed_dir}/{genome_version}/deepTools/plotProfile/profile.{region}.{sample}.{norm}.data",
+        regions = "{processed_dir}/{genome_version}/deepTools/plotProfile/profile.{region}.{sample}.{norm}.bed"
+    shell:
+        """
+            {params.deepTools_dir}/plotProfile --matrixFile {input} \
+                                               --outFileName {output.figure} \
+                                               --outFileNameData {output.data} \
+                                               --outFileSortedRegions {output.regions} \
+                                               --plotType se
+        """
+
+
+# rule plotHeatmap:
+#     version:
+#         0.2
+#     params:
+#         deepTools_dir = config["deepTools_dir"]
+#     input:
+#         "deepTools/{matrix_dir}/{region}.{sample}.{norm}.matrix.gz"
+#     output:
+#         figure = "deepTools/plotHeatmap/{matrix_dir}/heatmap.{region}.{sample}.{norm}.pdf",
+#         data = "deepTools/plotHeatmap/{matrix_dir}/heatmap.{region}.{sample}.{norm}.data",
+#         regions = "deepTools/plotHeatmap/{matrix_dir}/heatmap.{region}.{sample}.{norm}.bed",
+#         matrix = "deepTools/plotHeatmap/{matrix_dir}/heatmap.{region}.{sample}.{norm}.matrix"
+#     shell:
+#         """
+#         {params.deepTools_dir}/plotHeatmap --matrixFile {input} \
+#                                            --outFileName {output.figure} \
+#                                            --outFileNameData {output.data} \
+#                                            --outFileSortedRegions {output.regions} \
+#                                            --outFileNameMatrix {output.matrix} \
+#                                            --kmeans 4
+#         """
 
 # rule bamCompare:
 #     params:
@@ -173,51 +238,4 @@ rule bamCoverage_MNase:
 #                                              --missingDataAsZero \
 #                                              --outFileName {output.matrix_gz} \
 #                                              --outFileNameMatrix {output.matrix}
-#         """
-
-rule computeMatrix_referencePoint:
-    version:
-        0.2
-    params:
-        deepTools_dir = config["deepTools_dir"]
-    input:
-        file = "{processed_dir}/{genome_version}/deepTools/bamCoverage/{sample}.bw",
-        region = "{processed_dir}/{genome_version}/deepTools/regionFiles/{region}.bed"
-    output:
-        matrix_gz = "{processed_dir}/{genome_version}/deepTools/computeMatrix_referencePoint/{region}.{sample}.matrix.gz",
-        matrix = "{processed_dir}/{genome_version}/deepTools/computeMatrix_referencePoint/{region}.{sample}.matrix"
-    shell:
-        """
-        {params.deepTools_dir}/computeMatrix reference-point \
-                                             --referencePoint TSS \
-                                             --regionsFileName {input.region} \
-                                             --scoreFileName {input.file} \
-                                             --upstream 1500 \
-                                             --downstream 1500 \
-                                             --missingDataAsZero \
-                                             --skipZeros \
-                                             --outFileName {output.matrix_gz} \
-                                             --outFileNameMatrix {output.matrix}
-        """
-
-# rule plotHeatmap:
-#     version:
-#         0.2
-#     params:
-#         deepTools_dir = config["deepTools_dir"]
-#     input:
-#         "deepTools/{matrix_dir}/{region}.{sample}.{norm}.matrix.gz"
-#     output:
-#         figure = "deepTools/plotHeatmap/{matrix_dir}/heatmap.{region}.{sample}.{norm}.pdf",
-#         data = "deepTools/plotHeatmap/{matrix_dir}/heatmap.{region}.{sample}.{norm}.data",
-#         regions = "deepTools/plotHeatmap/{matrix_dir}/heatmap.{region}.{sample}.{norm}.bed",
-#         matrix = "deepTools/plotHeatmap/{matrix_dir}/heatmap.{region}.{sample}.{norm}.matrix"
-#     shell:
-#         """
-#         {params.deepTools_dir}/plotHeatmap --matrixFile {input} \
-#                                            --outFileName {output.figure} \
-#                                            --outFileNameData {output.data} \
-#                                            --outFileSortedRegions {output.regions} \
-#                                            --outFileNameMatrix {output.matrix} \
-#                                            --kmeans 4
 #         """
