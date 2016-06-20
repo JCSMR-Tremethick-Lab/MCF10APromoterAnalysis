@@ -160,6 +160,8 @@ rule plotFingerprint:
         """
 
 rule bamCoverage_MNase:
+    version:
+        0.2
     params:
         deepTools_dir = config["deepTools_dir"]
     input:
@@ -175,13 +177,13 @@ rule bamCoverage_MNase:
                                            --binSize 10 \
                                            --numberOfProcessors 8 \
                                            --normalizeUsingRPKM \
-                                           --smoothLength 20 \
+                                           --smoothLength 30 \
                                            --centerReads \
                                            --skipNonCoveredRegions
         """
 rule computeMatrix_referencePoint:
     version:
-        0.2
+        0.3
     params:
         deepTools_dir = config["deepTools_dir"]
     input:
@@ -196,8 +198,8 @@ rule computeMatrix_referencePoint:
                                              --referencePoint TSS \
                                              --regionsFileName {input.region} \
                                              --scoreFileName {input.file} \
-                                             --upstream 1500 \
-                                             --downstream 1500 \
+                                             --upstream 300 \
+                                             --downstream 300 \
                                              --missingDataAsZero \
                                              --skipZeros \
                                              --outFileName {output.matrix_gz} \
