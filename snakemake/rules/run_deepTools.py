@@ -15,10 +15,23 @@ For usage, include this in your workflow.
 
 rule all:
     input:
-        "processed_data/hg38/deepTools/results.npz",
+        expand("{processed_dir}/{genome_version}/deepTools/results.npz",
+               processed_dir = config["processed_dir"],
+               genome_version = "hg38"
+               ),
+        expand("{processed_dir}/{genome_version}/deepTools/multiBamSummary/raw_counts.txt",
+               processed_dir = config["processed_dir"],
+               genome_version = "hg38"
+               ),
         # expand("deepTools/bamPEFragmentSize/{samples}_histogram.png", samples = config["units"]),
-        "processed_data/hg38/deepTools/plotCorrelation/heatmap_SpearmanCorr_readCounts.png",
-        "processed_data/hg38/deepTools/plotPCA/PCA_readCounts.png",
+        expand("{processed_dir}/{genome_version}/deepTools/plotCorrelation/heatmap_SpearmanCorr_readCounts.png",
+               processed_dir = config["processed_dir"],
+               genome_version = "hg38"
+               ),
+        expand("{processed_dir}/{genome_version}/deepTools/plotPCA/PCA_readCounts.png",
+               processed_dir = config["processed_dir"],
+               genome_version = "hg38"
+               ),
         expand("{processed_dir}/{genome_version}/deepTools/bamCoverage/{sample}.bw",
                processed_dir = config["processed_dir"],
                genome_version = "hg38",
