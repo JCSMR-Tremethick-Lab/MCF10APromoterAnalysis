@@ -17,21 +17,17 @@ rule all:
     input:
         expand("{processed_dir}/{genome_version}/deepTools/results.npz",
                processed_dir = config["processed_dir"],
-               genome_version = "hg38"
-               ),
+               genome_version = "hg38"),
         expand("{processed_dir}/{genome_version}/deepTools/multiBamSummary/raw_counts.txt",
                processed_dir = config["processed_dir"],
-               genome_version = "hg38"
-               ),
+               genome_version = "hg38"),
         # expand("deepTools/bamPEFragmentSize/{samples}_histogram.png", samples = config["units"]),
         expand("{processed_dir}/{genome_version}/deepTools/plotCorrelation/heatmap_SpearmanCorr_readCounts.png",
                processed_dir = config["processed_dir"],
-               genome_version = "hg38"
-               ),
+               genome_version = "hg38"),
         expand("{processed_dir}/{genome_version}/deepTools/plotPCA/PCA_readCounts.png",
                processed_dir = config["processed_dir"],
-               genome_version = "hg38"
-               ),
+               genome_version = "hg38"),
         expand("{processed_dir}/{genome_version}/deepTools/bamCoverage/{sample}.bw",
                processed_dir = config["processed_dir"],
                genome_version = "hg38",
@@ -99,10 +95,13 @@ rule multiBamSummary:
         deepTools_dir = config["deepTools_dir"],
         binSize = 1000
     input:
-        expand("./processed_data/duplicates_removed/{units}.DeDup.sorted.fastq_q20.bam", units = config["units"])
+        expand("./{processed_dir}/{genome_version}/processed_data/duplicates_removed/{units}.DeDup.sorted.fastq_q20.bam",
+               units = config["units"],
+               processed_dir = config["processed_dir"],
+               genome_version = "hg38")
     output:
-        npz = "deepTools/results.npz",
-        raw = "deepTools/multiBamSummary/raw_counts.txt"
+        npz = "./{processed_dir}/{genome_version}/deepTools/results.npz",
+        raw = "./{processed_dir}/{genome_version}/deepTools/multiBamSummary/raw_counts.txt"
     shell:
         """
         {params.deepTools_dir}/multiBamSummary BED-file --BED seqCapTargets_hg38.bed \
@@ -118,10 +117,10 @@ rule plotCorrelation_heatmap:
     params:
         deepTools_dir = config["deepTools_dir"]
     input:
-        "deepTools/results.npz"
+        "./{processed_dir}/{genome_version}/deepTools/results.npz"
     output:
-        "deepTools/plotCorrelation/heatmap_SpearmanCorr_readCounts.png",
-        "deepTools/plotCorrelation/heatmap_SpearmanCorr_readCounts.tab"
+        "./{processed_dir}/{genome_version}/deepTools/plotCorrelation/heatmap_SpearmanCorr_readCounts.png",
+        "./{processed_dir}/{genome_version}/deepTools/plotCorrelation/heatmap_SpearmanCorr_readCounts.tab"
     shell:
         """
         {params.deepTools_dir}/plotCorrelation -in {input} \
@@ -139,9 +138,9 @@ rule plotPCA:
     params:
         deepTools_dir = config["deepTools_dir"]
     input:
-        "deepTools/results.npz"
+        "./{processed_dir}/{genome_version}/deepTools/results.npz"
     output:
-        "deepTools/plotPCA/PCA_readCounts.png"
+        "./{processed_dir}/{genome_version}/deepTools/plotPCA/PCA_readCounts.png"
     shell:
         """
         {params.deepTools_dir}/plotPCA -in {input} \
@@ -153,9 +152,9 @@ rule bamPEFragmentSize:
     params:
         deepTools_dir = config["deepTools_dir"]
     input:
-        "./processed_data/duplicates_marked/{units}.Q20.sorted.MkDup.bam"
+        "./{processed_dir}/{genome_version}/duplicates_marked/{units}.Q20.sorted.MkDup.bam"
     output:
-        "deepTools/bamPEFragmentSize/{units}_histogram.png"
+        "./{processed_dir}/{genome_version}/deepTools/bamPEFragmentSize/{units}_histogram.png"
     shell:
         """
         {params.deepTools_dir}/bamPEFragmentSize --histogram {output} {input}
@@ -165,7 +164,10 @@ rule plotFingerprint:
     params:
         deepTools_dir = config["deepTools_dir"]
     input:
-        expand("./processed_data/duplicates_removed/{units}.DeDup.sorted.fastq_q20.bam", units = config["units"])
+        expand("./{processed_dir}/{genome_version}/processed_data/duplicates_removed/{units}.DeDup.sorted.fastq_q20.bam",
+               units = config["units"],
+               processed_dir = config["processed_dir"],
+               genome_version = "hg38")
     output:
         "deepTools/plotFingerprint/duplicates_removed_fingerprints.png"
     shell:
