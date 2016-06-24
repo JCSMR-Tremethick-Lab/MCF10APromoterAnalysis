@@ -1,6 +1,7 @@
 require(GenomicRanges)
 require(clusterProfiler)
 require(ComplexHeatmap)
+require(fastcluster)
 
 # promoterSeqCap_deepTools_postProcessing.R
 mat <- read.table("~/Data/Tremethick/Breast/PromoterSeqCap/processed_data/hg38/deepTools/computeMatrix_referencePoint/EMT_markers.MCF10A_H2AZ_H.matrix.gz", header = F, comment.char = "@")

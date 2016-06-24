@@ -80,19 +80,25 @@ rule all:
                          "seqCap_Targets_EMT_markers_down"])
 
 rule multiBamSummary:
+    version:
+        0.2
     params:
-        deepTools_dir = config["deepTools_dir"]
+        deepTools_dir = config["deepTools_dir"],
+        binSize = 1000
     input:
         expand("./processed_data/duplicates_removed/{units}.DeDup.sorted.fastq_q20.bam", units = config["units"])
     output:
-        "deepTools/results.npz"
+        npz = "deepTools/results.npz",
+        raw = "deepTools/multiBamSummary/raw_counts.txt"
     shell:
         """
         {params.deepTools_dir}/multiBamSummary BED-file --BED seqCapTargets_hg38.bed \
                                                         --bamfiles {input} \
                                                         --numberOfProcessors max \
                                                         --centerReads \
-                                                        --outFileName {output}
+                                                        --binSize {params.binSize} \
+                                                        --outFileName {output.npz} \
+                                                        --outRawCounts {output.raw}
         """
 
 rule plotCorrelation_heatmap:
@@ -181,6 +187,7 @@ rule bamCoverage_MNase:
                                            --centerReads \
                                            --skipNonCoveredRegions
         """
+
 rule computeMatrix_referencePoint:
     version:
         0.3
