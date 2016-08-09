@@ -6,11 +6,11 @@
       "GTF" : "/home/skurscheid/Data/References/Annotations/Homo_sapiens/GRCh38_ensembl84/Homo_sapiens.GRCh38.84_ERCC.gtf",
       "kallisto" :
       {
-          "GRCh38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Homo_sapiens/GRCh38_ensembl84/Homo_sapiens.GRCh38.all_ERCC.ki",
+        "GRCh38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Homo_sapiens/GRCh38_ensembl84/Homo_sapiens.GRCh38.all_ERCC.ki",
       },
       "STAR" :
       {
-        "GRCh38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Canis_familiaris/CanFam3.1_ensembl84/STAR_Index_ERCC",
+        "GRCh38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Homo_sapiens/GRCh38_ensembl84/STAR_Index_ERCC",
       },
     },
     "kallisto" :
