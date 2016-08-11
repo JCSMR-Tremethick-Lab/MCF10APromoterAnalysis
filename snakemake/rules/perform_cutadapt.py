@@ -41,7 +41,6 @@ rule cutadapt_pe:
         """
 
 rule dummy_cutadapt:
-     """Trim all reads with all supplied trimming parameters"""
     input:
         expand("./{assayID}/{runID}/{outdir}/{trim_data}/{unit}_{suffix}.QT.CA.fastq.gz",
                assayID = "RNA-Seq",
@@ -49,4 +48,4 @@ rule dummy_cutadapt:
                outdir = config["processed_dir"],
                trim_data = config["trim_dir"],
                unit = config["RNA-Seq"],
-               suffix = ["R1_001", "R2_001"]),
+               suffix = ["R1_001", "R2_001"])
