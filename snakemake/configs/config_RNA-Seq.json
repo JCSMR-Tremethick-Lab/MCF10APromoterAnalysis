@@ -38,7 +38,7 @@
       "MCF10A_rep1" : ["Renae1_S1_R1_001.fastq.gz", "Renae1_S1_R2_001.fastq.gz"],
       "MCF10A_rep2": ["Renae2_S2_R1_001.fastq.gz", "Renae2_S2_R2_001.fastq.gz"],
       "MCF10A_shZ_rep1" : ["Renae3_S3_R1_001.fastq.gz", "Renae3_S3_R2_001.fastq.gz"],
-      "MCF10A_shZ_rep2" : ["Renae4_S4_R1_001.fastq.gz", "Renae4_S4_R1_001.fastq.gz"],
+      "MCF10A_shZ_rep2" : ["Renae4_S4_R1_001.fastq.gz", "Renae4_S4_R2_001.fastq.gz"],
       "MCF10A_TGFb_rep1" : ["Renae5_S5_R1_001.fastq.gz", "Renae5_S5_R2_001.fastq.gz"],
       "MCF10A_TGFb_rep2" : ["Renae6_S6_R1_001.fastq.gz", "Renae6_S6_R2_001.fastq.gz"],
       "MCF10Ca1a_rep1" : ["Renae13_S13_R1_001.fastq.gz", "Renae13_S13_R2_001.fastq.gz"],
