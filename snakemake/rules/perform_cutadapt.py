@@ -18,7 +18,7 @@ def getFASTQ(wildcards):
         for j in config[wildcards.assayID][i]:
                 fn.append("RNA-Seq/NB501086_0067_RDomaschenz_JCSMR_RNASeq/fastq/" + j)
         return(fn)
-        
+
 rule cutadapt_pe:
     """Trims given paired-end reads with given parameters"""
     params:
@@ -42,6 +42,11 @@ rule cutadapt_pe:
 
 rule dummy_cutadapt:
      """Trim all reads with all supplied trimming parameters"""
-     input:
-         expand("./{trim_data}/{unit}_R1_001.QT.CA.fastq.gz", unit = config["RNA-Seq"], trim_data = config["trim_dir"]),
-         expand("./{trim_data}/{unit}_R2_001.QT.CA.fastq.gz", unit = config["RNA-Seq"], trim_data = config["trim_dir"])
+    input:
+        expand("./{assayID}/{runID}/{outdir}/{trim_data}/{unit}_{suffix}.QT.CA.fastq.gz",
+               assayID = "RNA-Seq",
+               runID = "NB501086_0067_RDomaschenz_JCSMR_RNASeq",
+               outdir = config["processed_dir"],
+               trim_data = config["trim_dir"],
+               unit = config["RNA-Seq"],
+               suffix = ["R1_001", "R2_001"]),
