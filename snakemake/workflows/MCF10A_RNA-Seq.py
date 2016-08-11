@@ -8,7 +8,7 @@ rule:
     version: 0.3
 
 localrules:
-    all
+    all, run_cutadapt
 
 include_prefix="/home/skurscheid/Development/JCSMR-Tremethick-Lab/H2AZ_EMT/snakemake/rules/"
 
@@ -20,6 +20,16 @@ include:
     include_prefix + "run_kallisto.py"
 include:
     include_prefix + "run_STAR.py"
+
+rule run_cutadapt:
+    input:
+        "./RNA-Seq/NB501086_0067_RDomaschenz_JCSMR_RNASeq/processed_data/reports/",
+        expand("./{assayID}/NB501086_0067_RDomaschenz_JCSMR_RNASeq/{outdir}/{trim_data}/{unit}_{suffix}.QT.CA.fastq.gz",
+               assayID = "RNA-Seq",
+               outdir = config["processed_dir"],
+               unit = config["RNA-Seq"],
+               trim_data = config["trim_dir"],
+               suffix = ["R1_001", "R2_001"]),
 
 rule all:
     input:
