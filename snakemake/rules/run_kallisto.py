@@ -11,10 +11,11 @@ rule kallisto_quant:
         "Running kallisto quant..."
     params:
         bootstraps = config["kallisto"]["bootstraps"],
-        threads = 4
+        threads = 4,
+        trim_dir = config["trim_dir"]
     input:
-        "./{assayID}/{runID}/{processed_dir}/{trim_data}/{unit}_R1_001.QT.CA.fastq.gz",
-        "./{assayID}/{runID}/{processed_dir}/{trim_data}/{unit}_R2_001.QT.CA.fastq.gz",
+        read1 = "./{assayID}/{runID}/{processed_dir}/{params.trim_dir}/{unit}_R1_001.QT.CA.fastq.gz",
+        read2 = "./{assayID}/{runID}/{processed_dir}/{params.trim_dir}/{unit}_R2_001.QT.CA.fastq.gz",
         ki = lambda wildcards: config["references"]["kallisto"][wildcards.reference_version]
     output:
         protected("./{assayID}/{runID}/{processed_dir}/{reference_version}/kallisto/{unit}")
@@ -24,5 +25,5 @@ rule kallisto_quant:
                            --output-dir={output} \
                            --threads=4 \
                            --bootstrap-samples={params.bootstraps} \
-                           {input[0]} {input[1]}
+                           {input.read1} {input.read2}
         """
