@@ -10,10 +10,11 @@ rule star_align_full:
     version:
         0.4
     params:
-        runThreadN = config["STAR"]["runThreadN"]
+        runThreadN = config["STAR"]["runThreadN"],
+        trim_dir = config["trim_dir"]
     input:
-        read1 = "./{assayID}/{runID}/{processed_dir}/{trim_data}/{unit}_R1_001.QT.CA.fastq.gz",
-        read2 = "./{assayID}/{runID}/{processed_dir}/{trim_data}/{unit}_R2_001.QT.CA.fastq.gz",
+        read1 = "./{assayID}/{runID}/{processed_dir}/{params.trim_dir}/{unit}_R1_001.QT.CA.fastq.gz",
+        read2 = "./{assayID}/{runID}/{processed_dir}/{params.trim_dir}/{unit}_R2_001.QT.CA.fastq.gz",
         index = lambda wildcards: config["references"]["STAR"][wildcards.reference_version]
     output:
         "./{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam"
