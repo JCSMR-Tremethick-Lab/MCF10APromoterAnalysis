@@ -56,12 +56,13 @@ rule run_htseq:
 
 rule run_cutadapt:
     input:
-        expand("./{assayID}/NB501086_0067_RDomaschenz_JCSMR_RNASeq/{outdir}/{trim_data}/{unit}_{suffix}.QT.CA.fastq.gz",
+        expand("./{assayID}/{runID}/{outdir}/{trim_data}/{unit}_{suffix}.QT.CA.fastq.gz",
                assayID = "RNA-Seq",
+               runID = "NB501086_0067_RDomaschenz_JCSMR_RNASeq",
                outdir = config["processed_dir"],
-               unit = config["RNA-Seq"],
                trim_data = config["trim_dir"],
-               suffix = ["R1_001", "R2_001"]),
+               unit = config["RNA-Seq"],
+               suffix = ["R1_001", "R2_001"])
 
 rule all:
     input:
