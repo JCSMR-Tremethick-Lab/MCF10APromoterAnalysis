@@ -66,13 +66,13 @@ rule run_cutadapt:
 
 rule all:
     input:
-        "./RNA-Seq/NB501086_0067_RDomaschenz_JCSMR_RNASeq/processed_data/reports/",
-        expand("./{assayID}/NB501086_0067_RDomaschenz_JCSMR_RNASeq/{outdir}/{trim_data}/{unit}_{suffix}.QT.CA.fastq.gz",
-               assayID = "RNA-Seq",
-               outdir = config["processed_dir"],
-               unit = config["RNA-Seq"],
-               trim_data = config["trim_dir"],
-               suffix = ["R1_001", "R2_001"]),
+        # "./RNA-Seq/NB501086_0067_RDomaschenz_JCSMR_RNASeq/processed_data/reports/",
+        # expand("./{assayID}/NB501086_0067_RDomaschenz_JCSMR_RNASeq/{outdir}/{trim_data}/{unit}_{suffix}.QT.CA.fastq.gz",
+        #        assayID = "RNA-Seq",
+        #        outdir = config["processed_dir"],
+        #        unit = config["RNA-Seq"],
+        #        trim_data = config["trim_dir"],
+        #        suffix = ["R1_001", "R2_001"]),
         expand("./{assayID}/NB501086_0067_RDomaschenz_JCSMR_RNASeq/{outdir}/{reference_version}/kallisto/{unit}",
                assayID = "RNA-Seq",
                outdir = config["processed_dir"],
