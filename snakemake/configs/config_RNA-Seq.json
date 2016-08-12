@@ -6,20 +6,20 @@
       "GTF" : "/home/skurscheid/Data/References/Annotations/Homo_sapiens/GRCh38_ensembl84/Homo_sapiens.GRCh38.84_ERCC.gtf",
       "kallisto" :
       {
-        "GRCh38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Homo_sapiens/GRCh38_ensembl84/Homo_sapiens.GRCh38.all_ERCC.ki",
+        "GRCh38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Homo_sapiens/GRCh38_ensembl84/Homo_sapiens.GRCh38.all_ERCC.ki"
       },
       "STAR" :
       {
-        "GRCh38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Homo_sapiens/GRCh38_ensembl84/STAR_Index_ERCC",
-      },
+        "GRCh38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Homo_sapiens/GRCh38_ensembl84/STAR_Index_ERCC"
+      }
     },
     "kallisto" :
     {
-      "bootstraps" : "100",
+      "bootstraps" : "100"
     },
     "STAR" :
     {
-      "runThreadN" : "4",
+      "runThreadN" : "4"
     },
     "bt2_params" :
     {
@@ -44,7 +44,7 @@
       "MCF10Ca1a_rep1" : ["Renae13_S13_R1_001.fastq.gz", "Renae13_S13_R2_001.fastq.gz"],
       "MCF10Ca1a_rep2" : ["Renae14_S14_R1_001.fastq.gz", "Renae14_S14_R2_001.fastq.gz"],
       "MCF10Ca1a_shZ_rep1" : ["Renae15_S15_R1_001.fastq.gz", "Renae15_S15_R2_001.fastq.gz"],
-      "MCF10Ca1a_shZ_rep2" : ["Renae16_S16_R1_001.fastq.gz", "Renae16_S16_R2_001.fastq.gz"],
+      "MCF10Ca1a_shZ_rep2" : ["Renae16_S16_R1_001.fastq.gz", "Renae16_S16_R2_001.fastq.gz"]
     },
     "deepTools" :
     {
