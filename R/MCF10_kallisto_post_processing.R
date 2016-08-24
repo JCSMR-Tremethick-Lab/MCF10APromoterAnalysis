@@ -6,7 +6,7 @@ require(RColorBrewer)
 require(tibble)
 require(snowfall)
 require(sleuth)
-require(tximport)
+require(tibble)
 
 
 # external functions ------------------------------------------------------
@@ -105,7 +105,7 @@ if (!file.exists("ensGenes.rda")){
   load("t2g.rda")
 }
 
-# load kallisto data and normalize with sleuth (devel branch!) ------------
+# load kallisto data and normalize with sleuth ------------
 base_dir <- paste(pathPrefix, "Data/Tremethick/Breast/RNA-Seq/NB501086_0067_RDomaschenz_JCSMR_RNASeq/processed_data", runConfig$references$version, "kallisto", sep = "/")
 sample_id <- dir(base_dir)
 kal_dirs <- sapply(sample_id, function(id) file.path(base_dir, id))
@@ -139,9 +139,6 @@ s2c.list <- S4Vectors::endoapply(s2c.list, function(x){
   return(x)
 })
 
-# sfInit(parallel = T, cpus = cpus)
-# sfExport("s2c.list")
-# sfExport("t2g")
 results <- lapply(names(s2c.list), function(x){
   print(paste("Processing ", x, sep = ""))
   if (grep(x, levels(s2c.list[[x]]$condition)) == 1) {
@@ -163,7 +160,6 @@ results <- lapply(names(s2c.list), function(x){
   rownames(kt_wide) <- kt_wide[,1]
   kt_wide <- kt_wide[,-1]
   kt_pca <- ade4::dudi.pca(t(kt_wide), scannf = F, nf = 6)
-  kt_wide <- tibble::as_tibble(kt_wide)
   #-----------------------------------------------------------------------------
   # gene-level DE  
   so.gene <- sleuth::sleuth_prep(s2c.list[[x]], ~ condition, target_mapping = t2g, aggregation_column = "ens_gene")
@@ -173,30 +169,35 @@ results <- lapply(names(s2c.list), function(x){
   so.gene <- sleuth::sleuth_lrt(so.gene, "reduced", "full")
   rt.gene <- sleuth::sleuth_results(so.gene, paste("condition", x, sep = ""))
   rt.gene <- rt.gene[order(rt.gene$qval),]
-  # gene-level expression data has to be generated through tximport
-  files <- paste(s2c.list[[x]]$path, "abundance.tsv", sep = "/")
-  names(files) <- s2c.list[[x]]$sample
-  txi <- tximport::tximport(files,
-                            type = "kallisto",
-                            tx2gene = t2g,
-                            geneIdCol = "ens_gene",
-                            txIdCol = "target_id",
-                            reader = read_tsv)
+  # gene-level expression is summed from transcript level data (sum(TPM))
+  sfInit(parallel = T, cpus = cpus)
+  sfExport("so")
+  l1 <- sfLapply(unique(so$target_mapping$ens_gene), function(x) {
+    s <- apply(kt_wide[so$target_mapping[so$target_mapping$ens_gene == x, "target_id"], ], 2, sum)
+  })
+  sfStop()
+  names(l1) <- unique(so$target_mapping$ens_gene)
+  kt_genes <- as.data.frame(do.call("rbind", l1))
+  kt_genes$ensembl_gene_id <- rownames(kt_genes)
+  kt_genes <- tibble::as_tibble(merge(kt_genes, ensGenes, by.x = "ensembl_gene_id", by.y = "ensembl_gene_id"))
+  kt_wide <- tibble::as_tibble(tidyr::spread(kt[, c("target_id", "sample", "tpm")], sample, tpm))
   return(list(sleuth_object = so,
               sleuth_results = rt,
               kallisto_table = kt,
               kallisto_table_wide = kt_wide,
               kallisto_pca = kt_pca,
               sleuth_results.gene = rt.gene,
-              tximport_genes = txi))
+              kallisto_table_genes = kt_genes))
 })
+
 names(results) <- names(s2c.list)
-# sfStop()
 
 cor(kt_wide)
 pdf("Pairwise_correlation_transcript_level.pdf")
 pairs(kt_wide)
 dev.off()
+
+
 
 # save all results tables into one image file -----------------------------
 save(list = ls()[grep("^rt.", ls())], file = "sleuth_results_tables.rda")
