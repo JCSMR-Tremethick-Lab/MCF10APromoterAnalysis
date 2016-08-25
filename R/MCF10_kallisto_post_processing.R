@@ -134,6 +134,7 @@ s2c.list <- list(MCF10A_TGFb = s2c.TGFb_vs_WT,
                  MCF10Ca1a_shZ = s2c.Ca1AshZ_vs_WT)
 
 s2c.list <- S4Vectors::endoapply(s2c.list, function(x){
+  x$sample <- as.character(x$sample)
   x$condition <- as.character(x$condition)
   x$condition <- factor(x$condition, levels = levels(as.factor(x$condition))[c(2,1)])
   return(x)
@@ -156,10 +157,11 @@ results <- lapply(names(s2c.list), function(x){
   rt <- sleuth::sleuth_results(so, paste("condition", x, sep = ""))
   rt <- rt[order(rt$qval),]
   kt <- sleuth::kallisto_table(so, include_covariates = T)
+  kt <- kt[order(kt$target_id, kt$condition),]
   kt_wide <- tidyr::spread(kt[, c("target_id", "sample", "tpm")], sample, tpm)
   rownames(kt_wide) <- kt_wide[,1]
   kt_wide <- kt_wide[,-1]
-  kt_pca <- ade4::dudi.pca(t(kt_wide), scannf = F, nf = 6)
+  # kt_pca <- ade4::dudi.pca(t(kt_wide), scannf = F, nf = 6)
   #-----------------------------------------------------------------------------
   # gene-level DE  
   so.gene <- sleuth::sleuth_prep(s2c.list[[x]], ~ condition, target_mapping = t2g, aggregation_column = "ens_gene")
@@ -185,18 +187,37 @@ results <- lapply(names(s2c.list), function(x){
               sleuth_results = rt,
               kallisto_table = kt,
               kallisto_table_wide = kt_wide,
-              kallisto_pca = kt_pca,
+              #kallisto_pca = kt_pca,
               sleuth_results.gene = rt.gene,
               kallisto_table_genes = kt_genes))
 })
 
 names(results) <- names(s2c.list)
+resultsCompressed <- lapply(names(results), function(x){
+  results[[x]][grep("sleuth_object", names(results[[x]]), invert = T)]
+})
+names(resultsCompressed) <- names(results)
+
+resultsCompressed <- lapply(names(resultsCompressed), function(x){
+  resultsCompressed[[x]][grep("kallisto_pca", names(resultsCompressed[[x]]), invert = T)]
+})
+names(resultsCompressed) <- names(results)
+save(resultsCompressed, file = "resultsCompressed.rda")
+
+load("resultsCompressed.rda")
+resultsCompressed <- resultsCompressedBU
+
+resultsCompressed <- lapply(names(resultsCompressed), function(x) {
+  resultsCompressed[[x]]$kallisto_table_wide <- resultsCompressed[[x]]$kallisto_table_wide[, c("target_id", s2c.list[[x]]$sample)]
+  return(resultsCompressed[[x]])
+})
+
+names(resultsCompressed) <- names(s2c.list)
 
 cor(kt_wide)
 pdf("Pairwise_correlation_transcript_level.pdf")
 pairs(kt_wide)
 dev.off()
-
 
 
 # save all results tables into one image file -----------------------------
