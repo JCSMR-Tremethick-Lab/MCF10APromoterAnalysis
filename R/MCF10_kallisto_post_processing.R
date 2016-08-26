@@ -19,7 +19,6 @@ lDir <- function(x, y){
   paste(x, y, sep = "/")
 }
 
-
 # global variables --------------------------------------------------------
 ensemblHost <- "mar2016.archive.ensembl.org"
 dataset <- "hsapiens_gene_ensembl"
@@ -32,10 +31,12 @@ if (amILocal("JCSMR027564ML")){
 } else {
   pathPrefix <- "~"
   cpus <- 16
+  options(width = 137)
 }
 options(mc.cores = cpus)
 setwd(lDir(pathPrefix, "Data/Tremethick/Breast/RNA-Seq/NB501086_0067_RDomaschenz_JCSMR_RNASeq/R_Analysis/"))
 dataPath <- lDir(pathPrefix, "Data/Tremethick/Breast/RNA-Seq/NB501086_0067_RDomaschenz_JCSMR_RNASeq/processed_data/GRCh38_ensembl84_ERCC/HTSeq/count/")
+devPath <- "~/Development"
 
 files <- list.files(path = dataPath, full.names = T)
 names(files) <- list.files(path = dataPath, full.names = F)
@@ -123,54 +124,60 @@ s2c <- data.frame(sample = sample_id, condition = condition)
 s2c <- dplyr::mutate(s2c, path = kal_dirs)
 ################################################################################
 
-s2c.TGFb_vs_WT <- rbind(s2c[grep("MCF10A_wt", s2c$condition),], s2c[grep("MCF10A_TGFb", s2c$condition),])
-s2c.shZ_vs_WT <- rbind(s2c[grep("MCF10A_wt", s2c$condition),], s2c[grep("MCF10A_shZ", s2c$condition),])
-s2c.Ca1aWT_vs_WT <- rbind(s2c[grep("MCF10A_wt", s2c$condition),], s2c[grep("MCF10Ca1a_wt", s2c$condition),])
-s2c.Ca1AshZ_vs_WT <- rbind(s2c[grep("MCF10Ca1a_wt", s2c$condition),], s2c[grep("MCF10Ca1a_shZ", s2c$condition),])
+s2c.mcf10a <- s2c[grep("MCF10A_|MCF10Ca1a_wt", s2c$condition),]
+s2c.mcf10Ca1a <- s2c[grep("MCF10Ca1a", s2c$condition),]
 
-s2c.list <- list(MCF10A_TGFb = s2c.TGFb_vs_WT,
-                 MCF10A_shZ = s2c.shZ_vs_WT,
-                 MCF10Ca1a_wt = s2c.Ca1aWT_vs_WT,
-                 MCF10Ca1a_shZ = s2c.Ca1AshZ_vs_WT)
+s2c.list <- list(MCF10A = s2c.mcf10a,
+                 MCF10Ca1a = s2c.mcf10Ca1a)
 
-s2c.list <- S4Vectors::endoapply(s2c.list, function(x){
-  x$sample <- as.character(x$sample)
-  x$condition <- as.character(x$condition)
-  x$condition <- factor(x$condition, levels = levels(as.factor(x$condition))[c(2,1)])
-  return(x)
+s2c.list <- lapply(names(s2c.list), function(x) {
+  df <- s2c.list[[x]]
+  df$sample <- as.character(df$sample)
+  df$condition <- as.factor(as.character(df$condition))
+  df$condition <- relevel(df$condition, paste(x, "wt", sep = "_"))
+  df <- df[order(df$condition), ]
+  return(df)
 })
+names(s2c.list) <- c("MCF10A", "MCF10Ca1a")
 
+################################################################################
+# actual processing -------------------------------------------------------
 results <- lapply(names(s2c.list), function(x){
   print(paste("Processing ", x, sep = ""))
-  if (grep(x, levels(s2c.list[[x]]$condition)) == 1) {
-    cond <- as.character(s2c.list[[x]]$condition)
-    s2c.list[[x]]$condition <- factor(cond, levels = levels(as.factor(cond))) 
-  }
   design <- model.matrix(~ condition, data = s2c.list[[x]])
   #-----------------------------------------------------------------------------
   # transcript-level DE
   so <- sleuth::sleuth_prep(s2c.list[[x]], ~ condition, target_mapping = t2g)
   so <- sleuth::sleuth_fit(so, formula = design)
-  so <- sleuth::sleuth_wt(so, paste("condition", x, sep = ""))
   so <- sleuth::sleuth_fit(so, ~1, "reduced")
   so <- sleuth::sleuth_lrt(so, "reduced", "full")
-  rt <- sleuth::sleuth_results(so, paste("condition", x, sep = ""))
-  rt <- rt[order(rt$qval),]
+  for (i in colnames(design)[grep("Intercept", colnames(design), invert = T)]){
+    so <- sleuth::sleuth_wt(so, i)  
+  }
+  rt.list <- lapply(colnames(design)[grep("Intercept", colnames(design), invert = T)], function(x){
+    rt <- sleuth::sleuth_results(so, x)
+    rt <- rt[order(rt$qval),]
+  })
+  names(rt.list) <- colnames(design)[grep("Intercept", colnames(design), invert = T)]
   kt <- sleuth::kallisto_table(so, include_covariates = T)
-  kt <- kt[order(kt$target_id, kt$condition),]
+  kt <- sleuth::kallisto_table(so, normalized = T, include_covariates = T)
   kt_wide <- tidyr::spread(kt[, c("target_id", "sample", "tpm")], sample, tpm)
   rownames(kt_wide) <- kt_wide[,1]
   kt_wide <- kt_wide[,-1]
-  # kt_pca <- ade4::dudi.pca(t(kt_wide), scannf = F, nf = 6)
   #-----------------------------------------------------------------------------
   # gene-level DE  
   so.gene <- sleuth::sleuth_prep(s2c.list[[x]], ~ condition, target_mapping = t2g, aggregation_column = "ens_gene")
   so.gene <- sleuth::sleuth_fit(so.gene, formula = design)
-  so.gene <- sleuth::sleuth_wt(so.gene, paste("condition", x, sep = ""))
   so.gene <- sleuth::sleuth_fit(so.gene, ~1, "reduced")
   so.gene <- sleuth::sleuth_lrt(so.gene, "reduced", "full")
-  rt.gene <- sleuth::sleuth_results(so.gene, paste("condition", x, sep = ""))
-  rt.gene <- rt.gene[order(rt.gene$qval),]
+  for (i in colnames(design)[grep("Intercept", colnames(design), invert = T)]){
+    so.gene <- sleuth::sleuth_wt(so.gene, i)  
+  }
+  rt.gene.list <- lapply(colnames(design)[grep("Intercept", colnames(design), invert = T)], function(x){
+    rt.gene <- sleuth::sleuth_results(so.gene, x)
+    rt.gene <- rt.gene[order(rt.gene$qval),]
+  })
+  names(rt.gene.list) <- colnames(design)[grep("Intercept", colnames(design), invert = T)]
   # gene-level expression is summed from transcript level data (sum(TPM))
   sfInit(parallel = T, cpus = cpus)
   sfExport("so")
@@ -181,17 +188,19 @@ results <- lapply(names(s2c.list), function(x){
   names(l1) <- unique(so$target_mapping$ens_gene)
   kt_genes <- as.data.frame(do.call("rbind", l1))
   kt_genes$ensembl_gene_id <- rownames(kt_genes)
+  kt_genes <- kt_genes[, c("ensembl_gene_id", s2c.list[[x]]$sample)]
   kt_genes <- tibble::as_tibble(merge(kt_genes, ensGenes, by.x = "ensembl_gene_id", by.y = "ensembl_gene_id"))
   kt_wide <- tibble::as_tibble(tidyr::spread(kt[, c("target_id", "sample", "tpm")], sample, tpm))
   return(list(sleuth_object = so,
-              sleuth_results = rt,
+              sleuth_results = rt.list,
               kallisto_table = kt,
               kallisto_table_wide = kt_wide,
-              #kallisto_pca = kt_pca,
-              sleuth_results.gene = rt.gene,
+              sleuth_results.gene = rt.gene.list,
               kallisto_table_genes = kt_genes))
 })
 
+
+# re-formatting of list object --------------------------------------------
 names(results) <- names(s2c.list)
 resultsCompressed <- lapply(names(results), function(x){
   results[[x]][grep("sleuth_object", names(results[[x]]), invert = T)]
@@ -205,7 +214,7 @@ names(resultsCompressed) <- names(results)
 save(resultsCompressed, file = "resultsCompressed.rda")
 
 load("resultsCompressed.rda")
-resultsCompressed <- resultsCompressedBU
+resultsCompressedBU <- resultsCompressed
 
 resultsCompressed <- lapply(names(resultsCompressed), function(x) {
   resultsCompressed[[x]]$kallisto_table_wide <- resultsCompressed[[x]]$kallisto_table_wide[, c("target_id", s2c.list[[x]]$sample)]
@@ -214,19 +223,34 @@ resultsCompressed <- lapply(names(resultsCompressed), function(x) {
 
 names(resultsCompressed) <- names(s2c.list)
 
-cor(kt_wide)
-pdf("Pairwise_correlation_transcript_level.pdf")
-pairs(kt_wide)
-dev.off()
-
-
-# save all results tables into one image file -----------------------------
-save(list = ls()[grep("^rt.", ls())], file = "sleuth_results_tables.rda")
-
-
 # get list of EMT genes (from qPCR array) ---------------------------------
-qPCRGeneList <- readLines(lDir(pathPrefix, "Data/Tremethick/EMT/ChIP-Seq/MDCK qPCR data/genelist.txt"))
-mart <- human <- useEnsembl(biomart = biomart, host = ensemblHost, dataset = dataset)
-hsap.qPCRGenesTab <- getBM(attributes = c("ensembl_gene_id", "hgnc_symbol"), filters = "hgnc_symbol", values = qPCRGeneList, mart = mart)
+if(!file.exists("hsap.qPCRGenesTab.rda")){
+  qPCRGeneList <- readLines(lDir(pathPrefix, "Data/Tremethick/EMT/ChIP-Seq/MDCK qPCR data/genelist.txt"))
+  mart <- human <- useEnsembl(biomart = biomart, host = ensemblHost, dataset = dataset)
+  hsap.qPCRGenesTab <- getBM(attributes = c("ensembl_gene_id", "hgnc_symbol"), filters = "hgnc_symbol", values = qPCRGeneList, mart = mart)
+  save(hsap.qPCRGenesTab, file = "hsap.qPCRGenesTab.rda")
+} else {
+  load("hsap.qPCRGenesTab.rda")
+}
 
+# make volcano plots for shZ & TGFb vs WT ---------------------------------
+source(lDir(devPath, "JCSMR-Tremethick-Lab/Breast/R/volcano_plots_TGFb_shZ.R"))
 
+# heatmap of samples using MCF10A_wt as reference
+df1 <- resultsCompressed[["MCF10A"]]$kallisto_table_genes[,c(1:9)]
+df1 <- df1[, c("ensembl_gene_id", s2c.list[["MCF10A"]]$sample)]
+df1 <- df1[complete.cases(df1),]
+df2 <- log2(df1[, c(2:9)] + 1)
+filter <- apply(df2, 1, function(y) length(y[y>2])>=0.1)
+df2 <- as.matrix(df2[filter, ])
+colnames(df2) <- as.character(s2c.list[["MCF10A"]]$condition)
+sd1 <- apply(df2, 1, sd)
+length(sd1)
+heatmap.3(df2[sd1 > 2,], 
+          trace = "none",
+          cexCol = 0.6,
+          labRow = NULL)
+head(df2)
+table(is.na(sd1))
+head(sd1[is.na(sd1)])
+head(df2[is.na(sd1),])
