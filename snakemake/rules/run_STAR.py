@@ -49,7 +49,7 @@ rule run_htseq_count:
         0.3
     params:
         htseq_dir = config["HTSeq_dir"],
-        gtf = config["references"]["GTF"]
+        gtf = config["references"]["hg19"]["GTF"]
     input:
         bam = "./{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam",
         index = "./{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam.bai"
