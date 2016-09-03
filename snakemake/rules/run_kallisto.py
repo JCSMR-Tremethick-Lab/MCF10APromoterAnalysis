@@ -16,7 +16,7 @@ rule kallisto_quant:
     input:
         read1 = "./{assayID}/{runID}/{processed_dir}/{params.trim_dir}/{unit}_R1_001.QT.CA.fastq.gz",
         read2 = "./{assayID}/{runID}/{processed_dir}/{params.trim_dir}/{unit}_R2_001.QT.CA.fastq.gz",
-        ki = lambda wildcards: config["references"]["kallisto"][wildcards.reference_version]
+        ki = lambda wildcards: config["references"]["hg19"]["kallisto"][wildcards.reference_version]
     output:
         protected("./{assayID}/{runID}/{processed_dir}/{reference_version}/kallisto/{unit}")
     shell:
