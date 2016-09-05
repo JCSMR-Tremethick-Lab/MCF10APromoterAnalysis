@@ -228,18 +228,20 @@ if(!file.exists(sleuth_results_output)){
 
 # re-formatting of list object --------------------------------------------
 names(results) <- names(s2c.list)
-resultsCompressed <- lapply(names(results), function(x){
-  results[[x]][grep("sleuth_object", names(results[[x]]), invert = T)]
-})
-names(resultsCompressed) <- names(results)
-
-resultsCompressed <- lapply(names(resultsCompressed), function(x){
-  resultsCompressed[[x]][grep("kallisto_pca", names(resultsCompressed[[x]]), invert = T)]
-})
-names(resultsCompressed) <- names(results)
-save(resultsCompressed, file = "resultsCompressed.rda")
-
-load("resultsCompressed.rda")
+if(!file.exists("resultsCompressed.rda")){
+  resultsCompressed <- lapply(names(results), function(x){
+    results[[x]][grep("sleuth_object", names(results[[x]]), invert = T)]
+  })
+  names(resultsCompressed) <- names(results)
+  
+  resultsCompressed <- lapply(names(resultsCompressed), function(x){
+    resultsCompressed[[x]][grep("kallisto_pca", names(resultsCompressed[[x]]), invert = T)]
+  })
+  names(resultsCompressed) <- names(results)
+  save(resultsCompressed, file = "resultsCompressed.rda")
+} else {
+  load("resultsCompressed.rda")
+}
 resultsCompressedBU <- resultsCompressed
 
 resultsCompressed <- lapply(names(resultsCompressed), function(x) {
@@ -251,6 +253,7 @@ names(resultsCompressed) <- names(s2c.list)
 
 # prepare table for output ------------------------------------------------
 tab1 <- resultsCompressed[[1]]$kallisto_table_genes
+
 #########################################
 # rename colnames to resolve sample mixup
 colnames(tab1)[2:9] <- as.character(s2c.mcf10a$condition)[match(colnames(tab1)[2:9], as.character(s2c.mcf10a$sample))]
@@ -266,6 +269,32 @@ colnames(tab2)[seq(3,5,2)] <- paste(colnames(tab2)[seq(3,5,2)], "rep2", sep = "_
 tab1 <- as_tibble(merge(tab1, tab2[, c(1:3)], by.x = "ensembl_gene_id", by.y = "ensembl_gene_id", all.x = T))
 tab1 <- tab1[,c(1:9, 19:20, 10:18)]
 write.csv(tab1, "MCF10A_RNA-Seq_results.csv")
+
+
+# make Venn diagrams of DE genes ------------------------------------------
+sapply(resultsCompressed[["MCF10A"]]$sleuth_results.gene, function(x) table(x$qval < 0.1 & abs(x$b) > 1))
+
+DEGenes <- lapply(names(resultsCompressed[["MCF10A"]]$sleuth_results.gene), function(x){
+  dat <- resultsCompressed[["MCF10A"]]$sleuth_results.gene[[x]]
+  up <- dat[which(dat$qval < 0.1 & dat$b > 1), "target_id"]
+  down <- dat[which(dat$qval < 0.1 & dat$b < 1), "target_id"]
+  return(list(up_regulated = up,
+              down_regulated = down))
+})
+
+names(DEGenes) <- names(resultsCompressed[["MCF10A"]]$sleuth_results.gene)
+
+venn.diagram(x = list(TGFb = DEGenes[["conditionMCF10A_TGFb"]][["down_regulated"]], 
+                      shZ = DEGenes[["conditionMCF10A_shZ"]][["down_regulated"]]),
+             filename = "MCF10A_TGFb_vs_shZ_down.png",
+             imagetype = "png", 
+             main = "Down-regulated genes in MCF10A\n TGFb & shZ knockdown")
+
+venn.diagram(x = list(TGFb = DEGenes[["conditionMCF10A_TGFb"]][["up_regulated"]], 
+                      shZ = DEGenes[["conditionMCF10A_shZ"]][["up_regulated"]]),
+             filename = "MCF10A_TGFb_vs_shZ_up.png",
+             imagetype = "png", 
+             main = "Up-regulated genes in MCF10A\n TGFb & shZ knockdown")
 
 # get list of EMT genes (from qPCR array) ---------------------------------
 if(!file.exists("hsap.qPCRGenesTab.rda")){
