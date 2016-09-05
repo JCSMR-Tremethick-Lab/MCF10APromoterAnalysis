@@ -46,7 +46,7 @@ rule multiBamSummary:
         expand("./{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam",
                assayID = "RNA-Seq",
                runID = "NB501086_0067_RDomaschenz_JCSMR_RNASeq",
-               units = config["RNA-Seq"]["samples"],
+               units = config["samples"]["RNA-Seq"],
                processed_dir = config["processed_dir"],
                reference_version = config["hg19"]["version"])
     output:
