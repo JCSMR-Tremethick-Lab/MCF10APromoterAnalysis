@@ -48,7 +48,7 @@ rule multiBamSummary:
                runID = "NB501086_0067_RDomaschenz_JCSMR_RNASeq",
                units = config["samples"]["RNA-Seq"],
                processed_dir = config["processed_dir"],
-               reference_version = config["hg19"]["version"])
+               reference_version = config["references"]["hg19"]["version"])
     output:
         npz = "./{assayID}/{runID}/{processed_dir}/{reference_version}/deepTools/results.npz",
         raw = "./{assayID}/{runID}/{processed_dir}/{reference_version}/deepTools/multiBamSummary/raw_counts.txt"
