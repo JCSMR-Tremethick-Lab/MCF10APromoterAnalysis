@@ -19,22 +19,22 @@ rule all:
                assayID = "RNA-Seq",
                runID = "NB501086_0067_RDomaschenz_JCSMR_RNASeq",
                processed_dir = config["processed_dir"],
-               reference_version = config["hg19"]["version"]),
+               reference_version = config["references"]["hg19"]["version"]),
         expand("./{assayID}/{runID}/{processed_dir}/{reference_version}/deepTools/multiBamSummary/raw_counts.txt",
                assayID = "RNA-Seq",
                runID = "NB501086_0067_RDomaschenz_JCSMR_RNASeq",
                processed_dir = config["processed_dir"],
-               reference_version = config["hg19"]["version"]),
+               reference_version = config["references"]["hg19"]["version"]),
         expand("./{assayID}/{runID}/{processed_dir}/{reference_version}/deepTools/plotCorrelation/heatmap_SpearmanCorr_readCounts.png",
                assayID = "RNA-Seq",
                runID = "NB501086_0067_RDomaschenz_JCSMR_RNASeq",
                processed_dir = config["processed_dir"],
-               reference_version = config["hg19"]["version"]),
+               reference_version = config["references"]["hg19"]["version"]),
         expand("./{assayID}/{runID}/{processed_dir}/{reference_version}/deepTools/plotPCA/PCA_readCounts.png",
                assayID = "RNA-Seq",
                runID = "NB501086_0067_RDomaschenz_JCSMR_RNASeq",
                processed_dir = config["processed_dir"],
-               reference_version = config["hg19"]["version"])
+               reference_version = config["references"]["hg19"]["version"])
 
 rule multiBamSummary:
     version:
