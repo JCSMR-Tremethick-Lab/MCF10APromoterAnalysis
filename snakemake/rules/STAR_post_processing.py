@@ -56,7 +56,7 @@ rule multiBamSummary:
         """
         {params.deepTools_dir}/multiBamSummary BED-file --BED seqCapTargets_hg38.bed \
                                                         --bamfiles {input} \
-                                                        --numberOfProcessors 8 \
+                                                        --numberOfProcessors 12 \
                                                         --centerReads \
                                                         --binSize {params.binSize} \
                                                         --outFileName {output.npz} \
