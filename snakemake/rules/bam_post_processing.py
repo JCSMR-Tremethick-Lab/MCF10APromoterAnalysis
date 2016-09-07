@@ -15,8 +15,9 @@ wrapper_dir = "/home/skurscheid/Development/snakemake-wrappers/bio"
 
 rule target_bedtools_bamtofastq_pe:
     input:
-        "./fastq/{sample}.end1.fastq",
-        "./fastq/{sample}.end2.fastq"
+        expand("./fastq/{sample}.{read}.fastq",
+                sample = config["units"],
+                read = ("end1", "end2"))
 
 rule bedtools_bamtofastq_pe:
     message:
