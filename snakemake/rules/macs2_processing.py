@@ -15,7 +15,7 @@ For usage, include this in your workflow.
 
 rule macs2_callpeak_dummy:
     input:
-        expand("./macs2/callpeak/{digest}/{ChIP}_vs_{Input}/{sample}",
+        expand("./processed_data/hg38/macs2/callpeak/{digest}/{ChIP}_vs_{Input}/{sample}",
                digest = "H",
                ChIP = "H2AZ",
                Input = "Input",
@@ -26,10 +26,14 @@ rule macs2_callpeak:
         extsize = config["parameters"]["macs2"]["extsize"],
         macs2_dir = config["macs2_dir"]
     input:
-        input = lambda wildcards: config["samples"][wildcards.digest][wildcards.Input][wildcards.sample + "_" + wildcards.Input + "_" + wildcards.digest],
-        chip = lambda wildcards: config["samples"][wildcards.digest][wildcards.ChIP][wildcards.sample + "_" + wildcards.ChIP + "_" + wildcards.digest]
+        input = lambda wildcards: "processed_data/hg38/duplicates_removed" +
+                                  config["samples"][wildcards.digest][wildcards.Input][wildcards.sample + "_" + wildcards.Input + "_" + wildcards.digest] +
+                                  ".DeDup.sorted.fastq_q20.bam"
+        chip = lambda wildcards: "processed_data/hg38/duplicates_removed" +
+                                 config["samples"][wildcards.digest][wildcards.ChIP][wildcards.sample + "_" + wildcards.ChIP + "_" + wildcards.digest] +
+                                 ".DeDup.sorted.fastq_q20.bam"
     output:
-        "./macs2/callpeak/{digest}/{ChIP}_vs_{Input}/{sample}"
+        "./processed_data/hg38/macs2/callpeak/{digest}/{ChIP}_vs_{Input}/{sample}"
     shell:
         """
             mkdir {output} ; cd {output} ;
