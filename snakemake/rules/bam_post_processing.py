@@ -24,9 +24,9 @@ rule bedtools_bamtofastq_pe:
         "Extracting FASTQ reads from BAM file in paired-end mode..."
     params:
     input:
-        bam_file = "bam/{sample}.fastq_q20.bam"
+        bam_file = "./bam/{sample}.fastq_q20.bam"
     output:
-        read1 = "fastq/{sample}.end1.fastq",
-        read2 = "fastq/{sample}.end2.fastq"
+        read1 = "./fastq/{sample}.end1.fastq",
+        read2 = "./fastq/{sample}.end2.fastq"
     wrapper:
         "file://" + wrapper_dir + "/bedtools/bamtofastq/wrapper.py"
