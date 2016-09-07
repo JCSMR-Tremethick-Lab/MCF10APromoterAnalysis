@@ -28,7 +28,7 @@ rule macs2_callpeak:
     input:
         input = lambda wildcards: "processed_data/hg38/duplicates_removed" +
                                   config["samples"][wildcards.digest][wildcards.Input][wildcards.sample + "_" + wildcards.Input + "_" + wildcards.digest] +
-                                  ".DeDup.sorted.fastq_q20.bam"
+                                  ".DeDup.sorted.fastq_q20.bam",
         chip = lambda wildcards: "processed_data/hg38/duplicates_removed" +
                                  config["samples"][wildcards.digest][wildcards.ChIP][wildcards.sample + "_" + wildcards.ChIP + "_" + wildcards.digest] +
                                  ".DeDup.sorted.fastq_q20.bam"
