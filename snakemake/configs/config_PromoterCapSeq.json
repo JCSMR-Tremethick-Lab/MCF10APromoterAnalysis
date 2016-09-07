@@ -44,14 +44,13 @@
         "MCF10A_Input_H" : ["A_Inp_H_r1_R1", "A_Inp_H_r2_R1"],
         "MCF10A_shH2AZ_Input_H" : ["A_shH2AZ_Inp_H_r1_R1", "A_shH2AZ_Inp_H_r2_R1"],
         "MCF10A_TGFb_Input_H" : ["A_TGFb_Inp_H_r1_R1", "A_TGFb_Inp_H_r2_R1"],
-        "MCF10CA1a_Input_H" : ["CA1a_Inp_H_r1_R1", "CA1a_Inp_H_r2_R1"],
-
+        "MCF10CA1a_Input_H" : ["CA1a_Inp_H_r1_R1", "CA1a_Inp_H_r2_R1"]
       }
       "H2AZ" :
       {
         "MCF10A_H2AZ_H" : ["A_H2AZ_H_r1_R1", "A_H2AZ_H_r2_R1"],
         "MCF10A_TGFb_H2AZ_H" : ["A_TGFb_H2AZ_H_r1_R1", "A_TGFb_H2AZ_H_r2_R1"],
-        "MCF10CA1a_H2AZ_H" : ["CA1a_H2AZ_H_r1_R1", "CA1a_H2AZ_H_r2_R1"],
+        "MCF10CA1a_H2AZ_H" : ["CA1a_H2AZ_H_r1_R1", "CA1a_H2AZ_H_r2_R1"]
       }
     }
     "L" :
@@ -67,7 +66,7 @@
       {
         "MCF10A_H2AZ_L" : ["A_H2AZ_L_r1_R1", "A_H2AZ_L_r2_R1"],
         "MCF10A_TGFb_H2AZ_L" : ["A_TGFb_H2AZ_L_r1_R1", "A_TGFb_H2AZ_L_r2_R1"],
-        "MCF10CA1a_H2AZ_L" : ["CA1a_H2AZ_L_r1_R1", "CA1a_H2AZ_L_r2_R1"],
+        "MCF10CA1a_H2AZ_L" : ["CA1a_H2AZ_L_r1_R1", "CA1a_H2AZ_L_r2_R1"]
       },
     },
   },
