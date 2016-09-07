@@ -22,7 +22,6 @@ rule target_bedtools_bamtofastq_pe:
 rule bedtools_bamtofastq_pe:
     message:
         "Extracting FASTQ reads from BAM file in paired-end mode..."
-    params:
     input:
         bam_file = "./bam/{sample}.fastq_q20.bam"
     output:
