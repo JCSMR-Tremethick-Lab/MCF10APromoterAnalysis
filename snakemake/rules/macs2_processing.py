@@ -43,7 +43,7 @@ rule macs2_callpeak:
         "./processed_data/hg38/macs2/callpeak/{digest}/{ChIP}_vs_{Input}/{sample}"
     shell:
         """
-\            {params.macs2_dir}/macs2 callpeak -B \
+            {params.macs2_dir}/macs2 callpeak -B \
                                               -t {input.chip}\
                                               -c {input.input}\
                                               -n {wildcards.sample}\
