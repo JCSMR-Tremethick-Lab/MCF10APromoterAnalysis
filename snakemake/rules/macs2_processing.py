@@ -43,12 +43,11 @@ rule macs2_callpeak:
         "./processed_data/hg38/macs2/callpeak/{digest}/{ChIP}_vs_{Input}/{sample}"
     shell:
         """
-            if [ ! -d {output} ]; then mkdir -p {output} ; fi ; cd {output} \
-            {params.macs2_dir}/macs2 callpeak -B \
+\            {params.macs2_dir}/macs2 callpeak -B \
                                               -t {input.chip}\
                                               -c {input.input}\
                                               -n {wildcards.sample}\
                                               --nomodel\
                                               --extsize {params.extsize}\
-
+                                              --outdir {output}
         """
