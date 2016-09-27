@@ -45,9 +45,9 @@ chunkSize = 10000000
 # To map the .fastq.gz files, do the following:
 # 1. Separate your fastq files into two strands
 # 2. Put your .fastq.gz files (or symlinks to them) in one folder ("fastq" by default, can be change in fastqFolder variable))
-# 3. Be sure your files end with _1.fastq.gz and _2.fastq.gz 
+# 3. Be sure your files end with _1.fastq.gz and _2.fastq.gz
 #       Or that you have a unique prefix before .fastq.gz (like side1_data.fastq.gz, not side1_SRR12345.fastq.gz)
-#       Then just adjust "sidePrefixes" variable below 
+#       Then just adjust "sidePrefixes" variable below
 
 # The code below is moderately complicated.
 # For .sra, it automatically downloads .sra files from GEO. Replace the wget call with something else if you have already downloaded them.
@@ -56,30 +56,30 @@ chunkSize = 10000000
 # Once all chunks are mapped, it marks given dataset as completed
 
 
-mode = "sra"
-#mode = "fastq"
+#mode = "sra"
+mode = "fastq"
 
 # -------------------- Parameter definitions ------------
-inFastqDir = "fastq3"  # for mode="fastq" only
+inFastqDir = "/home/skurscheid/Data/Tremethick/Breast/HiC/fastq/test_run"  # for mode="fastq" only
 
 #sidePrefixes = ("side1", "side2")   # a version for naming ....side1.fastq.gz
-sidePrefixes = ("_1","_2")  # a prefix preceeding .fastq.gz, which will be used to distinguish side 1 and side 2
-# If your files are named "run32167_something_side1_somethingElse.fastq.gz", then "side1_somethingElse" should be the prefix. 
+sidePrefixes = ("_R1_001","_R2_001")  # a prefix preceeding .fastq.gz, which will be used to distinguish side 1 and side 2
+# If your files are named "run32167_something_side1_somethingElse.fastq.gz", then "side1_somethingElse" should be the prefix.
 
-threads = 4
-tmpDir = "/tmp"  # this will contain up to 3X the size of the largest input .sra file (256GB is enough for (Rao, 2014), but 128 is not)
+threads = 16
+tmpDir = "/home/skurscheid/tmp"  # this will contain up to 3X the size of the largest input .sra file (256GB is enough for (Rao, 2014), but 128 is not)
 # Make sure your system drive (where /tmp usually is) has enough space. If it is a small SSD, it may not.
 # Also, there is a lot of IO through the tmpDir. Put it on a local drive, not on a network drive, if you can.
 
-genomeName = "cb10"
+genomeName = "hg38"
 genome_db = getGenome(genomeName)
 
-bowtiePath = "../bin/bowtie2/bowtie2"
-bowtieIndex = "../bin/bowtie2/index/{0}".format(genomeName)  # change this if your index is named differently from the genome
+bowtiePath = "/usr/local/bin/bowtie2"
+bowtieIndex = "/home/skurscheid/Data/References/Genomes/Homo_sapiens/GRCh38_UCSC/index/{0}".format(genomeName)  # change this if your index is named differently from the genome
 bowtieFlags = "--very-sensitive"
 
-"IDs from GEO (SRR numbers)"
-GEOids = list(range(1665087,1665096))
+# "IDs from GEO (SRR numbers)"
+# GEOids = list(range(1665087,1665096))
 # Set this for for mapping .sra files
 # You can do it like this:
 # GEOids = range(1658523,1658540) + [398318, 398920,398921]  #taken from an actual study
@@ -252,4 +252,3 @@ for i in  iterList:
     a.close()
 
     os.remove(lockName)
-
