@@ -55,19 +55,15 @@ chunkSize = 10000000
 # It then maps each chunk separately
 # Once all chunks are mapped, it marks given dataset as completed
 
-
-#mode = "sra"
 mode = "fastq"
 
 # -------------------- Parameter definitions ------------
 inFastqDir = "/home/skurscheid/Data/Tremethick/Breast/HiC/fastq/test_run"  # for mode="fastq" only
 
-#sidePrefixes = ("side1", "side2")   # a version for naming ....side1.fastq.gz
 sidePrefixes = ("_R1_001","_R2_001")  # a prefix preceeding .fastq.gz, which will be used to distinguish side 1 and side 2
-# If your files are named "run32167_something_side1_somethingElse.fastq.gz", then "side1_somethingElse" should be the prefix.
 
 threads = 16
-tmpDir = "/home/skurscheid/tmp"  # this will contain up to 3X the size of the largest input .sra file (256GB is enough for (Rao, 2014), but 128 is not)
+tmpDir = "/dev/shm"  # this will contain up to 3X the size of the largest input .sra file (256GB is enough for (Rao, 2014), but 128 is not)
 # Make sure your system drive (where /tmp usually is) has enough space. If it is a small SSD, it may not.
 # Also, there is a lot of IO through the tmpDir. Put it on a local drive, not on a network drive, if you can.
 
@@ -78,16 +74,10 @@ bowtiePath = "/usr/local/bin/bowtie2"
 bowtieIndex = "/home/skurscheid/Data/References/Genomes/Homo_sapiens/GRCh38_UCSC/index/{0}".format(genomeName)  # change this if your index is named differently from the genome
 bowtieFlags = "--very-sensitive"
 
-# "IDs from GEO (SRR numbers)"
-# GEOids = list(range(1665087,1665096))
-# Set this for for mapping .sra files
-# You can do it like this:
-# GEOids = range(1658523,1658540) + [398318, 398920,398921]  #taken from an actual study
-
 seqSkipStart = 0  # skip first 2 bp of the read, if you want
 minMapLen = 20  # start mapping at this length
 # This will adjust iterative mapping automatically
-# Other iterative mapping parameters are in "calculateStep" function defenition
+# Other iterative mapping parameters are in "calculateStep" function definition
 
 # -------------------- End parameter definitions ------------
 if not os.path.exists(bowtiePath): raise
