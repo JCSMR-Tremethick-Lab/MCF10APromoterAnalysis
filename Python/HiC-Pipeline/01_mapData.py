@@ -19,7 +19,7 @@ setExceptionHook()
 
 from defineGenome import getGenome
 
-chunkSize = 10000000
+#chunkSize = 10000000
 
 #---------------------------
 # This code is not, by any means, an "essential" component of the library
