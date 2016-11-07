@@ -4,7 +4,7 @@ ucscIDs <- biomaRt::getBM(attributes = c("ensembl_transcript_id",
                           mart = mart,
                           filter = "ensembl_transcript_id",
                           values = ensTranscripts$ensembl_transcript_id)
-
+txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
 #########################################
 # rename colnames to resolve sample mixup
 # and prepare data for export
@@ -15,11 +15,11 @@ colnames(tab1)[seq(2,9,2)] <- paste(colnames(tab1)[seq(2,9,2)], "rep1", sep = "_
 colnames(tab1)[seq(3,9,2)] <- paste(colnames(tab1)[seq(3,9,2)], "rep2", sep = "_")
 
 tab2 <- resultsCompressed[[2]]$kallisto_table_wide
-# colnames(tab2)[2:5] <- as.character(s2c.mcf10Ca1a$condition)[match(colnames(tab2)[2:5], as.character(s2c.mcf10Ca1a$sample))]
-# colnames(tab2)[seq(2,5,2)] <- paste(colnames(tab2)[seq(2,5,2)], "rep1", sep = "_") 
-# colnames(tab2)[seq(3,5,2)] <- paste(colnames(tab2)[seq(3,5,2)], "rep2", sep = "_")
+colnames(tab2)[2:5] <- as.character(s2c.mcf10Ca1a$condition)[match(colnames(tab2)[2:5], as.character(s2c.mcf10Ca1a$sample))]
+colnames(tab2)[seq(2,5,2)] <- paste(colnames(tab2)[seq(2,5,2)], "rep1", sep = "_") 
+colnames(tab2)[seq(3,5,2)] <- paste(colnames(tab2)[seq(3,5,2)], "rep2", sep = "_")
 
-tab3 <- merge(tab1, tab2[, c(1, 4:5)], by.x = "target_id", by.y = "target_id", all.x = T)
+tab3 <- merge(tab1, tab2[, c(1:3)], by.x = "target_id", by.y = "target_id", all.x = T)
 tab_exportFile <- paste("MCF10A_RNA-Seq_results_", runConfig$references[[refVersion]]$version, "_transcripts_UCSC.csv", sep = "")
 write.csv(tab3, tab_exportFile)
 tab3 <- data.table(tab3)
@@ -40,8 +40,8 @@ tab4 <- data.frame(cbind(tab3[,"ucsc"],
                          apply(tab3[,c(8,9)], 1, mean),
                          apply(tab3[,c(10,11)], 1, mean)))
 
-tab4$ucsc <- as.character(tab4$ucsc)
 colnames(tab4)[1] <- "ucsc"
+tab4$ucsc <- as.character(tab4$ucsc)
 colnames(tab4)[2:6] <- unlist(lapply(strsplit(colnames(tab3)[seq(2,11,2)], "_"), function(x) paste(x[1:2], collapse = "_")))
 res <- select(txdb, keys = tab4$ucsc, columns = c("TXNAME","TXCHROM", "TXSTART", "TXEND", "TXSTRAND"), keytype = "TXNAME")
 tab4 <- merge(tab4, res, by.x = "ucsc", by.y = "TXNAME")
