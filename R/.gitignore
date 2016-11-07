@@ -5,3 +5,4 @@
 *.sh.o*
 *.sh.e*
 *.sh.po*
+*.html
