@@ -27,12 +27,12 @@ rule run_kallisto:
                assayID = "RNA-Seq",
                outdir = config["processed_dir"],
                reference_version = config["references"]["hg19"]["version"],
-               unit = config["RNA-Seq"]),
+               unit = config["samples"]["RNA-Seq"]),
         expand("./{assayID}/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/{outdir}/{reference_version}/kallisto/{unit}",
                assayID = "RNA-Seq_run2",
                outdir = config["processed_dir"],
                reference_version = config["references"]["hg19"]["version"],
-               unit = config["RNA-Seq_run2"])
+               unit = config["samples"]["RNA-Seq_run2"])
 
 rule run_STAR:
     input:
@@ -40,12 +40,12 @@ rule run_STAR:
                assayID = "RNA-Seq",
                outdir = config["processed_dir"],
                reference_version = config["references"]["hg19"]["version"],
-               unit = config["RNA-Seq"]),
+               unit = config["samples"]["RNA-Seq"]),
         expand("./{assayID}/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam",
                assayID = "RNA-Seq_run2",
                outdir = config["processed_dir"],
                reference_version = config["references"]["hg19"]["version"],
-               unit = config["RNA-Seq_run2"])
+               unit = config["samples"]["RNA-Seq_run2"])
 
 rule run_STAR_untrimmed:
     input:
@@ -54,13 +54,13 @@ rule run_STAR_untrimmed:
                runID = "NB501086_0067_RDomaschenz_JCSMR_RNASeq",
                outdir = config["processed_dir"],
                reference_version = config["references"]["hg19"]["version"],
-               unit = config["RNA-Seq"]),
+               unit = config["samples"]["RNA-Seq"]),
         expand("./{assayID}/{runID}/{outdir}/{reference_version}/STAR/full/untrimmed/{unit}.aligned.bam",
                assayID = "RNA-Seq_run2",
                runID = "NB501086_0082_RDomaschenz_JCSMR_mRNAseq",
                outdir = config["processed_dir"],
                reference_version = config["references"]["hg19"]["version"],
-               unit = config["RNA-Seq_run2"])
+               unit = config["samples"]["RNA-Seq_run2"])
 
 rule run_htseq:
     input:
@@ -73,7 +73,7 @@ rule run_htseq:
                assayID = "RNA-Seq_run2",
                outdir = config["processed_dir"],
                reference_version = config["references"]["hg19"]["version"],
-               unit = config["RNA-Seq_run2"])
+               unit = config["samples"]["RNA-Seq_run2"])
 
 rule run_cutadapt:
     input:
@@ -82,14 +82,14 @@ rule run_cutadapt:
                runID = "NB501086_0067_RDomaschenz_JCSMR_RNASeq",
                outdir = config["processed_dir"],
                trim_data = config["trim_dir"],
-               unit = config["RNA-Seq"],
+               unit = config["samples"]["RNA-Seq"],
                suffix = ["R1_001", "R2_001"]),
         expand("./{assayID}/{runID}/{outdir}/{trim_data}/{unit}_{suffix}.QT.CA.fastq.gz",
                assayID = "RNA-Seq_run2",
                runID = "NB501086_0082_RDomaschenz_JCSMR_mRNAseq",
                outdir = config["processed_dir"],
                trim_data = config["trim_dir"],
-               unit = config["RNA-Seq_run2"],
+               unit = config["samples"]["RNA-Seq_run2"],
                suffix = ["R1_001", "R2_001"])
 
 rule all:
@@ -106,43 +106,43 @@ rule all:
                runID = "NB501086_0067_RDomaschenz_JCSMR_RNASeq",
                outdir = config["processed_dir"],
                trim_data = config["trim_dir"],
-               unit = config["RNA-Seq"],
+               unit = config["samples"]["RNA-Seq"],
                suffix = ["R1_001", "R2_001"]),
         expand("./{assayID}/NB501086_0067_RDomaschenz_JCSMR_RNASeq/{outdir}/{reference_version}/kallisto/{unit}",
                assayID = "RNA-Seq",
                outdir = config["processed_dir"],
                reference_version = config["references"]["hg19"]["version"],
-               unit = config["RNA-Seq"]),
+               unit = config["samples"]["RNA-Seq"]),
         expand("./{assayID}/NB501086_0067_RDomaschenz_JCSMR_RNASeq/{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam",
                assayID = "RNA-Seq",
                outdir = config["processed_dir"],
                reference_version = config["references"]["hg19"]["version"],
-               unit = config["RNA-Seq"]),
+               unit = config["samples"]["RNA-Seq"]),
         expand("./{assayID}/NB501086_0067_RDomaschenz_JCSMR_RNASeq/{outdir}/{reference_version}/HTSeq/count/{unit}.txt",
                assayID = "RNA-Seq",
                outdir = config["processed_dir"],
                reference_version = config["references"]["hg19"]["version"],
-               unit = config["RNA-Seq"]),
+               unit = config["samples"]["RNA-Seq"]),
         # second run
         expand("./{assayID}/{runID}/{outdir}/{trim_data}/{unit}_{suffix}.QT.CA.fastq.gz",
                assayID = "RNA-Seq_run2",
                runID = "NB501086_0082_RDomaschenz_JCSMR_mRNAseq",
                outdir = config["processed_dir"],
                trim_data = config["trim_dir"],
-               unit = config["RNA-Seq_run2"],
+               unit = config["samples"]["RNA-Seq_run2"],
                suffix = ["R1_001", "R2_001"]),
         expand("./{assayID}/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/{outdir}/{reference_version}/kallisto/{unit}",
                assayID = "RNA-Seq_run2",
                outdir = config["processed_dir"],
                reference_version = config["references"]["hg19"]["version"],
-               unit = config["RNA-Seq_run2"]),
+               unit = config["samples"]["RNA-Seq_run2"]),
         expand("./{assayID}/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam",
                assayID = "RNA-Seq_run2",
                outdir = config["processed_dir"],
                reference_version = config["references"]["hg19"]["version"],
-               unit = config["RNA-Seq_run2"]),
+               unit = config["samples"]["RNA-Seq_run2"]),
         expand("./{assayID}/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/{outdir}/{reference_version}/HTSeq/count/{unit}.txt",
                assayID = "RNA-Seq_run2",
                outdir = config["processed_dir"],
                reference_version = config["references"]["hg19"]["version"],
-               unit = config["RNA-Seq_run2"])
+               unit = config["samples"]["RNA-Seq_run2"])
