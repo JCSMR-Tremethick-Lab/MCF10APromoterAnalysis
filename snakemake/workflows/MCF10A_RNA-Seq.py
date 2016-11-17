@@ -10,7 +10,7 @@ rule:
 localrules:
     all, run_kallisto, run_STAR, run_htseq, run_cutadapt
 
-include_prefix="/home/skurscheid/Development/JCSMR-Tremethick-Lab/Breast/snakemake/rules/"
+include_prefix="/home/sebastian/Development/JCSMR-Tremethick-Lab/Breast/snakemake/rules/"
 
 include:
      include_prefix + "perform_fastqc.py"
