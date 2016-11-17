@@ -94,7 +94,7 @@
           "minimum_perc" : "0.1"
       }
     },
-  "trim_params": "-q 10 -a AGATCGGAAGAGC -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT --minimum-length=30",
+  "trim_params": "-a AGATCGGAAGAGC -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT --minimum-length=30",
   "trim_dir" : "trimmed_data",
   "processed_dir" : "processed_data",
   "aligned_dir" : "aligned_data",
