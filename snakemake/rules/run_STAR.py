@@ -4,7 +4,7 @@ __date__ = "2016-04-22"
 
 from snakemake.exceptions import MissingInputException
 
-wrapper_dir = "/home/skurscheid/Development/snakemake-wrappers/bio"
+wrapper_dir = "/home/sebastian/Development/snakemake-wrappers/bio"
 
 rule star_align_full:
     version:
@@ -25,7 +25,7 @@ rule star_align_full:
                  --genomeDir {input.index} \
                  --readFilesIn {input.read1} {input.read2} \
                  --readFilesCommand zcat \
-                 --outTmpDir /home/skurscheid/tmp/{wildcards.unit} \
+                 --outTmpDir /home/sebastian/tmp/{wildcards.unit} \
                  --outSAMmode Full \
                  --outSAMattributes Standard \
                  --outSAMtype BAM SortedByCoordinate \
@@ -103,9 +103,9 @@ rule run_htseq_count:
 #         pdf = "{outdir}/{reference_version}/PICARD/insert_size_metrics/{unit}.insert_size_metrics.pdf"
 #     shell:
 #         """
-#             java -Djava.io.tmpdir=/home/skurscheid/tmp \
+#             java -Djava.io.tmpdir=/home/sebastian/tmp \
 #             -Xmx36G \
-#             -jar /home/skurscheid/Bioinformatics/picard-tools-1.131/picard.jar CollectInsertSizeMetrics \
+#             -jar /home/sebastian/Bioinformatics/picard-tools-1.131/picard.jar CollectInsertSizeMetrics \
 #             I={input} \
 #             O={output.txt} \
 #             H={output.pdf} \
@@ -117,7 +117,7 @@ rule run_htseq_count:
 #         0.1
 #     params:
 #         gtf = config["references"]["GTF"],
-#         bin = "/home/skurscheid/Bioinformatics/rMATS.3.2.2.beta/RNASeq-MATS.py"
+#         bin = "/home/sebastian/Bioinformatics/rMATS.3.2.2.beta/RNASeq-MATS.py"
 #     input:
 #         getGroups
 #     output:

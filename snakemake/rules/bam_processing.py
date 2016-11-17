@@ -17,7 +17,7 @@ def bam_merge_input(wildcards):
         fn.append("./" + wildcards.processed_dir + "/" + wildcards.genome_version + "/duplicates_removed/" + i + ".DeDup.sorted.fastq_q20.bam")
     return(fn)
 
-wrapper_dir = "/home/skurscheid/Development/snakemake-wrappers/bio"
+wrapper_dir = "/home/sebastian/Development/snakemake-wrappers/bio"
 
 # import other packages
 import os
@@ -62,9 +62,9 @@ rule bam_mark_duplicates:
         "./processed_data/duplicates_marked/{unit}.MkDup.sorted.fastq_q20.bam"
     shell:
         """
-            java -Djava.io.tmpdir=/home/skurscheid/tmp \
+            java -Djava.io.tmpdir=/home/sebastian/tmp \
             -Xmx36G \
-            -jar /home/skurscheid/Bioinformatics/picard-tools-1.131/picard.jar MarkDuplicates \
+            -jar /home/sebastian/Bioinformatics/picard-tools-1.131/picard.jar MarkDuplicates \
             INPUT={input}\
             OUTPUT={output}\
             ASSUME_SORTED=TRUE\
