@@ -55,10 +55,10 @@ devPath <- "~/Development"
 
 
 # read in data ------------------------------------------------------------
+dataPath <- lDir(pathPrefix, 
+                 paste("Data/Tremethick/Breast/RNA-Seq/NB501086_0067_RDomaschenz_JCSMR_RNASeq/processed_data/",runConfig$references[[refVersion]]$version,"HTSeq/count/", sep = ""))
 files <- list.files(path = dataPath, full.names = T)
 names(files) <- list.files(path = dataPath, full.names = F)
-dataPath <- lDir(pathPrefix, 
-                 paste("Data/Tremethick/Breast/RNA-Seq/NB501086_0067_RDomaschenz_JCSMR_RNASeq/processed_data/",runConfig$references[[refVersion]]$version,"/HTSeq/count/", sep = ""))
 
 # preparing annotation data from Ensembl ----------------------------------
 ensGenes_file <- paste("ensGenes_", runConfig$references[[refVersion]]$version, ".rda", sep = "")
