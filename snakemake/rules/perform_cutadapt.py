@@ -12,19 +12,6 @@ Rules for trimming reads with cutadapt
 
 For usage, include this in your workflow.
 """
-localrules:
-    dummy_cutadapt
-
-rule dummy_cutadapt:
-    input:
-        expand("./{assayID}/{runID}/{outdir}/{trim_data}/{unit}_{suffix}.QT.CA.fastq.gz",
-               assayID = "RNA-Seq",
-               runID = "NB501086_0067_RDomaschenz_JCSMR_RNASeq",
-               outdir = config["processed_dir"],
-               trim_data = config["trim_dir"],
-               unit = config["RNA-Seq"],
-               suffix = ["R1_001", "R2_001"])
-
 rule cutadapt_pe:
     """Trims given paired-end reads with given parameters"""
     params:
