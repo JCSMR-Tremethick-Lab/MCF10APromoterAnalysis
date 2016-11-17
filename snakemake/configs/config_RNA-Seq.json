@@ -64,6 +64,21 @@
         "MCF10Ca1a_wt_rep2" : ["Renae14_S14_R1_001.fastq.gz", "Renae14_S14_R2_001.fastq.gz"],
         "MCF10Ca1a_shZ_rep1" : ["Renae15_S15_R1_001.fastq.gz", "Renae15_S15_R2_001.fastq.gz"],
         "MCF10Ca1a_shZ_rep2" : ["Renae16_S16_R1_001.fastq.gz", "Renae16_S16_R2_001.fastq.gz"]
+      },
+      "RNA-Seq_run2" :
+      {
+        "MCF10AD6_1" : ["10AD6_1_S10_R1_001.fastq.gz", "10AD6_1_S10_R2_001.fastq.gz"],
+        "MCF10AD6_2" : ["10AD6_2_S11_R1_001.fastq.gz", "10AD6_2_S11_R2_001.fastq.gz"],
+        "MCF10AD6_3" : ["10AD6_3_S12_R1_001.fastq.gz", "10AD6_3_S12_R2_001.fastq.gz"],
+        "MCF10AD8_1" : ["10AD8_1_S16_R1_001.fastq.gz", "10AD8_1_S16_R2_001.fastq.gz"],
+        "MCF10AD8_2" : ["10AD8_2_S17_R1_001.fastq.gz", "10AD8_2_S17_R2_001.fastq.gz"],
+        "MCF10AD8_3" : ["10AD8_3_S18_R1_001.fastq.gz", "10AD8_3_S18_R2_001.fastq.gz"],
+        "MCF10AshZD8_1" : ["10AshZD8_1_S19_R1_001.fastq.gz", "10AshZD8_1_S19_R2_001.fastq.gz"],
+        "MCF10AshZD8_2" : ["10AshZD8_2_S20_R1_001.fastq.gz", "10AshZD8_2_S20_R2_001.fastq.gz"],
+        "MCF10AshZD8_3" : ["10AshZD8_3_S21_R1_001.fastq.gz", "10AshZD8_3_S21_R2_001.fastq.gz"],
+        "MCF10ATGFbD6_1" : ["10ATGFbD6_1_S13_R1_001.fastq.gz", "10ATGFbD6_1_S13_R2_001.fastq.gz"],
+        "MCF10ATGFbD6_2" : ["10ATGFbD6_2_S14_R1_001.fastq.gz", "10ATGFbD6_2_S14_R2_001.fastq.gz"],
+        "MCF10ATGFbD6_3" : ["10ATGFbD6_3_S15_R1_001.fastq.gz", "10ATGFbD6_3_S15_R2_001.fastq.gz"]
       }
     },
     "deepTools" :
