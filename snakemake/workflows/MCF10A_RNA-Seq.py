@@ -122,7 +122,7 @@ rule all:
                assayID = "RNA-Seq",
                outdir = config["processed_dir"],
                reference_version = config["references"]["hg19"]["version"],
-               unit = config["RNA-Seq"])
+               unit = config["RNA-Seq"]),
         # second run
         expand("./{assayID}/{runID}/{outdir}/{trim_data}/{unit}_{suffix}.QT.CA.fastq.gz",
                assayID = "RNA-Seq_run2",
