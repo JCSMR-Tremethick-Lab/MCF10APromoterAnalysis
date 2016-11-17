@@ -4,29 +4,29 @@
   "hg38" :
     {
       "version" : "GRCh38_ensembl84_ERCC",
-      "genome" : "/home/skurscheid/Data/References/Genomes/Homo_sapiens/GRCh38_ensembl84/primary/Homo_sapiens.GRCh38.dna.primary_assembly.fa",
-      "GTF" : "/home/skurscheid/Data/References/Annotations/Homo_sapiens/GRCh38_ensembl84/Homo_sapiens.GRCh38.84_ERCC.gtf",
+      "genome" : "/home/sebastian/Data/References/Genomes/Homo_sapiens/GRCh38_ensembl84/primary/Homo_sapiens.GRCh38.dna.primary_assembly.fa",
+      "GTF" : "/home/sebastian/Data/References/Annotations/Homo_sapiens/GRCh38_ensembl84/Homo_sapiens.GRCh38.84_ERCC.gtf",
       "kallisto" :
       {
-        "GRCh38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Homo_sapiens/GRCh38_ensembl84/Homo_sapiens.GRCh38.all_ERCC.ki"
+        "GRCh38_ensembl84_ERCC" : "/home/sebastian/Data/References/Transcriptomes/Homo_sapiens/GRCh38_ensembl84/Homo_sapiens.GRCh38.all_ERCC.ki"
       },
       "STAR" :
       {
-        "GRCh38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Homo_sapiens/GRCh38_ensembl84/STAR_Index_ERCC"
+        "GRCh38_ensembl84_ERCC" : "/home/sebastian/Data/References/Transcriptomes/Homo_sapiens/GRCh38_ensembl84/STAR_Index_ERCC"
       }
     },
   "hg19" :
     {
       "version" : "GRCh37_hg19_ensembl75_ERCC",
-      "genome" : "/home/skurscheid/Data/References/Genomes/Homo_sapiens/GRCh37_hg19_ensembl75/primary/Homo_sapiens.GRCh37.75.dna.primary_assembly.fa",
-      "GTF" : "/home/skurscheid/Data/References/Annotations/Homo_sapiens/GRCh37_hg19_ensembl75/Homo_sapiens.GRCh37.75_ERCC.gtf",
+      "genome" : "/home/sebastian/Data/References/Genomes/Homo_sapiens/GRCh37_hg19_ensembl75/primary/Homo_sapiens.GRCh37.75.dna.primary_assembly.fa",
+      "GTF" : "/home/sebastian/Data/References/Annotations/Homo_sapiens/GRCh37_hg19_ensembl75/Homo_sapiens.GRCh37.75_ERCC.gtf",
       "kallisto" :
       {
-        "GRCh37_hg19_ensembl75_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_ensembl75/GRCh37_hg19_ensembl75_ERCC.ki"
+        "GRCh37_hg19_ensembl75_ERCC" : "/home/sebastian/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_ensembl75/GRCh37_hg19_ensembl75_ERCC.ki"
       },
       "STAR" :
       {
-        "GRCh37_hg19_ensembl75_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_ensembl75/STAR_Index_ERCC"
+        "GRCh37_hg19_ensembl75_ERCC" : "/home/sebastian/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_ensembl75/STAR_Index_ERCC"
       }
     }
   },
@@ -102,8 +102,8 @@
   "temp_dir" : "temp_data",
   "alignment_quality" : "20",
   "raw_dir" : "fastq",
-  "cutadapt_dir" : "/home/skurscheid/miniconda2/envs/snakemake/bin",
-  "deepTools_dir" : "/home/skurscheid/miniconda2/envs/deepTools/bin",
-  "HTSeq_dir" : "/home/skurscheid/miniconda2/envs/HTSeq/bin",
-  "DEXSeq_dir" : "/home/skurscheid/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/"
+  "cutadapt_dir" : "/home/sebastian/miniconda3/envs/snakemake/bin",
+  "deepTools_dir" : "/home/sebastian/miniconda3/envs/deepTools/bin",
+  "HTSeq_dir" : "/home/sebastian/miniconda2/envs/HTSeq/bin",
+  "DEXSeq_dir" : "/home/sebastian/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/"
 }

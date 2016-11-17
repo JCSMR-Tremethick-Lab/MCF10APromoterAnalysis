@@ -13,11 +13,11 @@ rule star_align_full:
         runThreadN = config["STAR"]["runThreadN"],
         trim_dir = config["trim_dir"]
     input:
-        read1 = "./{assayID}/{runID}/{processed_dir}/trimmed_data/{unit}_R1_001.QT.CA.fastq.gz",
-        read2 = "./{assayID}/{runID}/{processed_dir}/trimmed_data/{unit}_R2_001.QT.CA.fastq.gz",
+        read1 = "{assayID}/{runID}/{processed_dir}/trimmed_data/{unit}_R1_001.QT.CA.fastq.gz",
+        read2 = "{assayID}/{runID}/{processed_dir}/trimmed_data/{unit}_R2_001.QT.CA.fastq.gz",
         index = lambda wildcards: config["references"]["hg19"]["STAR"][wildcards.reference_version]
     output:
-        "./{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam"
+        "{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam"
     shell:
         """
             STAR --runMode alignReads \
@@ -38,9 +38,9 @@ rule bam_index_STAR_output:
     version:
         0.2
     input:
-        "./{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam"
+        "{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam"
     output:
-        "./{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam.bai"
+        "{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam.bai"
     wrapper:
         "file://" + wrapper_dir + "/samtools/index/wrapper.py"
 
@@ -51,10 +51,10 @@ rule run_htseq_count:
         htseq_dir = config["HTSeq_dir"],
         gtf = config["references"]["hg19"]["GTF"]
     input:
-        bam = "./{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam",
-        index = "./{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam.bai"
+        bam = "{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam",
+        index = "{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam.bai"
     output:
-        "./{assayID}/{runID}/{processed_dir}/{reference_version}/HTSeq/count/{unit}.txt"
+        "{assayID}/{runID}/{processed_dir}/{reference_version}/HTSeq/count/{unit}.txt"
     shell:
         """
             {params.htseq_dir}/htseq-count --format=bam \
