@@ -68,7 +68,7 @@ rule run_htseq:
                assayID = "RNA-Seq",
                outdir = config["processed_dir"],
                reference_version = config["references"]["hg19"]["version"],
-               unit = config["RNA-Seq"]),
+               unit = config["samples"]["RNA-Seq"]),
         expand("./{assayID}/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/{outdir}/{reference_version}/HTSeq/count/{unit}.txt",
                assayID = "RNA-Seq_run2",
                outdir = config["processed_dir"],
