@@ -3,6 +3,7 @@ __license__ = "MIT"
 __date__ = "2015-04-22"
 
 from snakemake.exceptions import MissingInputException
+import os
 
 rule:
     version: 0.3
@@ -10,7 +11,9 @@ rule:
 localrules:
     all, run_kallisto, run_STAR, run_htseq, run_cutadapt
 
-include_prefix="/home/sebastian/Development/JCSMR-Tremethick-Lab/Breast/snakemake/rules/"
+wrapper_dir = os.environ['HOME'] + "/Development/snakemake-wrappers/bio"
+
+include_prefix= os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/rules/"
 
 include:
      include_prefix + "perform_fastqc.py"

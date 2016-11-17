@@ -11,7 +11,7 @@ Rules for post-processing BAM files
 For usage, include this in your workflow.
 """
 
-wrapper_dir = "/home/sebastian/Development/snakemake-wrappers/bio"
+#wrapper_dir = "/home/sebastian/Development/snakemake-wrappers/bio"
 
 rule target_bedtools_bamtofastq_pe:
     input:

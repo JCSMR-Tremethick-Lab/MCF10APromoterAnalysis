@@ -4,7 +4,7 @@ __date__ = "2016-04-10"
 
 from snakemake.exceptions import MissingInputException
 
-wrapper_dir = "/home/sebastian/Development/snakemake-wrappers/bio"
+#wrapper_dir = "/home/sebastian/Development/snakemake-wrappers/bio"
 
 rule kallisto_quant:
     message:

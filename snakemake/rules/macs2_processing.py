@@ -26,7 +26,7 @@ def get_replicates_chip(wildcards):
 
 rule macs2_callpeak_dummy:
     input:
-        expand("./processed_data/hg38/macs2/callpeak/{digest}/{ChIP}_vs_{Input}/{sample}",
+        expand("processed_data/hg38/macs2/callpeak/{digest}/{ChIP}_vs_{Input}/{sample}",
                digest = "H",
                ChIP = "H2AZ",
                Input = "Input",
@@ -40,7 +40,7 @@ rule macs2_callpeak:
         input = get_replicates_input,
         chip = get_replicates_chip
     output:
-        "./processed_data/hg38/macs2/callpeak/{digest}/{ChIP}_vs_{Input}/{sample}"
+        "processed_data/hg38/macs2/callpeak/{digest}/{ChIP}_vs_{Input}/{sample}"
     shell:
         """
             {params.macs2_dir}/macs2 callpeak -B \
