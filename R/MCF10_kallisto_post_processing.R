@@ -50,13 +50,13 @@ if (amILocal("JCSMR027564ML")){
 options(mc.cores = cpus)
 
 setwd(lDir(pathPrefix, 
-           "Data/Tremethick/Breast/RNA-Seq/NB501086_0067_RDomaschenz_JCSMR_RNASeq/R_Analysis/"))
+           "Data/Tremethick/Breast/RNA-Seq_run2/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/R_Analysis/"))
 devPath <- "~/Development"
 
 
 # read in data ------------------------------------------------------------
 dataPath <- lDir(pathPrefix, 
-                 paste("Data/Tremethick/Breast/RNA-Seq/NB501086_0067_RDomaschenz_JCSMR_RNASeq/processed_data/",runConfig$references[[refVersion]]$version,"HTSeq/count/", sep = ""))
+                 paste("Data/Tremethick/Breast/RNA-Seq_run2/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/processed_data/",runConfig$references[[refVersion]]$version,"HTSeq/count/", sep = ""))
 files <- list.files(path = dataPath, full.names = T)
 names(files) <- list.files(path = dataPath, full.names = F)
 
@@ -133,7 +133,7 @@ if (!file.exists(ensGenes_file)){
 
 # load kallisto data with tximport and inspect via PCA -------------------------
 base_dir <- paste(pathPrefix, 
-                  "Data/Tremethick/Breast/RNA-Seq/NB501086_0067_RDomaschenz_JCSMR_RNASeq/processed_data", 
+                  "Data/Tremethick/Breast/RNA-Seq_run2/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/processed_data", 
                   runConfig$references[[refVersion]]$version, 
                   "kallisto",
                   sep = "/")
@@ -305,7 +305,7 @@ colnames(tab2)[seq(3,5,2)] <- paste(colnames(tab2)[seq(3,5,2)], "rep2", sep = "_
 
 tab3 <- as_tibble(merge(tab1, tab2[, c(1:3)], by.x = "ensembl_gene_id", by.y = "ensembl_gene_id", all.x = T))
 tab3 <- tab3[,c(1:9, 19:20, 10:18)]
-tab_exportFile <- paste("MCF10A_RNA-Seq_results_", runConfig$references[[refVersion]]$version, ".csv", sep = "")
+tab_exportFile <- paste("MCF10A_RNA-Seq_run2_results_", runConfig$references[[refVersion]]$version, ".csv", sep = "")
 write.csv(tab3, tab_exportFile)
 tab3 <- as.data.frame(tab3)
 
