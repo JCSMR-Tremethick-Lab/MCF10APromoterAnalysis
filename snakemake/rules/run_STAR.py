@@ -46,13 +46,13 @@ rule bam_index_STAR_output:
 
 rule run_htseq_count:
     version:
-        0.3
+        0.4
     params:
         htseq_dir = config["HTSeq_dir"],
-        gtf = config["references"]["hg19"]["GTF"]
     input:
         bam = "{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam",
-        index = "{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam.bai"
+        index = "{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam.bai",
+        gtf = config["references"]["hg19"]["GTF"][wildcards.reference_version]
     output:
         "{assayID}/{runID}/{processed_dir}/{reference_version}/HTSeq/count/{unit}.txt"
     shell:
@@ -64,7 +64,7 @@ rule run_htseq_count:
                                            --idattr=gene_id \
                                            --order=pos \
                                            {input.bam} \
-                                           {params.gtf} \
+                                           {input.gtf} \
                                            > {output}
         """
 
