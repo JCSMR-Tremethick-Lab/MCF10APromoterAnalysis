@@ -287,14 +287,15 @@ names(resultsCompressed) <- names(s2c.list)
 # diagnostic boxplot of ERCC spike in RNA abundances ----------------------
 ERCCs <- resultsCompressed[["MCF10A_vs_shZ"]][["kallisto_table"]][grep("ERCC", resultsCompressed[["MCF10A_vs_shZ"]][["kallisto_table"]]$target_id),]
 ERCCs <- rbind(ERCCs, resultsCompressed[["MCF10A_vs_TGFb"]][["kallisto_table"]][grep("ERCC", resultsCompressed[["MCF10A_vs_TGFb"]][["kallisto_table"]]$target_id),])
-p1 <- ggplot(data = ERCCs, mapping = aes(x = sample, y = log2(tpm + 1), fill = condition))
-p1 + geom_boxplot() # looks like spike ins have massive variability
-
 Transcripts <- resultsCompressed[["MCF10A_vs_shZ"]][["kallisto_table"]][grep("ENS", resultsCompressed[["MCF10A_vs_shZ"]][["kallisto_table"]]$target_id),]
 Transcripts <- rbind(Transcripts, resultsCompressed[["MCF10A_vs_TGFb"]][["kallisto_table"]][grep("ENS", resultsCompressed[["MCF10A_vs_TGFb"]][["kallisto_table"]]$target_id),])
-p2 <- ggplot(data = Transcripts, mapping = aes(x = sample, y = log2(tpm + 1), fill = condition))
-p2 + geom_boxplot() 
 
+pdf("Diagnostic_boxplots.pdf", paper = "a4r")
+p1 <- ggplot(data = ERCCs, mapping = aes(x = sample, y = log2(tpm + 1), fill = condition))
+p1 + geom_boxplot() + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + labs(title = "ERCC spike ins") # looks like spike ins have massive variability
+p2 <- ggplot(data = Transcripts, mapping = aes(x = sample, y = log2(tpm + 1), fill = condition))
+p2 + geom_boxplot() + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + labs(title = "All transcripts")
+dev.off()
 
 # prepare table for output ------------------------------------------------
 # load("tab1.rda")
