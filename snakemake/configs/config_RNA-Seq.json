@@ -17,24 +17,24 @@
     },
   "hg19" :
     {
-      "version" : ["GRCh37_hg19_ensembl75_ERCC", "GRCh37_hg19_ensembl75"],
-      "genome" : "/home/sebastian/Data/References/Genomes/Homo_sapiens/GRCh37_hg19_ensembl75/primary/Homo_sapiens.GRCh37.75.dna.primary_assembly.fa",
-      "GTF" :
-        {
-          "GRCh37_hg19_ensembl75_ERCC" : "/home/sebastian/Data/References/Annotations/Homo_sapiens/GRCh37_hg19_ensembl75/Homo_sapiens.GRCh37.75_ERCC.gtf",
-          "GRCh37_hg19_ensembl75" : "/home/sebastian/Data/References/Annotations/Homo_sapiens/GRCh37_hg19_ensembl75/Homo_sapiens.GRCh37.75.gtf"
-        },
-      "kallisto" :
-        {
-          "GRCh37_hg19_ensembl75_ERCC" : "/home/sebastian/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_ensembl75/GRCh37_hg19_ensembl75_ERCC.ki",
-          "GRCh37_hg19_ensembl75" : "/home/sebastian/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_ensembl75/GRCh37_hg19_ensembl75.ki"
-        },
-      "STAR" :
-        {
-          "GRCh37_hg19_ensembl75_ERCC" : "/home/sebastian/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_ensembl75/STAR_Index_ERCC",
-          "GRCh37_hg19_ensembl75" : "/home/sebastian/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_ensembl75/STAR_Index"
-        }
-    },
+    "version" : ["GRCh37_hg19_ensembl75_ERCC", "GRCh37_hg19_ensembl75"],
+    "genome" : "/home/sebastian/Data/References/Genomes/Homo_sapiens/GRCh37_hg19_ensembl75/primary/Homo_sapiens.GRCh37.75.dna.primary_assembly.fa",
+    "GTF" :
+      {
+        "GRCh37_hg19_ensembl75_ERCC" : "/home/sebastian/Data/References/Annotations/Homo_sapiens/GRCh37_hg19_ensembl75/Homo_sapiens.GRCh37.75_ERCC.gtf",
+        "GRCh37_hg19_ensembl75" : "/home/sebastian/Data/References/Annotations/Homo_sapiens/GRCh37_hg19_ensembl75/Homo_sapiens.GRCh37.75.gtf"
+      },
+    "kallisto" :
+      {
+        "GRCh37_hg19_ensembl75_ERCC" : "/home/sebastian/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_ensembl75/GRCh37_hg19_ensembl75_ERCC.ki",
+        "GRCh37_hg19_ensembl75" : "/home/sebastian/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_ensembl75/GRCh37_hg19_ensembl75.ki"
+      },
+    "STAR" :
+      {
+        "GRCh37_hg19_ensembl75_ERCC" : "/home/sebastian/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_ensembl75/STAR_Index_ERCC",
+        "GRCh37_hg19_ensembl75" : "/home/sebastian/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_ensembl75/STAR_Index"
+      }
+    }
   },
     "kallisto" :
     {
