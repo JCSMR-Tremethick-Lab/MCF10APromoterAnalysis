@@ -44,7 +44,7 @@ if (amILocal("JCSMR027564ML")){
   cpus <- 8
 } else {
   pathPrefix <- "~"
-  cpus <- 4
+  cpus <- 8
   options(width = 137)
 }
 options(mc.cores = cpus)
@@ -56,7 +56,7 @@ devPath <- "~/Development"
 
 # read in data ------------------------------------------------------------
 dataPath <- lDir(pathPrefix, 
-                 paste("Data/Tremethick/Breast/RNA-Seq_run2/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/processed_data/",runConfig$references[[refVersion]]$version,"HTSeq/count/", sep = ""))
+                 paste("Data/Tremethick/Breast/RNA-Seq_run2/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/processed_data/",runConfig$references[[refVersion]]$version,"/HTSeq/count/", sep = ""))
 files <- list.files(path = dataPath, full.names = T)
 names(files) <- list.files(path = dataPath, full.names = F)
 
@@ -103,10 +103,19 @@ if (!file.exists(ensGenes_file)){
                             "external_gene_name", 
                             "version", 
                             "transcript_version")]
+  t2g <- dplyr::rename(t2g, target_id = ensembl_transcript_id, ens_gene = ensembl_gene_id, ext_gene = external_gene_name)
+  if(refVersion == "hg19"){
+    erccGenes <- import("~/Data/References/Transcriptomes/ERCC/ERCC92.gtf")
+    erccGenes <- data.frame(target_id = erccGenes$gene_id, 
+                            ens_gene = erccGenes$gene_id, 
+                            ext_gene = erccGenes$gene_id)
+    erccGenes$version <- 1
+    erccGenes$transcript_version <- 1
+    t2g <- rbind(t2g, erccGenes)
+  }
   if(refVersion == "hg38"){
     t2g$ensembl_transcript_id <- paste(t2g$ensembl_transcript_id, t2g$transcript_version, sep = ".")
   }
-  t2g <- dplyr::rename(t2g, target_id = ensembl_transcript_id, ens_gene = ensembl_gene_id, ext_gene = external_gene_name)
   save(t2g, file = t2g_file)
   
   mylength <- sapply(ensGenes$ensembl_gene_id, function(x){
@@ -140,7 +149,8 @@ base_dir <- paste(pathPrefix,
 sample_id <- dir(base_dir)
 kal_dirs <- sapply(sample_id, function(id) file.path(base_dir, id))
 #sample_id[c(1,2,7,8)] <- unlist(lapply(strsplit(sample_id[c(1,2,7,8)], "_"), function(x) paste(x[1], "wt", x[2], x[3], sep = "_")))
-condition <- unlist(lapply(strsplit(sample_id, "_"), function(x) paste(x[1:2], collapse = "_")))
+condition <- c(rep("MCF10A_wt", 6), rep("MCF10A_shZ", 3), rep("MCF10A_TGFb", 3))
+names(condition) <- names(files)
 files <- paste(kal_dirs, "abundance.tsv", sep = "/")
 names(files) <- sample_id
 
@@ -152,45 +162,32 @@ txi <- tximport::tximport(files,
                           tx2gene = t2g,
                           reader = read_tsv)
 # perform PCA for first inspection of data --------------------------------
-pca1 <- ade4::dudi.pca(t(txi$abundance), scannf = F, nf = 6)
-ade4::s.arrow(pca1$li)
-ade4::s.class(pca1$li, fac = as.factor(condition))
+sd1 <- apply(txi$abundance, 1, sd)
+# treat D6 and D8 samples separately
+pcaD6 <- ade4::dudi.pca(t(txi$abundance[sd1 > 3, grep("D6", colnames(txi$abundance))]), scannf = F, nf = 6)
+ade4::s.arrow(pcaD6$li)
+ade4::s.class(pcaD6$li, fac = as.factor(condition[grep("D6", names(condition))]))
 
-################################################################################
-# IMPORTANT!!!!!
-# PCA shows that two samples were mislabelled
-# inspection of the s.class plot reveals that most likely:
-# MCF10A_shZ_rep2 is MCF10A_wt_rep2 and vice versa
-condition <- as.character(condition[c(1,6,3:5,2,7:10)])
-condition <- as.factor(condition)
-condition <- relevel(condition, ref = "MCF10A_wt")
+pcaD8 <- ade4::dudi.pca(t(txi$abundance[sd1 > 3, grep("D8", colnames(txi$abundance))]), scannf = F, nf = 6)
+ade4::s.arrow(pcaD8$li)
+ade4::s.class(pcaD8$li, fac = as.factor(condition[grep("D8", names(condition))]))
+
+
+# prepare sample to condition table for sleuth processing -----------------
 s2c <- data.frame(sample = sample_id, condition = condition)
 s2c <- dplyr::mutate(s2c, path = kal_dirs)
-################################################################################
-s2c.mcf10a <- s2c[grep("MCF10A_|MCF10Ca1a_wt", s2c$condition),]
-s2c.mcf10a$condition <- as.factor(as.character(s2c.mcf10a$condition))
-s2c.mcf10a$condition <- relevel(s2c.mcf10a$condition, ref = "MCF10A_wt")
-s2c.mcf10a$sample <- as.character(s2c.mcf10a$sample)
-s2c.mcf10Ca1a <- s2c[grep("MCF10Ca1a", s2c$condition),]
-s2c.mcf10Ca1a$condition <- as.factor(as.character(s2c.mcf10Ca1a$condition))
-s2c.mcf10Ca1a$condition <- relevel(s2c.mcf10Ca1a$condition, ref = "MCF10Ca1a_wt")
-s2c.mcf10Ca1a$sample <- as.character(s2c.mcf10Ca1a$sample)
-
-# make separate sets for different contrasts
-# s2c.mcf10a_vs_mcf10a_shZ <- s2c.mcf10a[1:4,]
-# s2c.mcf10a_vs_mcf10a_shZ$condition <- as.character(s2c.mcf10a_vs_mcf10a_shZ$condition)
-# s2c.mcf10a_vs_mcf10a_shZ$condition <- as.factor(s2c.mcf10a_vs_mcf10a_shZ$condition)
-# s2c.mcf10a_vs_mcf10a_shZ$condition <- relevel(s2c.mcf10a_vs_mcf10a_shZ$condition, "MCF10A_wt")
-# s2c.mcf10a_vs_mcf10a_TGFb <- s2c.mcf10a[c(1,4,5:6),] 
-# s2c.mcf10a_vs_mcf10a_TGFb$condition <- as.character(s2c.mcf10a_vs_mcf10a_TGFb$condition)
-# s2c.mcf10a_vs_mcf10a_TGFb$condition <- as.factor(s2c.mcf10a_vs_mcf10a_TGFb$condition)
-# s2c.mcf10a_vs_mcf10a_TGFb$condition <- relevel(s2c.mcf10a_vs_mcf10a_TGFb$condition, "MCF10A_wt")
+s2c$sample <- as.character(s2c$sample)
+# make separate sets for different contrasts for shZ and TGFb
+s2c.mcf10a_vs_mcf10a_shZ <- s2c[grep("D8", s2c$sample),]
+s2c.mcf10a_vs_mcf10a_shZ$condition <- droplevels(s2c.mcf10a_vs_mcf10a_shZ$condition)
+s2c.mcf10a_vs_mcf10a_shZ$condition <- relevel(s2c.mcf10a_vs_mcf10a_shZ$condition, "MCF10A_wt")
+s2c.mcf10a_vs_mcf10a_TGFb <- s2c[grep("D6", s2c$sample),]
+s2c.mcf10a_vs_mcf10a_TGFb$condition <- droplevels(s2c.mcf10a_vs_mcf10a_TGFb$condition)
+s2c.mcf10a_vs_mcf10a_TGFb$condition <- relevel(s2c.mcf10a_vs_mcf10a_TGFb$condition, "MCF10A_wt")
 
 # collate list()
-s2c.list <- list(MCF10A = s2c.mcf10a,
-                 MCF10Ca1a = s2c.mcf10Ca1a)
-                 # MCF10A_vs_shZ = s2c.mcf10a_vs_mcf10a_shZ,
-                 # MCF10A_vs_TGFb = s2c.mcf10a_vs_mcf10a_TGFb)
+s2c.list <- list(MCF10A_vs_shZ = s2c.mcf10a_vs_mcf10a_shZ,
+                 MCF10A_vs_TGFb = s2c.mcf10a_vs_mcf10a_TGFb)
 
 ################################################################################
 # actual processing using sleuth------------------------------------------------
@@ -198,8 +195,8 @@ sleuth_results_output <- paste("sleuthResults_", runConfig$references[[refVersio
 
 if(!file.exists(sleuth_results_output)){
   results <- lapply(names(s2c.list), function(x){
-    print(paste("Processing ", x, sep = ""))
     design <- model.matrix(~ condition, data = s2c.list[[x]])
+    print(paste("Processing ", x, " transcript-level analysis",sep = ""))
     #-----------------------------------------------------------------------------
     # transcript-level DE
     so <- sleuth::sleuth_prep(s2c.list[[x]], ~ condition, target_mapping = t2g)
@@ -218,20 +215,6 @@ if(!file.exists(sleuth_results_output)){
     kt_wide <- tidyr::spread(kt[, c("target_id", "sample", "tpm")], sample, tpm)
     rownames(kt_wide) <- kt_wide[,1]
     kt_wide <- kt_wide[,-1]
-    #-----------------------------------------------------------------------------
-    # gene-level DE  
-    so.gene <- sleuth::sleuth_prep(s2c.list[[x]], ~ condition, target_mapping = t2g, aggregation_column = "ens_gene")
-    so.gene <- sleuth::sleuth_fit(so.gene, formula = design)
-    so.gene <- sleuth::sleuth_fit(so.gene, ~1, "reduced")
-    so.gene <- sleuth::sleuth_lrt(so.gene, "reduced", "full")
-    for (i in colnames(design)[grep("Intercept", colnames(design), invert = T)]){
-      so.gene <- sleuth::sleuth_wt(so.gene, i)  
-    }
-    rt.gene.list <- lapply(colnames(design)[grep("Intercept", colnames(design), invert = T)], function(x){
-      rt.gene <- sleuth::sleuth_results(so.gene, x)
-      rt.gene <- rt.gene[order(rt.gene$qval),]
-    })
-    names(rt.gene.list) <- colnames(design)[grep("Intercept", colnames(design), invert = T)]
     # gene-level expression is summed from transcript level data (sum(TPM))
     target_mapping <- so$target_mapping
     rownames(target_mapping) <- target_mapping$target_id
@@ -248,20 +231,34 @@ if(!file.exists(sleuth_results_output)){
     kt_genes <- kt_genes[, c("ensembl_gene_id", s2c.list[[x]]$sample)]
     kt_genes <- tibble::as_tibble(merge(kt_genes, ensGenes, by.x = "ensembl_gene_id", by.y = "ensembl_gene_id"))
     kt_wide <- tibble::as_tibble(tidyr::spread(kt[, c("target_id", "sample", "tpm")], sample, tpm))
+    #-----------------------------------------------------------------------------
+    # gene-level DE  
+    so.gene <- sleuth::sleuth_prep(s2c.list[[x]], ~ condition, target_mapping = t2g, aggregation_column = "ens_gene")
+    so.gene <- sleuth::sleuth_fit(so.gene, formula = design)
+    so.gene <- sleuth::sleuth_fit(so.gene, ~1, "reduced")
+    so.gene <- sleuth::sleuth_lrt(so.gene, "reduced", "full")
+    for (i in colnames(design)[grep("Intercept", colnames(design), invert = T)]){
+      so.gene <- sleuth::sleuth_wt(so.gene, i)  
+    }
+    rt.gene.list <- lapply(colnames(design)[grep("Intercept", colnames(design), invert = T)], function(x){
+      rt.gene <- sleuth::sleuth_results(so.gene, x)
+      rt.gene <- rt.gene[order(rt.gene$qval),]
+    })
+    names(rt.gene.list) <- colnames(design)[grep("Intercept", colnames(design), invert = T)]
     return(list(sleuth_object = so,
                 sleuth_results = rt.list,
+                sleuth_results_genes = rt.gene.list,
                 kallisto_table = kt,
                 kallisto_table_wide = kt_wide,
-                sleuth_results.gene = rt.gene.list,
                 kallisto_table_genes = kt_genes))
   })
+  names(results) <- names(s2c.list)
   save(results, file = sleuth_results_output)
 } else {
   load(sleuth_results_output)
 }
 
 # re-formatting of list object --------------------------------------------
-names(results) <- names(s2c.list)
 
 sleuth_resultsCompressed_file <- paste("sleuthResultsCompressed_", runConfig$references[[refVersion]]$version, ".rda", sep = "")
 
@@ -286,22 +283,23 @@ resultsCompressed <- lapply(names(resultsCompressed), function(x) {
 })
 names(resultsCompressed) <- names(s2c.list)
 
+
+# diagnostic boxplot of ERCC spike in RNA abundances ----------------------
+ERCCs <- resultsCompressed[["MCF10A_vs_shZ"]][["kallisto_table"]][grep("ERCC", resultsCompressed[["MCF10A_vs_shZ"]][["kallisto_table"]]$target_id),]
+ERCCs <- rbind(ERCCs, resultsCompressed[["MCF10A_vs_TGFb"]][["kallisto_table"]][grep("ERCC", resultsCompressed[["MCF10A_vs_TGFb"]][["kallisto_table"]]$target_id),])
+p1 <- ggplot(data = ERCCs, mapping = aes(x = sample, y = log2(tpm + 1), fill = condition))
+p1 + geom_boxplot() # looks like spike ins have massive variability
+
+Transcripts <- resultsCompressed[["MCF10A_vs_shZ"]][["kallisto_table"]][grep("ENS", resultsCompressed[["MCF10A_vs_shZ"]][["kallisto_table"]]$target_id),]
+Transcripts <- rbind(Transcripts, resultsCompressed[["MCF10A_vs_TGFb"]][["kallisto_table"]][grep("ENS", resultsCompressed[["MCF10A_vs_TGFb"]][["kallisto_table"]]$target_id),])
+p2 <- ggplot(data = Transcripts, mapping = aes(x = sample, y = log2(tpm + 1), fill = condition))
+p2 + geom_boxplot() 
+
+
 # prepare table for output ------------------------------------------------
 # load("tab1.rda")
 tab1 <- resultsCompressed[[1]]$kallisto_table_genes
 
-#########################################
-# rename colnames to resolve sample mixup
-# and prepare data for export
-colnames(tab1)[2:9] <- as.character(s2c.mcf10a$condition)[match(colnames(tab1)[2:9], as.character(s2c.mcf10a$sample))]
-tab1 <- tab1[, c(1,3,6,4,5,2,7:18)]
-colnames(tab1)[seq(2,9,2)] <- paste(colnames(tab1)[seq(2,9,2)], "rep1", sep = "_") 
-colnames(tab1)[seq(3,9,2)] <- paste(colnames(tab1)[seq(3,9,2)], "rep2", sep = "_")
-
-tab2 <- resultsCompressed[[2]]$kallisto_table_genes
-colnames(tab2)[2:5] <- as.character(s2c.mcf10Ca1a$condition)[match(colnames(tab2)[2:5], as.character(s2c.mcf10Ca1a$sample))]
-colnames(tab2)[seq(2,5,2)] <- paste(colnames(tab2)[seq(2,5,2)], "rep1", sep = "_") 
-colnames(tab2)[seq(3,5,2)] <- paste(colnames(tab2)[seq(3,5,2)], "rep2", sep = "_")
 
 tab3 <- as_tibble(merge(tab1, tab2[, c(1:3)], by.x = "ensembl_gene_id", by.y = "ensembl_gene_id", all.x = T))
 tab3 <- tab3[,c(1:9, 19:20, 10:18)]
