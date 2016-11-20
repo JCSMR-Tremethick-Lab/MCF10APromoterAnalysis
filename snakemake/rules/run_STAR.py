@@ -52,7 +52,7 @@ rule run_htseq_count:
     input:
         bam = "{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam",
         index = "{assayID}/{runID}/{processed_dir}/{reference_version}/STAR/full/{unit}.aligned.bam.bai",
-        gtf = config["references"]["hg19"]["GTF"][wildcards.reference_version]
+        gtf = lambda wildcards: config["references"]["hg19"]["GTF"][wildcards.reference_version]
     output:
         "{assayID}/{runID}/{processed_dir}/{reference_version}/HTSeq/count/{unit}.txt"
     shell:
