@@ -1,7 +1,7 @@
 ---
 title: "MCF10A RNA-Seq Analysis"
 author: "Sebastian Kurscheid"
-date: "26 August 2016"
+date: "24 November 2016"
 output:
   html_document:
     fontsize: 12
@@ -9,15 +9,15 @@ output:
     number_section: yes
     theme: flatly
     toc: yes
-    toc_depth: 3
+    toc_depth: 5
   github_document:
     number_sections: yes
     toc: yes
-    toc_depth: 3
+    toc_depth: 5
   pdf_document:
     number_sections: yes
     toc: yes
-    toc_depth: 3
+    toc_depth: 5
 ---
 
 # Introduction
@@ -26,10 +26,8 @@ output:
 * Following conditions were used
     + **MCF10A WT** vs **MCF10A TGFb-treated** (induction of EMT)
     + **MCF10A WT** vs **MCF10A H2A.Z** knock-down (induction of EMT/effects of siRNAi mediated gene silencing)
-    + **MCF10A WT** vs **MCF10ca1a WT** (normal breast epithelial cells vs RAS-transformde, cancerous cells)
-    + **MFC10Aca1a WT** vs **MCF10Aca1a shZ** (effects of siRNAi mediated gene silencing)
-  
-Two biological replicates were used for each condition and libraries were sequenced on an Illumina Next-Seq 500 sequencer using Illumina TruSeq protocol, 76bp PE. The sequencing reads were pre-processed and aligned to the human reference genome hg38-based Ensembl Version 84 transcriptome annotation using STAR. Actual transcript quantification was performed using kallisto against and index built from Ensembl 84 (all cDNAs + ncRNAs). The sequencing data processing pipeline is implemented using snakemake <https://bitbucket.org/snakemake/> and can be found at <https://github.com/JCSMR-Tremethick-Lab/Breast>.
+
+Three biological replicates were used for each condition and libraries were sequenced on an Illumina Next-Seq 500 sequencer using Illumina TruSeq protocol, 76bp PE. The sequencing reads were pre-processed and aligned to the human reference genome hg19-based Ensembl Version 75 transcriptome annotation using STAR. Actual transcript quantification was performed using kallisto against and index built from Ensembl 75 (all cDNAs + ncRNAs). The sequencing data processing pipeline is implemented using snakemake <https://bitbucket.org/snakemake/> and can be found at <https://github.com/JCSMR-Tremethick-Lab/Breast>.
 
 *********
 
@@ -37,16 +35,177 @@ Two biological replicates were used for each condition and libraries were sequen
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r cars}
-summary(cars)
+```{r get_run_config, echo = FALSE, cache = TRUE, tidy.opts=(list(tidy=50))}
+require(knitr)
+knit_print.data.frame = function(x, ...) {
+    res = paste(c("", "", kable(x, output = FALSE)), collapse = "\n")
+    asis_output(res)
+}
+require(jsonlite)
+dataPath <- "~/Data/Tremethick/Breast/RNA-Seq_run2/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/R_Analysis/"
+runConfig <- jsonlite::fromJSON("~/Development/JCSMR-Tremethick-Lab/Breast/snakemake/configs/config_RNA-Seq.json")
+refVersion <- "hg19"
+annotationVersion <- runConfig$references[[refVersion]]$version
+annotationVersion <- annotationVersion[2] # use non ERCC processed data
+analysis_version <- 2
+annotationDataPath <- "~/Data/Tremethick/Breast/RNA-Seq_run2/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/R_Analysis/"
+
+# load annotation files
+ensGenes_file <- paste(annotationDataPath, "ensGenes_", annotationVersion, ".rda", sep = "")
+load(ensGenes_file)
+
+# load results from sleuth analysis
+sleuth_resultsCompressed_file <- paste(dataPath, "/","sleuthResultsCompressed_", annotationVersion, "_V", analysis_version, ".rda", sep = "")
+load(sleuth_resultsCompressed_file)
+load(paste(dataPath, "/", "hsap.qPCRGenesTab.rda", sep = ""))
+names(resultsCompressed)
 ```
 
-## Including Plots
+# Results
 
-You can also embed plots, for example:
+## Analysis of EMT genes as defined by pPCR array
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+### TGF-b treated MCF10A vs WT
+
+Volcano plots of the two datasets, first TGFb-treated MCF10A cells vs MCF10A wt.
+
+```{r volcano_plot_tgfb, echo=FALSE, cache = TRUE, tidy.opts=(list(tidy=50))}
+emtGenes_tgfb <- resultsCompressed[["MCF10A_vs_TGFb"]]$sleuth_results_genes[["conditionMCF10A_TGFb"]][which(resultsCompressed[[2]]$sleuth_results_genes[["conditionMCF10A_TGFb"]]$target_id %in% hsap.qPCRGenesTab$ensembl_gene_id),]
+emtGenes_tgfb$FC_estimated <- log2(exp(emtGenes_tgfb$b))
+emtGenes_tgfb <- merge(emtGenes_tgfb, ensGenes[,c("ensembl_gene_id", "external_gene_name")], by.x = "target_id", by.y = "ensembl_gene_id")
+plot(emtGenes_tgfb$b, -log10(emtGenes_tgfb$qval), axes = F, xlab = "", ylab = "", frame = F, xlim = c(-6,6), cex = 0.3, pch = 16)
+points(emtGenes_tgfb[which(-log10(emtGenes_tgfb$qval) >= 1), "b"], -log10(emtGenes_tgfb[which(-log10(emtGenes_tgfb$qval) >= 1), "qval"]), col = "red", pch = 16, cex = 1.2)
+axis(2, pos = 0, lwd = 3) #, at = c(seq(0,200,2)), labels = c("", seq(2,200,2)))
+axis(1, pos = 0, lwd = 3)
+mtext("-log10(q-value)", side = 2)
+mtext("beta value", side = 1, line = 2)
+abline(h = 1, col = "red", lty = 2, lwd = 2)
+# only adding labels to genes with adjuste p-value <= 0.01
+text(emtGenes_tgfb[which(-log10(emtGenes_tgfb$qval) >= 2), "b"], -log10(emtGenes_tgfb[which(-log10(emtGenes_tgfb$qval) >= 2), "qval"]), 
+     labels = emtGenes_tgfb[which(-log10(emtGenes_tgfb$qval) >= 2), "external_gene_name" ],
+     cex = 0.7,
+     pos = 4, offset = 0.3)
+text(-4,1.2, "< 0.1 [adjusted p-value]", cex = 0.7)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+EMT genes differentially expressed in MCF10A cells upon TGFb treatment, sorted by log2fold-change (descending), and q-value (adjusted p-value).
+
+```{r table_tgfb, echo=FALSE, cache = TRUE, tidy.opts=(list(tidy=50))}
+require(tibble)
+selectedColumns <- c("pval", "qval", "b", "FC_estimated", "external_gene_name")
+rowSort <- order(emtGenes_tgfb$b, emtGenes_tgfb$qval)
+knit_print.data.frame(emtGenes_tgfb[rowSort , selectedColumns])
+```
+
+*******************************
+
+### shZ-knockdown in MCF10A vs WT
+
+```{r volcano_plot_shZ, echo=FALSE, cache = TRUE, tidy.opts=(list(tidy=50))}
+s1 <- which(resultsCompressed[["MCF10A_vs_shZ"]]$sleuth_results_genes[["conditionMCF10A_shZ"]]$target_id %in% hsap.qPCRGenesTab$ensembl_gene_id)
+emtGenes_shZ <- resultsCompressed[["MCF10A_vs_shZ"]]$sleuth_results_genes[["conditionMCF10A_shZ"]][s1,]
+emtGenes_shZ$FC_estimated <- log2(exp(emtGenes_shZ$b))
+emtGenes_shZ <- merge(emtGenes_shZ, ensGenes[,c("ensembl_gene_id", "external_gene_name")], by.x = "target_id", by.y = "ensembl_gene_id")
+plot(emtGenes_shZ$b, -log10(emtGenes_shZ$qval), axes = F, xlab = "", ylab = "", frame = F, xlim = c(-6,6), cex = 0.3, pch = 16)
+points(emtGenes_shZ[which(-log10(emtGenes_shZ$qval) >= 1), "b"], -log10(emtGenes_shZ[which(-log10(emtGenes_shZ$qval) >= 1), "qval"]), col = "red", pch = 16, cex = 1.2)
+axis(2, pos = 0, lwd = 3) #, at = c(seq(0,200,2)), labels = c("", seq(2,200,2)))
+axis(1, pos = 0, lwd = 3)
+mtext("-log10(q-value)", side = 2)
+mtext("beta value", side = 1, line = 2)
+abline(h = 1, col = "red", lty = 2, lwd = 2)
+# only adding labels to genes with adjuste p-value <= 0.01
+text(emtGenes_shZ[which(-log10(emtGenes_shZ$qval) >= 2), "b"], -log10(emtGenes_shZ[which(-log10(emtGenes_shZ$qval) >= 2), "qval"]), 
+     labels = emtGenes_shZ[which(-log10(emtGenes_shZ$qval) >= 2), "external_gene_name" ],
+     cex = 0.7,
+     pos = 4, offset = 0.3)
+text(-4,1.2, "< 0.1 [adjusted p-value]", cex = 0.7)
+
+```
+
+EMT genes differentially expressed in MCF10A cells upon H2AZ shRNA-mediated knock-down, sorted by log2fold-change (descending), and q-value (adjusted p-value).
+
+
+```{r table_shz, echo=FALSE, cache = TRUE, tidy.opts=(list(tidy=50))}
+require(tibble)
+selectedColumns <- c("pval", "qval", "b", "FC_estimated", "external_gene_name")
+rowSort <- order(emtGenes_shZ$b, emtGenes_shZ$qval)
+knit_print.data.frame(emtGenes_shZ[rowSort , selectedColumns])
+```
+
+## Global analysis of differentially expressed genes
+For the purpose of improved readibilit, I restrict the number of genes to the top 50 up and top 50 down-regulated genes. 
+
+### TGF-b treated vs WT
+
+#### Top 50 up-regulated genes
+```{r table_tgfb_global_top50_up, echo=FALSE, cache = TRUE, tidy.opts=(list(tidy=50))}
+require(tibble)
+emtGenes_tgfb_global_up <- resultsCompressed[["MCF10A_vs_TGFb"]]$sleuth_results_genes[["conditionMCF10A_TGFb"]]
+emtGenes_tgfb_global_up <- emtGenes_tgfb_global_up[which(emtGenes_tgfb_global_up$b > 0),]
+s <- order(emtGenes_tgfb_global_up$qval)
+top50up <- emtGenes_tgfb_global_up[s, ]
+top50up <- top50up[1:50,]
+top50up <- merge(top50up, 
+                 ensGenes[,c("ensembl_gene_id", "external_gene_name", "description")],
+                 by.x = "target_id", 
+                 by.y = "ensembl_gene_id")
+top50up$estimated_FC <- log2(exp(top50up$b))
+selectedColumns <- c("pval", "qval", "b", "estimated_FC", "external_gene_name", "description")
+knit_print.data.frame(top50up[, selectedColumns])
+```
+
+***********************
+
+#### Top 50 down-regulated genes
+
+```{r table_tgfb_global_top50_down, echo=FALSE, cache = TRUE, tidy.opts=(list(tidy=50))}
+require(tibble)
+emtGenes_tgfb_global_down <- resultsCompressed[["MCF10A_vs_TGFb"]]$sleuth_results_genes[["conditionMCF10A_TGFb"]]
+emtGenes_tgfb_global_down <- emtGenes_tgfb_global_down[which(emtGenes_tgfb_global_down$b < 0),]
+s <- order(emtGenes_tgfb_global_down$qval)
+top50down <- emtGenes_tgfb_global_down[s, ]
+top50down <- top50down[1:50,]
+top50down <- merge(top50down, 
+                 ensGenes[,c("ensembl_gene_id", "external_gene_name", "description")],
+                 by.x = "target_id", 
+                 by.y = "ensembl_gene_id")
+top50down$estimated_FC <- log2(exp(top50down$b))
+selectedColumns <- c("pval", "qval", "b", "estimated_FC", "external_gene_name", "description")
+knit_print.data.frame(top50down[, selectedColumns])
+```
+
+### H2AZ knock-down vs WT
+
+#### Top 50 up-regulated genes
+```{r table_shZ_global_top50_up, echo=FALSE, cache = TRUE, tidy.opts=(list(tidy=50))}
+emtGenes_shZ_global_up <- resultsCompressed[["MCF10A_vs_shZ"]]$sleuth_results_genes[["conditionMCF10A_shZ"]]
+emtGenes_shZ_global_up <- emtGenes_shZ_global_up[which(emtGenes_shZ_global_up$b > 0),]
+s <- order(emtGenes_shZ_global_up$qval)
+top50up <- emtGenes_shZ_global_up[s, ]
+top50up <- top50up[1:50,]
+top50up <- merge(top50up, 
+                 ensGenes[,c("ensembl_gene_id", "external_gene_name", "description")],
+                 by.x = "target_id", 
+                 by.y = "ensembl_gene_id")
+top50up$estimated_FC <- log2(exp(top50up$b))
+selectedColumns <- c("pval", "qval", "b", "estimated_FC", "external_gene_name", "description")
+knit_print.data.frame(top50up[, selectedColumns])
+```
+
+***********************
+
+#### Top 50 down-regulated genes
+```{r table_shZ_global_top50_down, echo=FALSE, cache = TRUE, tidy.opts=(list(tidy=50))}
+emtGenes_shZ_global_down <- resultsCompressed[["MCF10A_vs_shZ"]]$sleuth_results_genes[["conditionMCF10A_shZ"]]
+emtGenes_shZ_global_down <- emtGenes_shZ_global_down[which(emtGenes_shZ_global_down$b < 0),]
+s <- order(emtGenes_shZ_global_down$qval)
+top50down <- emtGenes_shZ_global_down[s, ]
+top50down <- top50down[1:50,]
+top50down <- merge(top50down, 
+                 ensGenes[,c("ensembl_gene_id", "external_gene_name", "description")],
+                 by.x = "target_id", 
+                 by.y = "ensembl_gene_id")
+top50down$estimated_FC <- log2(exp(top50down$b))
+selectedColumns <- c("pval", "qval", "b", "estimated_FC", "external_gene_name", "description")
+knit_print.data.frame(top50down[, selectedColumns])
+```
