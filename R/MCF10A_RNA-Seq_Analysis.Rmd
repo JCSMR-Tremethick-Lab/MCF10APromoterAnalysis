@@ -3,6 +3,10 @@ title: "MCF10A RNA-Seq Analysis"
 author: "Sebastian Kurscheid"
 date: "24 November 2016"
 output:
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 5
   html_document:
     fontsize: 12
     highlight: default
@@ -14,34 +18,35 @@ output:
     number_sections: yes
     toc: yes
     toc_depth: 5
-  pdf_document:
-    number_sections: yes
-    toc: yes
-    toc_depth: 5
 ---
 
 # Introduction
 ## Purpose of the analysis
-* Determine differential expression in human breast epithelial cell lines MCF10A/MCF10Aca1a
+* Determine differential expression of a set of pre-defined genes (EMT-marker genes) in human breast epithelial cell lines MCF10A/MCF10Aca1a
 * Following conditions were used
     + **MCF10A WT** vs **MCF10A TGFb-treated** (induction of EMT)
     + **MCF10A WT** vs **MCF10A H2A.Z** knock-down (induction of EMT/effects of siRNAi mediated gene silencing)
 
 Three biological replicates were used for each condition and libraries were sequenced on an Illumina Next-Seq 500 sequencer using Illumina TruSeq protocol, 76bp PE. The sequencing reads were pre-processed and aligned to the human reference genome hg19-based Ensembl Version 75 transcriptome annotation using STAR. Actual transcript quantification was performed using kallisto against and index built from Ensembl 75 (all cDNAs + ncRNAs). The sequencing data processing pipeline is implemented using snakemake <https://bitbucket.org/snakemake/> and can be found at <https://github.com/JCSMR-Tremethick-Lab/Breast>.
 
+Important: This is a supervised analysis, i.e. we predominantely investigated the changes in set of gene we defined prior to the experiment. The next step will be to conduct a fully unsupervised analysis and firstly identify those genes which are dysregulated, and link these back to biological pathways. This will then be a good starting point to analyse the H2A.Z ChIP-Seq results.
+
 *********
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+require(knitr)
+require(jsonlite)
+require(reshape2)
+require(ggplot2)
+
 ```
 
 ```{r get_run_config, echo = FALSE, cache = TRUE, tidy.opts=(list(tidy=50))}
-require(knitr)
 knit_print.data.frame = function(x, ...) {
     res = paste(c("", "", kable(x, output = FALSE)), collapse = "\n")
     asis_output(res)
 }
-require(jsonlite)
 dataPath <- "~/Data/Tremethick/Breast/RNA-Seq_run2/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/R_Analysis/"
 runConfig <- jsonlite::fromJSON("~/Development/JCSMR-Tremethick-Lab/Breast/snakemake/configs/config_RNA-Seq.json")
 refVersion <- "hg19"
@@ -52,7 +57,9 @@ annotationDataPath <- "~/Data/Tremethick/Breast/RNA-Seq_run2/NB501086_0082_RDoma
 
 # load annotation files
 ensGenes_file <- paste(annotationDataPath, "ensGenes_", annotationVersion, ".rda", sep = "")
+ensTranscripts_file <- paste(annotationDataPath, "ensTranscripts_", annotationVersion, ".rda", sep = "")
 load(ensGenes_file)
+load(ensTranscripts_file)
 
 # load results from sleuth analysis
 sleuth_resultsCompressed_file <- paste(dataPath, "/","sleuthResultsCompressed_", annotationVersion, "_V", analysis_version, ".rda", sep = "")
@@ -91,7 +98,6 @@ text(-4,1.2, "< 0.1 [adjusted p-value]", cex = 0.7)
 EMT genes differentially expressed in MCF10A cells upon TGFb treatment, sorted by log2fold-change (descending), and q-value (adjusted p-value).
 
 ```{r table_tgfb, echo=FALSE, cache = TRUE, tidy.opts=(list(tidy=50))}
-require(tibble)
 selectedColumns <- c("pval", "qval", "b", "FC_estimated", "external_gene_name")
 rowSort <- order(emtGenes_tgfb$b, emtGenes_tgfb$qval)
 knit_print.data.frame(emtGenes_tgfb[rowSort , selectedColumns])
@@ -139,7 +145,6 @@ For the purpose of improved readibilit, I restrict the number of genes to the to
 
 #### Top 50 up-regulated genes
 ```{r table_tgfb_global_top50_up, echo=FALSE, cache = TRUE, tidy.opts=(list(tidy=50))}
-require(tibble)
 emtGenes_tgfb_global_up <- resultsCompressed[["MCF10A_vs_TGFb"]]$sleuth_results_genes[["conditionMCF10A_TGFb"]]
 emtGenes_tgfb_global_up <- emtGenes_tgfb_global_up[which(emtGenes_tgfb_global_up$b > 0),]
 s <- order(emtGenes_tgfb_global_up$qval)
@@ -150,8 +155,9 @@ top50up <- merge(top50up,
                  by.x = "target_id", 
                  by.y = "ensembl_gene_id")
 top50up$estimated_FC <- log2(exp(top50up$b))
+s <- order(top50up$estimated_FC, decreasing = T)
 selectedColumns <- c("pval", "qval", "b", "estimated_FC", "external_gene_name", "description")
-knit_print.data.frame(top50up[, selectedColumns])
+knit_print.data.frame(top50up[s, selectedColumns])
 ```
 
 ***********************
@@ -159,7 +165,6 @@ knit_print.data.frame(top50up[, selectedColumns])
 #### Top 50 down-regulated genes
 
 ```{r table_tgfb_global_top50_down, echo=FALSE, cache = TRUE, tidy.opts=(list(tidy=50))}
-require(tibble)
 emtGenes_tgfb_global_down <- resultsCompressed[["MCF10A_vs_TGFb"]]$sleuth_results_genes[["conditionMCF10A_TGFb"]]
 emtGenes_tgfb_global_down <- emtGenes_tgfb_global_down[which(emtGenes_tgfb_global_down$b < 0),]
 s <- order(emtGenes_tgfb_global_down$qval)
@@ -170,8 +175,9 @@ top50down <- merge(top50down,
                  by.x = "target_id", 
                  by.y = "ensembl_gene_id")
 top50down$estimated_FC <- log2(exp(top50down$b))
+s <- order(top50down$estimated_FC)
 selectedColumns <- c("pval", "qval", "b", "estimated_FC", "external_gene_name", "description")
-knit_print.data.frame(top50down[, selectedColumns])
+knit_print.data.frame(top50down[s, selectedColumns])
 ```
 
 ### H2AZ knock-down vs WT
@@ -188,8 +194,9 @@ top50up <- merge(top50up,
                  by.x = "target_id", 
                  by.y = "ensembl_gene_id")
 top50up$estimated_FC <- log2(exp(top50up$b))
+s <- order(top50up$estimated_FC, decreasing = T)
 selectedColumns <- c("pval", "qval", "b", "estimated_FC", "external_gene_name", "description")
-knit_print.data.frame(top50up[, selectedColumns])
+knit_print.data.frame(top50up[s, selectedColumns])
 ```
 
 ***********************
@@ -206,6 +213,68 @@ top50down <- merge(top50down,
                  by.x = "target_id", 
                  by.y = "ensembl_gene_id")
 top50down$estimated_FC <- log2(exp(top50down$b))
+s <- order(top50down$estimated_FC)
 selectedColumns <- c("pval", "qval", "b", "estimated_FC", "external_gene_name", "description")
-knit_print.data.frame(top50down[, selectedColumns])
+knit_print.data.frame(top50down[s, selectedColumns])
 ```
+
+************
+
+### Plots of genes used in qPCR validation of experiment
+
+#### TGFb-treated MCF10A vs WT
+```{r barplots_qPCR_validation_genes_tgfb, echo=TRUE, cache = TRUE, tidy.opts=(list(tidy=50))}
+# list of IDs
+geneList <- c(H2AZ = "ENSG00000164032", 
+              ECadherin = "ENSG00000039068", 
+              NCadherin = "ENSG00000170558",
+              EpCAM = "ENSG00000119888",
+              Fibronectin = "ENSG00000115414",
+              TGFb1 = "ENSG00000105329")
+
+geneExp <- as.data.frame(resultsCompressed[["MCF10A_vs_TGFb"]]$kallisto_table_genes)
+samples <- grep("MCF", colnames(geneExp))
+w1 <- geneExp$ensembl_gene_id %in% geneList
+geneExp <- geneExp[w1, c(1, samples)]
+gdata <- melt(geneExp)
+gdata$value <- log2(gdata$value)
+
+sapply(names(geneList), function(x){
+  s <- geneExp$ensembl_gene_id == geneList[x]
+  dat <- geneExp[s, ]
+  dat <- melt(dat)
+  dat$value <- log2(dat$value + 1)
+  p1 <- ggplot(dat, aes(x = variable, y = value, fill = variable)) + geom_bar(stat="identity") + ggtitle(paste(x)) + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  plot(p1)
+})
+
+```
+
+#### shZ-knock-down MCF10A vs WT
+```{r barplots_qPCR_validation_genes_shZ, echo=TRUE, cache = TRUE, tidy.opts=(list(tidy=50))}
+# list of IDs
+geneList <- c(H2AZ = "ENSG00000164032", 
+              ECadherin = "ENSG00000039068", 
+              NCadherin = "ENSG00000170558",
+              EpCAM = "ENSG00000119888",
+              Fibronectin = "ENSG00000115414",
+              TGFb1 = "ENSG00000105329")
+
+geneExp <- as.data.frame(resultsCompressed[["MCF10A_vs_shZ"]]$kallisto_table_genes)
+samples <- grep("MCF", colnames(geneExp))
+w1 <- geneExp$ensembl_gene_id %in% geneList
+geneExp <- geneExp[w1, c(1, samples)]
+gdata <- melt(geneExp)
+gdata$value <- log2(gdata$value)
+
+sapply(names(geneList), function(x){
+  s <- geneExp$ensembl_gene_id == geneList[x]
+  dat <- geneExp[s, ]
+  dat <- melt(dat)
+  dat$value <- log2(dat$value + 1)
+  p1 <- ggplot(dat, aes(x = variable, y = value, fill = variable)) + geom_bar(stat="identity") + ggtitle(paste(x)) + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  plot(p1)
+})
+
+```
+
