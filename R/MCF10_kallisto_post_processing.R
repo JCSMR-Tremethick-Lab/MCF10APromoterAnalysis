@@ -26,6 +26,8 @@ runConfig <- jsonlite::fromJSON("~/Development/JCSMR-Tremethick-Lab/Breast/snake
 refVersion <- "hg19"
 annotationVersion <- runConfig$references[[refVersion]]$version
 annotationVersion <- annotationVersion[2]
+runID <- "NB501086_0082_RDomaschenz_JCSMR_mRNAseq"
+
 # global variables --------------------------------------------------------
 if (refVersion == "hg38"){
   ensemblHost <- "mar2016.archive.ensembl.org"
@@ -145,10 +147,13 @@ if (all(sapply(annotationFileList, file.exists))){
 
 # load kallisto data with tximport and inspect via PCA -------------------------
 base_dir <- paste(pathPrefix, 
-                  "Data/Tremethick/Breast/RNA-Seq_run2/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/processed_data", 
+                  "Data/Tremethick/Breast/RNA-Seq_run2", 
+                  runID, 
+                  "processed_data",
                   annotationVersion, 
                   "kallisto",
                   sep = "/")
+
 sample_id <- dir(base_dir)
 kal_dirs <- sapply(sample_id, function(id) file.path(base_dir, id))
 #sample_id[c(1,2,7,8)] <- unlist(lapply(strsplit(sample_id[c(1,2,7,8)], "_"), function(x) paste(x[1], "wt", x[2], x[3], sep = "_")))
@@ -293,8 +298,6 @@ if(!file.exists(sleuth_resultsCompressed_file)){
 } else {
   load(sleuth_resultsCompressed_file)
 }
-
-
 
 # diagnostic boxplot of ERCC spike in RNA abundances ----------------------
 ERCCs <- resultsCompressed[["MCF10A_vs_shZ"]][["kallisto_table"]][grep("ERCC", resultsCompressed[["MCF10A_vs_shZ"]][["kallisto_table"]]$target_id),]
