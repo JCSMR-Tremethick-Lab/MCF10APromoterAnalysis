@@ -24,7 +24,9 @@ lDir <- function(x, y){
 # get snakemake run configuration -----------------------------------------
 runConfig <- jsonlite::fromJSON("~/Development/JCSMR-Tremethick-Lab/Breast/snakemake/configs/config_RNA-Seq.json")
 refVersion <- "hg19"
-runConfig$references[[refVersion]]$version
+annotationVersion <- runConfig$references[[refVersion]]$version
+annotationVersion <- annotationVersion[2]
+runID <- "NB501086_0082_RDomaschenz_JCSMR_mRNAseq"
 
 # global variables --------------------------------------------------------
 if (refVersion == "hg38"){
@@ -52,24 +54,27 @@ options(mc.cores = cpus)
 setwd(lDir(pathPrefix, 
            "Data/Tremethick/Breast/RNA-Seq_run2/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/R_Analysis/"))
 devPath <- "~/Development"
-
+annotationDataPath <- "~/Data/Tremethick/Breast/RNA-Seq_run2/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/R_Analysis/"
 
 # read in data ------------------------------------------------------------
 dataPath <- lDir(pathPrefix, 
-                 paste("Data/Tremethick/Breast/RNA-Seq_run2/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/processed_data/",runConfig$references[[refVersion]]$version,"/HTSeq/count/", sep = ""))
+                 paste("Data/Tremethick/Breast/RNA-Seq_run2/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/processed_data/", 
+                       annotationVersion,
+                       "/HTSeq/count/", sep = ""))
 files <- list.files(path = dataPath, full.names = T)
 names(files) <- list.files(path = dataPath, full.names = F)
 
 # preparing annotation data from Ensembl ----------------------------------
-ensGenes_file <- paste("ensGenes_", runConfig$references[[refVersion]]$version, ".rda", sep = "")
-ensTranscripts_file <- paste("ensTranscripts_", runConfig$references[[refVersion]]$version, ".rda", sep = "")
-t2g_file <- paste("t2g_", runConfig$references[[refVersion]]$version, ".rda", sep = "")
-myLength_file <- paste("mylength_", runConfig$references[[refVersion]]$version, ".rda", sep = "")
-myGC_file <- paste("myGC_", runConfig$references[[refVersion]]$version, ".rda", sep = "")
-myBiotypes_file <- paste("myBiotypes_", runConfig$references[[refVersion]]$version, ".rda", sep = "")
-myChroms_file <- paste("myChroms_", runConfig$references[[refVersion]]$version, ".rda", sep = "")
+ensGenes_file <- paste(annotationDataPath, "ensGenes_", annotationVersion, ".rda", sep = "")
+ensTranscripts_file <- paste(annotationDataPath, "ensTranscripts_", annotationVersion, ".rda", sep = "")
+t2g_file <- paste(annotationDataPath, "t2g_", annotationVersion, ".rda", sep = "")
+myLength_file <- paste(annotationDataPath, "mylength_", annotationVersion, ".rda", sep = "")
+myGC_file <- paste(annotationDataPath, "myGC_", annotationVersion, ".rda", sep = "")
+myBiotypes_file <- paste(annotationDataPath, "myBiotypes_", annotationVersion, ".rda", sep = "")
+myChroms_file <- paste(annotationDataPath, "myChroms_", annotationVersion, ".rda", sep = "")
+annotationFileList <- list(ensGenes_file, ensTranscripts_file, t2g_file, myLength_file, myGC_file, myBiotypes_file, myChroms_file) 
 
-if (!file.exists(ensGenes_file)){
+if (all(sapply(annotationFileList, file.exists))){
   mart <- biomaRt::useEnsembl(biomart = biomart, dataset = dataset, host = ensemblHost)
   attribs <- biomaRt::listAttributes(mart)
   ensGenes <- biomaRt::getBM(attributes = c("ensembl_gene_id",
@@ -104,7 +109,7 @@ if (!file.exists(ensGenes_file)){
                             "version", 
                             "transcript_version")]
   t2g <- dplyr::rename(t2g, target_id = ensembl_transcript_id, ens_gene = ensembl_gene_id, ext_gene = external_gene_name)
-  if(refVersion == "hg19"){
+  if(length(grep("ERCC", ensGenes_file)) > 0){
     erccGenes <- import("~/Data/References/Transcriptomes/ERCC/ERCC92.gtf")
     erccGenes <- data.frame(target_id = erccGenes$gene_id, 
                             ens_gene = erccGenes$gene_id, 
@@ -129,7 +134,7 @@ if (!file.exists(ensGenes_file)){
   names(mybiotypes) <- ensGenes$ensembl_gene_id
   save(mybiotypes, file = myBiotypes_file)
   mychroms <- data.frame(Chr = ensGenes$chromosome_name, GeneStart = ensGenes$start_position, GeneEnd = ensGenes$end_position)
-  save(mychroms, file =myChroms_file)
+  save(mychroms, file = myChroms_file)
   } else {
   load(ensGenes_file)
   load(ensTranscripts_file)
@@ -142,10 +147,13 @@ if (!file.exists(ensGenes_file)){
 
 # load kallisto data with tximport and inspect via PCA -------------------------
 base_dir <- paste(pathPrefix, 
-                  "Data/Tremethick/Breast/RNA-Seq_run2/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/processed_data", 
-                  runConfig$references[[refVersion]]$version, 
+                  "Data/Tremethick/Breast/RNA-Seq_run2", 
+                  runID, 
+                  "processed_data",
+                  annotationVersion, 
                   "kallisto",
                   sep = "/")
+
 sample_id <- dir(base_dir)
 kal_dirs <- sapply(sample_id, function(id) file.path(base_dir, id))
 #sample_id[c(1,2,7,8)] <- unlist(lapply(strsplit(sample_id[c(1,2,7,8)], "_"), function(x) paste(x[1], "wt", x[2], x[3], sep = "_")))
@@ -163,20 +171,29 @@ txi <- tximport::tximport(files,
                           reader = read_tsv)
 # perform PCA for first inspection of data --------------------------------
 sd1 <- apply(txi$abundance, 1, sd)
+summary(sd1)
 # treat D6 and D8 samples separately
 pcaD6 <- ade4::dudi.pca(t(txi$abundance[sd1 > 3, grep("D6", colnames(txi$abundance))]), scannf = F, nf = 6)
-ade4::s.arrow(pcaD6$li)
+pdf(paste("PCA_MCF10A_wt_vs_TGFb_", annotationVersion, ".pdf", sep = ""))
+ade4::s.arrow(pcaD6$li) # should remove MCF10AD6_3
 ade4::s.class(pcaD6$li, fac = as.factor(condition[grep("D6", names(condition))]))
+dev.off()
 
 pcaD8 <- ade4::dudi.pca(t(txi$abundance[sd1 > 3, grep("D8", colnames(txi$abundance))]), scannf = F, nf = 6)
-ade4::s.arrow(pcaD8$li)
+pdf(paste("PCA_MCF10A_wt_vs_shZ_", annotationVersion, ".pdf", sep = ""))
+ade4::s.arrow(pcaD8$li) # should remove MCF10AD8_1
 ade4::s.class(pcaD8$li, fac = as.factor(condition[grep("D8", names(condition))]))
+dev.off()
 
-
+# PCA shows that there is a WT sample at each timepoint with outlier behaviour
+quarantinedSamples <- c("MCF10AD8_1", "MCF10AD6_3")
 # prepare sample to condition table for sleuth processing -----------------
 s2c <- data.frame(sample = sample_id, condition = condition)
 s2c <- dplyr::mutate(s2c, path = kal_dirs)
 s2c$sample <- as.character(s2c$sample)
+# remove the quarantined samples
+selected <- ! s2c$sample %in% quarantinedSamples
+s2c <- s2c[selected,]
 # make separate sets for different contrasts for shZ and TGFb
 s2c.mcf10a_vs_mcf10a_shZ <- s2c[grep("D8", s2c$sample),]
 s2c.mcf10a_vs_mcf10a_shZ$condition <- droplevels(s2c.mcf10a_vs_mcf10a_shZ$condition)
@@ -191,7 +208,8 @@ s2c.list <- list(MCF10A_vs_shZ = s2c.mcf10a_vs_mcf10a_shZ,
 
 ################################################################################
 # actual processing using sleuth------------------------------------------------
-sleuth_results_output <- paste("sleuthResults_", runConfig$references[[refVersion]]$version, ".rda", sep = "")
+analysis_version <- 2
+sleuth_results_output <- paste("sleuthResults_", annotationVersion, "_V", analysis_version, ".rda", sep = "")
 
 if(!file.exists(sleuth_results_output)){
   results <- lapply(names(s2c.list), function(x){
@@ -260,7 +278,7 @@ if(!file.exists(sleuth_results_output)){
 
 # re-formatting of list object --------------------------------------------
 
-sleuth_resultsCompressed_file <- paste("sleuthResultsCompressed_", runConfig$references[[refVersion]]$version, ".rda", sep = "")
+sleuth_resultsCompressed_file <- paste("sleuthResultsCompressed_", annotationVersion, "_V", analysis_version, ".rda", sep = "")
 
 if(!file.exists(sleuth_resultsCompressed_file)){
   resultsCompressed <- lapply(names(results), function(x){
@@ -271,18 +289,15 @@ if(!file.exists(sleuth_resultsCompressed_file)){
   resultsCompressed <- lapply(names(resultsCompressed), function(x){
     resultsCompressed[[x]][grep("kallisto_pca", names(resultsCompressed[[x]]), invert = T)]
   })
-  names(resultsCompressed) <- names(results)
+  resultsCompressed <- lapply(names(resultsCompressed), function(x) {
+    resultsCompressed[[x]]$kallisto_table_wide <- resultsCompressed[[x]]$kallisto_table_wide[, c("target_id", s2c.list[[x]]$sample)]
+    return(resultsCompressed[[x]])
+  names(resultsCompressed) <- names(s2c.list)
   save(resultsCompressed, file = sleuth_resultsCompressed_file)
+  })
 } else {
   load(sleuth_resultsCompressed_file)
 }
-
-resultsCompressed <- lapply(names(resultsCompressed), function(x) {
-  resultsCompressed[[x]]$kallisto_table_wide <- resultsCompressed[[x]]$kallisto_table_wide[, c("target_id", s2c.list[[x]]$sample)]
-  return(resultsCompressed[[x]])
-})
-names(resultsCompressed) <- names(s2c.list)
-
 
 # diagnostic boxplot of ERCC spike in RNA abundances ----------------------
 ERCCs <- resultsCompressed[["MCF10A_vs_shZ"]][["kallisto_table"]][grep("ERCC", resultsCompressed[["MCF10A_vs_shZ"]][["kallisto_table"]]$target_id),]
@@ -304,7 +319,7 @@ tab1 <- resultsCompressed[[1]]$kallisto_table_genes
 
 tab3 <- as_tibble(merge(tab1, tab2[, c(1:3)], by.x = "ensembl_gene_id", by.y = "ensembl_gene_id", all.x = T))
 tab3 <- tab3[,c(1:9, 19:20, 10:18)]
-tab_exportFile <- paste("MCF10A_RNA-Seq_run2_results_", runConfig$references[[refVersion]]$version, ".csv", sep = "")
+tab_exportFile <- paste("MCF10A_RNA-Seq_run2_results_", annotationVersion, ".csv", sep = "")
 write.csv(tab3, tab_exportFile)
 tab3 <- as.data.frame(tab3)
 
@@ -372,6 +387,8 @@ if(!file.exists("hsap.qPCRGenesTab.rda")){
   qPCRGeneList <- readLines(lDir(pathPrefix, "Data/Tremethick/EMT/ChIP-Seq/MDCK qPCR data/genelist.txt"))
   mart <- human <- useEnsembl(biomart = biomart, host = ensemblHost, dataset = dataset)
   hsap.qPCRGenesTab <- getBM(attributes = c("ensembl_gene_id", "hgnc_symbol"), filters = "hgnc_symbol", values = qPCRGeneList, mart = mart)
+  keep <- grep("ENSG", hsap.qPCRGenesTab$ensembl_gene_id)
+  hsap.qPCRGenesTab <- hsap.qPCRGenesTab[keep,]
   save(hsap.qPCRGenesTab, file = "hsap.qPCRGenesTab.rda")
 } else {
   load("hsap.qPCRGenesTab.rda")
