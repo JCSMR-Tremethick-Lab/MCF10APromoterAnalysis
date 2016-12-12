@@ -15,10 +15,10 @@ For usage, include this in your workflow.
 rule cutadapt_pe:
     """Trims given paired-end reads with given parameters"""
     params:
-        trim_params = config["trim_params"],
+        trim_params = config["program_parameters"]["cutadapt"]["trim_params"],
         trim_data = config["trim_dir"],
         raw_data = config["raw_dir"],
-        cutadapt_dir = config["cutadapt_dir"]
+        cutadapt_dir = home + config["cutadapt_dir"]
     input:
         read1 = lambda wildcards: "RNA-Seq" + "/" + wildcards.runID + "/fastq/" + config["samples"][wildcards.assayID][wildcards.unit][0],
         read2 = lambda wildcards: "RNA-Seq" + "/" + wildcards.runID + "/fastq/" + config["samples"][wildcards.assayID][wildcards.unit][1]
