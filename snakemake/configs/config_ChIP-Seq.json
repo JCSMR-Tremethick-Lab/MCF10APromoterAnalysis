@@ -104,8 +104,9 @@
   "temp_dir" : "temp_data",
   "alignment_quality" : "20",
   "raw_dir" : "fastq",
-  "cutadapt_dir" : "/home/sebastian/miniconda3/envs/snakemake/bin",
-  "deepTools_dir" : "/home/sebastian/miniconda3/envs/deepTools/bin",
-  "HTSeq_dir" : "/home/sebastian/miniconda3/envs/py27/bin",
-  "DEXSeq_dir" : "/home/sebastian/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/"
+  "cutadapt_dir" : "/miniconda3/envs/snakemake/bin",
+  "deepTools_dir" : "/miniconda3/envs/deepTools/bin",
+  "HTSeq_dir" : "/miniconda3/envs/py27/bin",
+  "DEXSeq_dir" : "/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/",
+  "picard" : "/bin/picard.jar"
 }
