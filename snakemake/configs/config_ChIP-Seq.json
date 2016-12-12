@@ -39,21 +39,24 @@
   },
   "samples" :
   {
-    "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq" :
+    "ChIP-Seq" :
     {
-      "H2AZ_TGFb_10A_high_rep1" : ["H2AZ_TGFb_10A_high_rep1/Florida_9_S4_R1_001.fastq.gz", "/H2AZ_TGFb_10A_high_rep1/Florida_9_S4_R2_001.fastq.gz"],
-      "H2AZ_TGFb_10A_high_rep2" : ["H2AZ_TGFb_10A_high_rep2/Florida_10_S5_R1_001.fastq.gz", "H2AZ_TGFb_10A_high_rep2/Florida_10_S5_R2_001.fastq.gz"],
-      "Inp_TGFb_10A_high_rep2" : ["Inp_TGFb_10A_high_rep2/Florida_8_S3_R1_001.fastq.gz", "Inp_TGFb_10A_high_rep2/Florida_8_S3_R2_001.fastq.gz"],
-      "Inp_shZ_10A_high_rep1" : ["Inp_shZ_10A_high_rep1/Florida_6_S1_R1_001.fastq.gz", "Inp_shZ_10A_high_rep1/Florida_6_S1_R1_001.fastq.gz"],
-      "Inp_shZ_10A_high_rep2" : ["Inp_shZ_10A_high_rep2/Florida_7_S2_R1_001.fastq.gz", "Inp_shZ_10A_high_rep2/Florida_7_S2_R2_001.fastq.gz"]
-    },
-    "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq" :
-    {
-      "H2AZ_10A_high_rep1" : ["H2AZ_10A_high_rep1/Florida_2_S2_R1_001.fastq.gz", "H2AZ_10A_high_rep1/Florida_2_S2_R2_001.fastq.gz"],
-      "H2AZ_10A_high_rep2" : ["H2AZ_10A_high_rep2/Florida_4_S4_R1_001.fastq.gz", "H2AZ_10A_high_rep2/Florida_4_S4_R2_001.fastq.gz"],
-      "Inp_10A_TGFb_high_rep1" : ["Inp_10A_TGFb_high_rep1/Florida_5_S5_R1_001.fastq.gz", "Inp_10A_TGFb_high_rep1/Florida_5_S5_R2_001.fastq.gz"],
-      "Inp_10A_WT_high_rep1" : ["Inp_10A_high_rep1/Florida_1_S1_R1_001.fastq.gz", "Inp_10A_high_rep1/Florida_1_S1_R2_001.fastq.gz"],
-      "Inp_10A_WT_high_rep2" : ["Inp_10A_high_rep2/Florida_3_S3_R1_001.fastq.gz", "Inp_10A_high_rep2/Florida_3_S3_R2_001.fastq.gz"]
+      "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq" :
+      {
+        "H2AZ_TGFb_10A_high_rep1" : ["H2AZ_TGFb_10A_high_rep1/Florida_9_S4_R1_001.fastq.gz", "/H2AZ_TGFb_10A_high_rep1/Florida_9_S4_R2_001.fastq.gz"],
+        "H2AZ_TGFb_10A_high_rep2" : ["H2AZ_TGFb_10A_high_rep2/Florida_10_S5_R1_001.fastq.gz", "H2AZ_TGFb_10A_high_rep2/Florida_10_S5_R2_001.fastq.gz"],
+        "Inp_TGFb_10A_high_rep2" : ["Inp_TGFb_10A_high_rep2/Florida_8_S3_R1_001.fastq.gz", "Inp_TGFb_10A_high_rep2/Florida_8_S3_R2_001.fastq.gz"],
+        "Inp_shZ_10A_high_rep1" : ["Inp_shZ_10A_high_rep1/Florida_6_S1_R1_001.fastq.gz", "Inp_shZ_10A_high_rep1/Florida_6_S1_R1_001.fastq.gz"],
+        "Inp_shZ_10A_high_rep2" : ["Inp_shZ_10A_high_rep2/Florida_7_S2_R1_001.fastq.gz", "Inp_shZ_10A_high_rep2/Florida_7_S2_R2_001.fastq.gz"]
+      },
+      "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq" :
+      {
+        "H2AZ_10A_high_rep1" : ["H2AZ_10A_high_rep1/Florida_2_S2_R1_001.fastq.gz", "H2AZ_10A_high_rep1/Florida_2_S2_R2_001.fastq.gz"],
+        "H2AZ_10A_high_rep2" : ["H2AZ_10A_high_rep2/Florida_4_S4_R1_001.fastq.gz", "H2AZ_10A_high_rep2/Florida_4_S4_R2_001.fastq.gz"],
+        "Inp_10A_TGFb_high_rep1" : ["Inp_10A_TGFb_high_rep1/Florida_5_S5_R1_001.fastq.gz", "Inp_10A_TGFb_high_rep1/Florida_5_S5_R2_001.fastq.gz"],
+        "Inp_10A_WT_high_rep1" : ["Inp_10A_high_rep1/Florida_1_S1_R1_001.fastq.gz", "Inp_10A_high_rep1/Florida_1_S1_R2_001.fastq.gz"],
+        "Inp_10A_WT_high_rep2" : ["Inp_10A_high_rep2/Florida_3_S3_R1_001.fastq.gz", "Inp_10A_high_rep2/Florida_3_S3_R2_001.fastq.gz"]
+      }
     }
   },
   "program_parameters" :
