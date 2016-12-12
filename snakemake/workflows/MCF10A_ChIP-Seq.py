@@ -24,6 +24,10 @@ include:
 include:
     include_prefix + "bam_processing.py"
 
+# define global variables such as reference version of genome so that it can be accessed
+# throughout the whole worfklow
+REF_GENOME = "hg19"
+
 rule run_cutadapt:
     input:
         expand("{assayID}/{runID}/{outdir}/{trim_data}/{unit}_{suffix}.QT.CA.fastq.gz",
@@ -47,7 +51,7 @@ rule all:
                assayID = "ChIP-Seq",
                runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
                outdir = config["processed_dir"],
-               reference_version = config["references"]["hg19"]["version"][0],
+               reference_version = config["references"][REF_GENOME]["version"][0],
                unit = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
                qual = config["alignment_quality"],
                suffix = ["bam", "bam.bai"]),
@@ -55,7 +59,7 @@ rule all:
                assayID = "ChIP-Seq",
                runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
                outdir = config["processed_dir"],
-               reference_version = config["references"]["hg19"]["version"][0],
+               reference_version = config["references"][REF_GENOME]["version"][0],
                unit = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
                qual = config["alignment_quality"],
                suffix = ["bam", "bam.bai"]),
@@ -63,7 +67,7 @@ rule all:
                assayID = "ChIP-Seq",
                runID = "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq",
                outdir = config["processed_dir"],
-               reference_version = config["references"]["hg19"]["version"][0],
+               reference_version = config["references"][REF_GENOME]["version"][0],
                unit = config["samples"]["ChIP-Seq"]["NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq"],
                qual = config["alignment_quality"],
                suffix = ["bam", "bam.bai"]),
@@ -71,7 +75,7 @@ rule all:
                assayID = "ChIP-Seq",
                runID = "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq",
                outdir = config["processed_dir"],
-               reference_version = config["references"]["hg19"]["version"][0],
+               reference_version = config["references"][REF_GENOME]["version"][0],
                unit = config["samples"]["ChIP-Seq"]["NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq"],
                qual = config["alignment_quality"],
                suffix = ["bam", "bam.bai"])
