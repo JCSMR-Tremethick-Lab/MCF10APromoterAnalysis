@@ -33,7 +33,7 @@ rule run_cutadapt:
                outdir = config["processed_dir"],
                trim_data = config["trim_dir"],
                unit = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
-               suffix = ["R1_001", "R2_001"])
+               suffix = ["R1_001", "R2_001"]),
         expand("{assayID}/{runID}/{outdir}/{trim_data}/{unit}_{suffix}.QT.CA.fastq.gz",
                assayID = "ChIP-Seq",
                runID = "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq",
@@ -59,7 +59,7 @@ rule all:
                reference_version = config["references"]["CanFam3.1"]["version"][0],
                unit = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
                qual = config["alignment_quality"],
-               suffix = ["bam", "bam.bai"])
+               suffix = ["bam", "bam.bai"]),
         expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_marked/{unit}.Q{qual}.sorted.MkDup.{suffix}",
                assayID = "ChIP-Seq",
                runID = "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq",
