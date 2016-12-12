@@ -17,9 +17,8 @@ wrapper_dir = home + "/Development/snakemake-wrappers/bio"
 
 include_prefix = home + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/rules/"
 
-# include:
-# include:
-#     include_prefix + "perform_cutadapt.py"
+include:
+   include_prefix + "perform_cutadapt.py"
 include:
     include_prefix + "run_bowtie2.py"
 include:
@@ -48,7 +47,7 @@ rule all:
                assayID = "ChIP-Seq",
                runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
                outdir = config["processed_dir"],
-               reference_version = config["references"]["CanFam3.1"]["version"][0],
+               reference_version = config["references"]["hg19"]["version"][0],
                unit = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
                qual = config["alignment_quality"],
                suffix = ["bam", "bam.bai"]),
@@ -56,7 +55,7 @@ rule all:
                assayID = "ChIP-Seq",
                runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
                outdir = config["processed_dir"],
-               reference_version = config["references"]["CanFam3.1"]["version"][0],
+               reference_version = config["references"]["hg19"]["version"][0],
                unit = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
                qual = config["alignment_quality"],
                suffix = ["bam", "bam.bai"]),
@@ -64,7 +63,7 @@ rule all:
                assayID = "ChIP-Seq",
                runID = "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq",
                outdir = config["processed_dir"],
-               reference_version = config["references"]["CanFam3.1"]["version"][0],
+               reference_version = config["references"]["hg19"]["version"][0],
                unit = config["samples"]["ChIP-Seq"]["NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq"],
                qual = config["alignment_quality"],
                suffix = ["bam", "bam.bai"]),
@@ -72,7 +71,7 @@ rule all:
                assayID = "ChIP-Seq",
                runID = "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq",
                outdir = config["processed_dir"],
-               reference_version = config["references"]["CanFam3.1"]["version"][0],
+               reference_version = config["references"]["hg19"]["version"][0],
                unit = config["samples"]["ChIP-Seq"]["NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq"],
                qual = config["alignment_quality"],
                suffix = ["bam", "bam.bai"])
