@@ -26,7 +26,7 @@ include:
 
 # define global variables such as reference version of genome so that it can be accessed
 # throughout the whole worfklow
-REF_GENOME = config["references"][1]
+REF_GENOME = config["references"]["genomes"][1]
 
 rule run_cutadapt:
     input:

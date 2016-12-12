@@ -18,7 +18,7 @@ from snakemake.exceptions import MissingInputException
 
 # set local variables
 home = os.environ['HOME']
-REF_GENOME = config["references"][1]
+REF_GENOME = config["references"]["genomes"][1]
 
 rule bowtie2_pe:
     params:

@@ -1,6 +1,7 @@
 {
   "references" :
   {
+  "genomes" : ["hg38", "hg19"],
   "hg38" :
     {
       "version" : "GRCh38_ensembl84_ERCC",
