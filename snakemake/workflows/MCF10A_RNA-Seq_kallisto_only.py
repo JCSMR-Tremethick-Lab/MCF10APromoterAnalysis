@@ -30,19 +30,3 @@ rule run_kallisto:
                outdir = config["processed_dir"],
                reference_version = config["references"]["hg19"]["version"],
                unit = config["samples"]["RNA-Seq_run2"])
-
-rule all:
-    input:
-        # second run
-        expand("{assayID}/{runID}/{outdir}/{trim_data}/{unit}_{suffix}.QT.CA.fastq.gz",
-               assayID = "RNA-Seq_run2",
-               runID = "NB501086_0082_RDomaschenz_JCSMR_mRNAseq",
-               outdir = config["processed_dir"],
-               trim_data = config["trim_dir"],
-               unit = config["samples"]["RNA-Seq_run2"],
-               suffix = ["R1_001", "R2_001"]),
-        expand("{assayID}/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/{outdir}/{reference_version}/kallisto/{unit}",
-               assayID = "RNA-Seq_run2",
-               outdir = config["processed_dir"],
-               reference_version = config["references"]["hg19"]["version"],
-               unit = config["samples"]["RNA-Seq_run2"])
