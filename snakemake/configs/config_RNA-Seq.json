@@ -17,7 +17,7 @@
     },
   "hg19" :
     {
-    "version" : ["GRCh37_hg19_ensembl75_ERCC", "GRCh37_hg19_ensembl75", "GRCh37_hg19_UCSC"],
+    "version" : ["GRCh37_hg19_ensembl75_ERCC", "GRCh37_hg19_ensembl75", "GRCh37_hg19_UCSC", "GRCh37_hg19_UCSC_ERCC"],
     "genome" :
       {
         "GRCh37_hg19_ensembl75_ERCC" : "/home/sebastian/Data/References/Genomes/Homo_sapiens/GRCh37_hg19_ensembl75/primary/Homo_sapiens.GRCh37.75.dna.primary_assembly.fa",
@@ -34,7 +34,8 @@
       {
         "GRCh37_hg19_ensembl75_ERCC" : "/home/sebastian/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_ensembl75/GRCh37_hg19_ensembl75_ERCC.ki",
         "GRCh37_hg19_ensembl75" : "/home/sebastian/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_ensembl75/GRCh37_hg19_ensembl75.ki",
-        "GRCh37_hg19_UCSC" : "/home/sebastian/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_UCSC/GRCh37_hg19_UCSC.ki"
+        "GRCh37_hg19_UCSC" : "/home/sebastian/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_UCSC/GRCh37_hg19_UCSC.ki",
+        "GRCh37_hg19_UCSC_ERCC" : "/home/sebastian/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_UCSC/GRCh37_hg19_UCSC_ERCC.ki"
       },
     "STAR" :
       {
