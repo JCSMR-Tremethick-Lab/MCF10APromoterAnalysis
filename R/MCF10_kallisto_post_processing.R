@@ -23,6 +23,7 @@ lDir <- function(x, y){
 
 # get snakemake run configuration -----------------------------------------
 runConfig <- jsonlite::fromJSON("~/Development/JCSMR-Tremethick-Lab/Breast/snakemake/configs/config_RNA-Seq.json")
+runNo <- names(runConfig$samples)[2]
 refVersion <- "hg19"
 annotationVersion <- runConfig$references[[refVersion]]$version
 annotationVersion <- annotationVersion[2]
@@ -52,13 +53,21 @@ if (amILocal("JCSMR027564ML")){
 options(mc.cores = cpus)
 
 setwd(lDir(pathPrefix, 
-           "Data/Tremethick/Breast/RNA-Seq_run2/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/R_Analysis/"))
+           paste("Data/Tremethick/Breast/", runNo,"/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/R_Analysis/", sep = "")))
 devPath <- "~/Development"
-annotationDataPath <- "~/Data/Tremethick/Breast/RNA-Seq_run2/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/R_Analysis/"
+annotationDataPath <- paste("~/Data/Tremethick/Breast/", runNo,"/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/R_Analysis/", sep = "")
+
+
+# file names for data output  ---------------------------------------------
+analysis_version <- 2
+sleuth_results_output <- paste("sleuthResults_", annotationVersion, "_V", analysis_version, ".rda", sep = "")
+sleuth_resultsCompressed_file <- paste("sleuthResultsCompressed_", annotationVersion, "_V", analysis_version, ".rda", sep = "")
 
 # read in data ------------------------------------------------------------
 dataPath <- lDir(pathPrefix, 
-                 paste("Data/Tremethick/Breast/RNA-Seq_run2/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/processed_data/", 
+                 paste("Data/Tremethick/Breast/",
+                       runNo,
+                       "/NB501086_0082_RDomaschenz_JCSMR_mRNAseq/processed_data/", 
                        annotationVersion,
                        "/HTSeq/count/", sep = ""))
 files <- list.files(path = dataPath, full.names = T)
@@ -147,7 +156,8 @@ if (all(sapply(annotationFileList, file.exists))){
 
 # load kallisto data with tximport and inspect via PCA -------------------------
 base_dir <- paste(pathPrefix, 
-                  "Data/Tremethick/Breast/RNA-Seq_run2", 
+                  "Data/Tremethick/Breast",
+                  runNo, 
                   runID, 
                   "processed_data",
                   annotationVersion, 
@@ -208,9 +218,6 @@ s2c.list <- list(MCF10A_vs_shZ = s2c.mcf10a_vs_mcf10a_shZ,
 
 ################################################################################
 # actual processing using sleuth------------------------------------------------
-analysis_version <- 2
-sleuth_results_output <- paste("sleuthResults_", annotationVersion, "_V", analysis_version, ".rda", sep = "")
-
 if(!file.exists(sleuth_results_output)){
   results <- lapply(names(s2c.list), function(x){
     design <- model.matrix(~ condition, data = s2c.list[[x]])
@@ -277,9 +284,6 @@ if(!file.exists(sleuth_results_output)){
 }
 
 # re-formatting of list object --------------------------------------------
-
-sleuth_resultsCompressed_file <- paste("sleuthResultsCompressed_", annotationVersion, "_V", analysis_version, ".rda", sep = "")
-
 if(!file.exists(sleuth_resultsCompressed_file)){
   resultsCompressed <- lapply(names(results), function(x){
     results[[x]][grep("sleuth_object", names(results[[x]]), invert = T)]
