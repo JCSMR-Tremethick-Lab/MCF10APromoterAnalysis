@@ -19,7 +19,7 @@ from snakemake.exceptions import MissingInputException
 # set local variables
 home = os.environ['HOME']
 REF_GENOME = config["references"]["genomes"][1]
-REF_VERSION = config["references"][REF_GENOME]["version"][1]
+REF_VERSION = config["references"][REF_GENOME]["version"][0]
 
 rule bowtie2_pe:
     version:
