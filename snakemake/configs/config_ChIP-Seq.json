@@ -14,6 +14,10 @@
       "STAR" :
       {
         "GRCh38_ensembl84_ERCC" : "/Data/References/Transcriptomes/Homo_sapiens/GRCh38_ensembl84/STAR_Index_ERCC"
+      },
+      "bowtie2" :
+      {
+        "GRCh38_ensembl84_ERCC" : "/Data/References/Genomes/Homo_sapiens/GRCh38_ensembl84/primary/Homo_sapiens.GRCh38.dna.primary_assembly"
       }
     },
   "hg19" :
@@ -34,6 +38,10 @@
       {
         "GRCh37_hg19_ensembl75_ERCC" : "/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_ensembl75/STAR_Index_ERCC",
         "GRCh37_hg19_ensembl75" : "/Data/References/Transcriptomes/Homo_sapiens/GRCh37_hg19_ensembl75/STAR_Index"
+      },
+      "bowtie2" :
+      {
+        "GRCh37_hg19_ensembl75_ERCC" : "/Data/References/Genomes/Homo_sapiens/GRCh37_hg19_ensembl75/primary/Homo_sapiens.GRCh37.75.dna.primary_assembly"
       }
     }
   },

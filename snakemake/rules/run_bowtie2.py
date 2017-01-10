@@ -19,12 +19,15 @@ from snakemake.exceptions import MissingInputException
 # set local variables
 home = os.environ['HOME']
 REF_GENOME = config["references"]["genomes"][1]
+REF_VERSION = config["references"][REF_GENOME]["version"][1]
 
 rule bowtie2_pe:
+    version:
+        "0.2"
     params:
         threads = config["program_parameters"]["bt2_params"]["threads"],
         max_in = config["program_parameters"]["bt2_params"]["max_insert"],
-        bt2_index = home + config["references"][REF_GENOME]["genome"]
+        bt2_index = home + config["references"][REF_GENOME]["bowtie2"][REF_VERSION]
     input:
         read1="{assayID}/{runID}/{outdir}/trimmed_data/{unit}_R1_001.QT.CA.fastq.gz",
         read2="{assayID}/{runID}/{outdir}/trimmed_data/{unit}_R2_001.QT.CA.fastq.gz"
@@ -121,13 +124,13 @@ rule cutadapt_pe_unmapped:
 
 rule bowtie2_pe_unmapped_reads:
     version:
-        "0.1"
+        "0.2"
     message:
         "Running second round of bowtie2 alignments on previously unmapped reads..."
     params:
         threads = config["program_parameters"]["bt2_params"]["threads"],
         max_in = config["program_parameters"]["bt2_params"]["max_insert"],
-        bt2_index = home + config["references"][REF_GENOME]["genome"]
+        bt2_index = home + config["references"][REF_GENOME]["bowtie2"][REF_VERSION]
     input:
         rules.cutadapt_pe_unmapped.output
     output:
