@@ -17,8 +17,8 @@ wrapper_dir = home + "/Development/snakemake-wrappers/bio"
 
 include_prefix = home + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/rules/"
 
-include:
-   include_prefix + "perform_cutadapt.py"
+# include:
+#    include_prefix + "perform_cutadapt.py"
 include:
     include_prefix + "run_bowtie2.py"
 include:
