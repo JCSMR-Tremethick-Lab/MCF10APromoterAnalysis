@@ -28,7 +28,7 @@ rule bowtie2_pe:
         max_in = config["program_parameters"]["bt2_params"]["max_insert"],
         bt2_index = home + config["references"][REF_GENOME]["bowtie2"][REF_VERSION]
     threads:
-        lambda wildcards: config["program_parameters"]["bt2_params"]["threads"]
+        lambda wildcards: int(config["program_parameters"]["bt2_params"]["threads"])
     input:
         read1="{assayID}/{runID}/{outdir}/trimmed_data/{unit}_R1_001.QT.CA.fastq.gz",
         read2="{assayID}/{runID}/{outdir}/trimmed_data/{unit}_R2_001.QT.CA.fastq.gz"
