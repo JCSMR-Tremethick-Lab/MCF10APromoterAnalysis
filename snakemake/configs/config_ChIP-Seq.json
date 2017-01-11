@@ -86,7 +86,7 @@
     "bt2_params_unmapped_reads" :
     {
         "max_insert" : ["1000000"],
-        "threads" : ["7"],
+        "threads" : "7",
         "platform" : ["Illumina"]
     },
 
