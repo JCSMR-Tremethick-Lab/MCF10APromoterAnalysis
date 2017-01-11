@@ -25,9 +25,10 @@ rule bowtie2_pe:
     version:
         "0.2"
     params:
-        threads = config["program_parameters"]["bt2_params"]["threads"],
         max_in = config["program_parameters"]["bt2_params"]["max_insert"],
         bt2_index = home + config["references"][REF_GENOME]["bowtie2"][REF_VERSION]
+    threads:
+        config["program_parameters"]["bt2_params"]["threads"]
     input:
         read1="{assayID}/{runID}/{outdir}/trimmed_data/{unit}_R1_001.QT.CA.fastq.gz",
         read2="{assayID}/{runID}/{outdir}/trimmed_data/{unit}_R2_001.QT.CA.fastq.gz"
@@ -40,7 +41,7 @@ rule bowtie2_pe:
             --no-mixed \
             --no-discordant \
             --maxins {params.max_in} \
-            --threads {params.threads}\
+            --threads {threads}\
             --rg-id '{wildcards.unit}' \
             --rg 'LB:{wildcards.unit}' \
             --rg 'SM:{wildcards.unit}' \
@@ -128,9 +129,10 @@ rule bowtie2_pe_unmapped_reads:
     message:
         "Running second round of bowtie2 alignments on previously unmapped reads..."
     params:
-        threads = config["program_parameters"]["bt2_params"]["threads"],
         max_in = config["program_parameters"]["bt2_params"]["max_insert"],
         bt2_index = home + config["references"][REF_GENOME]["bowtie2"][REF_VERSION]
+    threads:
+        config["program_parameters"]["bt2_params"]["threads"]
     input:
         rules.cutadapt_pe_unmapped.output
     output:
@@ -140,7 +142,7 @@ rule bowtie2_pe_unmapped_reads:
             bowtie2 \
             -x {params.bt2_index}\
             --maxins {params.max_in} \
-            --threads {params.threads}\
+            --threads {threads}\
             --very-sensitive\
             --rg-id '{wildcards.unit}' \
             --rg 'LB:{wildcards.unit}' \
