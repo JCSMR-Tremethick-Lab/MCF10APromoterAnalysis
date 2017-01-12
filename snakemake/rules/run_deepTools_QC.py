@@ -57,7 +57,7 @@ rule multiBamSummary_deduplicated:
     params:
         deepTools_dir = home + config["deepTools_dir"],
         binSize = config["program_parameters"]["deepTools"]["binSize"],
-        labels = lambda wildcards: ' '.join("{!s}".format(key) for (key) in config["samples"]["ChIP-Seq"]["NB501086_0011_MNekrasov_MDCK_JCSMR_ChIPseq"].keys())
+        labels = lambda wildcards: ' '.join("{!s}".format(key) for (key) in config["samples"][wildcards.assaID][wildcards.runID].keys())
     threads:
         24
     input:
@@ -130,18 +130,26 @@ rule plotPCA:
 rule bamPEFragmentSize:
     params:
         deepTools_dir = home + config["deepTools_dir"],
-        labels = lambda wildcards: ' '.join("{!s}".format(key) for (key) in config["samples"]["ChIP-Seq"]["NB501086_0011_MNekrasov_MDCK_JCSMR_ChIPseq"].keys()),
+        labels = lambda wildcards: ' '.join("{!s}".format(key) for (key) in config["samples"][wildcards.assaID][wildcards.runID].keys()),
     threads:
         lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
     input:
-        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_marked/{unit}.Q{qual}.sorted.{suffix}",
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_marked/{unit}.Q{qual}.sorted.MkDup.{suffix}",
                assayID = "ChIP-Seq",
-               runID = "NB501086_0011_MNekrasov_MDCK_JCSMR_ChIPseq",
+               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
                outdir = config["processed_dir"],
-               reference_version = config["references"]["CanFam3.1"]["version"][0],
-               unit = config["samples"]["ChIP-Seq"]["NB501086_0011_MNekrasov_MDCK_JCSMR_ChIPseq"],
+               reference_version = config["references"][REF_GENOME]["version"][0],
+               unit = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
                qual = config["alignment_quality"],
-               suffix = "MkDup.bam")
+               suffix = ["bam", "bam.bai"]),
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_marked/{unit}.Q{qual}.sorted.MkDup.{suffix}",
+               assayID = "ChIP-Seq",
+               runID = "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq",
+               outdir = config["processed_dir"],
+               reference_version = config["references"][REF_GENOME]["version"][0],
+               unit = config["samples"]["ChIP-Seq"]["NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq"],
+               qual = config["alignment_quality"],
+               suffix = ["bam"])
     output:
         "{assayID}/{outdir}/{reference_version}/deepTools/bamPEFragmentSize/duplicates_marked/histogram_duplicates_marked.png"
     shell:
@@ -155,19 +163,27 @@ rule bamPEFragmentSize:
 rule bamPEFragmentSize_deduplicated:
     params:
         deepTools_dir = home + config["deepTools_dir"],
-        labels = lambda wildcards: ' '.join("{!s}".format(key) for (key) in config["samples"]["ChIP-Seq"]["NB501086_0011_MNekrasov_MDCK_JCSMR_ChIPseq"].keys()),
+        labels = lambda wildcards: ' '.join("{!s}".format(key) for (key) in config["samples"][wildcards.assaID][wildcards.runID].keys()),
         plotTitle = lambda wildcards: "BAM PE " + wildcards.duplicates + " fragment size"
     threads:
         lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
     input:
-        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_removed/{unit}.Q{qual}.sorted.{suffix}",
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_removed/{unit}.Q{qual}.sorted.DeDup.{suffix}",
                assayID = "ChIP-Seq",
-               runID = "NB501086_0011_MNekrasov_MDCK_JCSMR_ChIPseq",
+               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
                outdir = config["processed_dir"],
-               reference_version = config["references"]["CanFam3.1"]["version"][0],
-               unit = config["samples"]["ChIP-Seq"]["NB501086_0011_MNekrasov_MDCK_JCSMR_ChIPseq"],
+               reference_version = config["references"][REF_GENOME]["version"][0],
+               unit = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
                qual = config["alignment_quality"],
-               suffix = "DeDup.bam")
+               suffix = ["bam"]),
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_removed/{unit}.Q{qual}.sorted.DeDup.{suffix}",
+               assayID = "ChIP-Seq",
+               runID = "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq",
+               outdir = config["processed_dir"],
+               reference_version = config["references"][REF_GENOME]["version"][0],
+               unit = config["samples"]["ChIP-Seq"]["NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq"],
+               qual = config["alignment_quality"],
+               suffix = ["bam"])
     output:
         "{assayID}/{outdir}/{reference_version}/deepTools/bamPEFragmentSize/{duplicates}/histogram_duplicates_removed.png"
     shell:
@@ -186,14 +202,22 @@ rule plotFingerprint:
     threads:
         lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
     input:
-        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_marked/{unit}.Q{qual}.sorted.{suffix}",
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_marked/{unit}.Q{qual}.sorted.MkDup.{suffix}",
                assayID = "ChIP-Seq",
-               runID = "NB501086_0011_MNekrasov_MDCK_JCSMR_ChIPseq",
+               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
                outdir = config["processed_dir"],
-               reference_version = config["references"]["CanFam3.1"]["version"][0],
-               unit = config["samples"]["ChIP-Seq"]["NB501086_0011_MNekrasov_MDCK_JCSMR_ChIPseq"],
+               reference_version = config["references"][REF_GENOME]["version"][0],
+               unit = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
                qual = config["alignment_quality"],
-               suffix = "MkDup.bam")
+               suffix = ["bam", "bam.bai"]),
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_marked/{unit}.Q{qual}.sorted.MkDup.{suffix}",
+               assayID = "ChIP-Seq",
+               runID = "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq",
+               outdir = config["processed_dir"],
+               reference_version = config["references"][REF_GENOME]["version"][0],
+               unit = config["samples"]["ChIP-Seq"]["NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq"],
+               qual = config["alignment_quality"],
+               suffix = ["bam"])
     output:
         "{assayID}/{outdir}/{reference_version}/deepTools/plotFingerprint/{duplicates}/fingerprints_duplicates_marked.png"
     shell:
@@ -213,14 +237,22 @@ rule plotFingerprint_deduplicated:
     threads:
         lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
     input:
-        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_removed/{unit}.Q{qual}.sorted.{suffix}",
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_removed/{unit}.Q{qual}.sorted.DeDup.{suffix}",
                assayID = "ChIP-Seq",
-               runID = "NB501086_0011_MNekrasov_MDCK_JCSMR_ChIPseq",
+               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
                outdir = config["processed_dir"],
-               reference_version = config["references"]["CanFam3.1"]["version"][0],
-               unit = config["samples"]["ChIP-Seq"]["NB501086_0011_MNekrasov_MDCK_JCSMR_ChIPseq"],
+               reference_version = config["references"][REF_GENOME]["version"][0],
+               unit = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
                qual = config["alignment_quality"],
-               suffix = "DeDup.bam")
+               suffix = ["bam"]),
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_removed/{unit}.Q{qual}.sorted.DeDup.{suffix}",
+               assayID = "ChIP-Seq",
+               runID = "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq",
+               outdir = config["processed_dir"],
+               reference_version = config["references"][REF_GENOME]["version"][0],
+               unit = config["samples"]["ChIP-Seq"]["NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq"],
+               qual = config["alignment_quality"],
+               suffix = ["bam"])
     output:
         "{assayID}/{outdir}/{reference_version}/deepTools/plotFingerprint/{duplicates}/fingerprints_duplicates_removed.png"
     shell:
