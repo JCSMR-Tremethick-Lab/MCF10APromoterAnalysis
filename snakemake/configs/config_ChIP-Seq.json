@@ -94,7 +94,9 @@
     {
       "SES_sample_length" : ["1000"],
       "SES_numer_of_samples" : ["10000000.0"],
-      "ignoreForNormalization" : ["MT X"]
+      "ignoreForNormalization" : ["MT X"],
+      "binSize" : ["10000"],
+      "threads" : "4"
     },
     "picard_tools" :
     {
