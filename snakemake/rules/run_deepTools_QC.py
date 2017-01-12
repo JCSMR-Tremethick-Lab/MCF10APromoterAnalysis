@@ -95,7 +95,7 @@ rule plotCorrelation_heatmap:
         deepTools_dir = home + config["deepTools_dir"],
         plotTitle = lambda wildcards: "Correlation heatmap - " + wildcards.duplicates
     input:
-        npz = "{assayID}/{runID}/{outdir}/{reference_version}/deepTools/multiBamSummary/{duplicates}/results.npz"
+        npz = "{assayID}/{outdir}/{reference_version}/deepTools/multiBamSummary/{duplicates}/results.npz"
     output:
         "{assayID}/{outdir}/{reference_version}/deepTools/plotCorrelation/{duplicates}/heatmap_SpearmanCorr_readCounts.png",
         "{assayID}/{outdir}/{reference_version}/deepTools/plotCorrelation/{duplicates}/heatmap_SpearmanCorr_readCounts.tab"
@@ -117,7 +117,7 @@ rule plotPCA:
         deepTools_dir = home + config["deepTools_dir"],
         plotTitle = lambda wildcards: "PCA - " + wildcards.duplicates
     input:
-        npz = "{assayID}/{runID}/{outdir}/{reference_version}/deepTools/multiBamSummary/{duplicates}/results.npz"
+        npz = "{assayID}/{outdir}/{reference_version}/deepTools/multiBamSummary/{duplicates}/results.npz"
     output:
         "{assayID}/{outdir}/{reference_version}/deepTools/plotPCA/{duplicates}/PCA_readCounts.png"
     shell:
