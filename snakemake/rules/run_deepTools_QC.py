@@ -57,7 +57,7 @@ rule multiBamSummary_deduplicated:
     params:
         deepTools_dir = home + config["deepTools_dir"],
         binSize = config["program_parameters"]["deepTools"]["binSize"],
-        labels = lambda wildcards: ' '.join("{!s}".format(key) for (key) in config["samples"][wildcards.assaID][wildcards.runID].keys())
+        labels = lambda wildcards: ' '.join("{!s}".format(key) for (key) in config["samples"][wildcards.assayID][wildcards.runID].keys())
     threads:
         24
     input:
@@ -130,7 +130,7 @@ rule plotPCA:
 rule bamPEFragmentSize:
     params:
         deepTools_dir = home + config["deepTools_dir"],
-        labels = lambda wildcards: ' '.join("{!s}".format(key) for (key) in config["samples"][wildcards.assaID][wildcards.runID].keys()),
+        labels = lambda wildcards: ' '.join("{!s}".format(key) for (key) in config["samples"][wildcards.assayID][wildcards.runID].keys()),
     threads:
         lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
     input:
@@ -163,7 +163,7 @@ rule bamPEFragmentSize:
 rule bamPEFragmentSize_deduplicated:
     params:
         deepTools_dir = home + config["deepTools_dir"],
-        labels = lambda wildcards: ' '.join("{!s}".format(key) for (key) in config["samples"][wildcards.assaID][wildcards.runID].keys()),
+        labels = lambda wildcards: ' '.join("{!s}".format(key) for (key) in config["samples"][wildcards.assayID][wildcards.runID].keys()),
         plotTitle = lambda wildcards: "BAM PE " + wildcards.duplicates + " fragment size"
     threads:
         lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
