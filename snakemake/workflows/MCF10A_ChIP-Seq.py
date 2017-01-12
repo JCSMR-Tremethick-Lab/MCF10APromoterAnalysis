@@ -67,7 +67,7 @@ rule deepTools_QC:
                runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
                outdir = config["processed_dir"],
                reference_version = config["references"]["CanFam3.1"]["version"][0],
-               duplicates = ["duplicates_marked"])
+               duplicates = ["duplicates_marked"]),
         expand("{assayID}/{outdir}/{reference_version}/deepTools/bamPEFragmentSize/{duplicates}/histogram_{duplicates}.png",
                assayID = "ChIP-Seq",
                runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
@@ -82,7 +82,7 @@ rule deepTools_QC_deduplicated:
                runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
                outdir = config["processed_dir"],
                reference_version = config["references"]["CanFam3.1"]["version"][0],
-               duplicates = ["duplicates_removed"])
+               duplicates = ["duplicates_removed"]),
         expand("{assayID}/{outdir}/{reference_version}/deepTools/bamPEFragmentSize/{duplicates}/histogram_{duplicates}.png",
                assayID = "ChIP-Seq",
                runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
