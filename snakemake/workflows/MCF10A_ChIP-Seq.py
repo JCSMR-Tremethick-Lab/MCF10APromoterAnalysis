@@ -23,6 +23,8 @@ include:
     include_prefix + "run_bowtie2.py"
 include:
     include_prefix + "bam_processing.py"
+include:
+    include_prefix + "run_deepTools_QC.py"
 
 # define global variables such as reference version of genome so that it can be accessed
 # throughout the whole worfklow
@@ -45,17 +47,53 @@ rule run_cutadapt:
                unit = config["samples"]["ChIP-Seq"]["NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq"],
                suffix = ["R1_001", "R2_001"])
 
-rule all:
+rule deepTools_QC:
     input:
-        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_marked/{unit}.Q{qual}.sorted.MkDup.{suffix}",
+        expand("{assayID}/{outdir}/{reference_version}/deepTools/plotCorrelation/{duplicates}/heatmap_SpearmanCorr_readCounts.{suffix}",
                assayID = "ChIP-Seq",
                runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
                outdir = config["processed_dir"],
-               reference_version = config["references"][REF_GENOME]["version"][0],
-               unit = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
-               qual = config["alignment_quality"],
-               suffix = ["bam", "bam.bai"]),
-        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_removed/{unit}.Q{qual}.sorted.DeDup.{suffix}",
+               reference_version = config["references"]["CanFam3.1"]["version"][0],
+               duplicates = ["duplicates_marked", "duplicates_removed"],
+               suffix = ["png", "tab"]),
+        expand("{assayID}/{outdir}/{reference_version}/deepTools/plotPCA/{duplicates}/PCA_readCounts.png",
+               assayID = "ChIP-Seq",
+               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
+               outdir = config["processed_dir"],
+               reference_version = config["references"]["CanFam3.1"]["version"][0],
+               duplicates = ["duplicates_marked", "duplicates_removed"]),
+        expand("{assayID}/{outdir}/{reference_version}/deepTools/plotFingerprint/{duplicates}/fingerprints_{duplicates}.png",
+               assayID = "ChIP-Seq",
+               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
+               outdir = config["processed_dir"],
+               reference_version = config["references"]["CanFam3.1"]["version"][0],
+               duplicates = ["duplicates_marked"])
+        expand("{assayID}/{outdir}/{reference_version}/deepTools/bamPEFragmentSize/{duplicates}/histogram_{duplicates}.png",
+               assayID = "ChIP-Seq",
+               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
+               outdir = config["processed_dir"],
+               reference_version = config["references"]["CanFam3.1"]["version"][0],
+               duplicates = ["duplicates_marked"])
+
+rule deepTools_QC_deduplicated:
+    input:
+        expand("{assayID}/{outdir}/{reference_version}/deepTools/plotFingerprint/{duplicates}/fingerprints_{duplicates}.png",
+               assayID = "ChIP-Seq",
+               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
+               outdir = config["processed_dir"],
+               reference_version = config["references"]["CanFam3.1"]["version"][0],
+               duplicates = ["duplicates_removed"])
+        expand("{assayID}/{outdir}/{reference_version}/deepTools/bamPEFragmentSize/{duplicates}/histogram_{duplicates}.png",
+               assayID = "ChIP-Seq",
+               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
+               outdir = config["processed_dir"],
+               reference_version = config["references"]["CanFam3.1"]["version"][0],
+               duplicates = ["duplicates_removed"])
+
+
+rule all:
+    input:
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_marked/{unit}.Q{qual}.sorted.MkDup.{suffix}",
                assayID = "ChIP-Seq",
                runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
                outdir = config["processed_dir"],
@@ -69,6 +107,14 @@ rule all:
                outdir = config["processed_dir"],
                reference_version = config["references"][REF_GENOME]["version"][0],
                unit = config["samples"]["ChIP-Seq"]["NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq"],
+               qual = config["alignment_quality"],
+               suffix = ["bam", "bam.bai"]),
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_removed/{unit}.Q{qual}.sorted.DeDup.{suffix}",
+               assayID = "ChIP-Seq",
+               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
+               outdir = config["processed_dir"],
+               reference_version = config["references"][REF_GENOME]["version"][0],
+               unit = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
                qual = config["alignment_quality"],
                suffix = ["bam", "bam.bai"]),
         expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_removed/{unit}.Q{qual}.sorted.DeDup.{suffix}",
