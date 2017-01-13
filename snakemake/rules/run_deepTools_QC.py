@@ -15,12 +15,16 @@ For usage, include this in your workflow.
 
 # global functions
 def get_sample_labels(wildcards):
-    fn = []
+    sl = []
+    slt = []
     runIDs = config["samples"][wildcards.assayID].keys()
     for i in runIDs:
         for k in config["samples"][wildcards.assayID][i].keys():
-            fn.append(k)
-    return(fn)
+            sl.append(k)
+            return(sl)
+        slt = slt.append(sl)
+    return(slt)
+
 
 rule multiBamSummary:
     version:
