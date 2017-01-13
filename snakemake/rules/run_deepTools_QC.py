@@ -28,7 +28,7 @@ rule multiBamSummary:
     params:
         deepTools_dir = home + config["deepTools_dir"],
         binSize = config["program_parameters"]["deepTools"]["binSize"],
-        labels = get_sample_labels(wildcards)
+        labels = get_sample_labels
     threads:
         24
     input:
@@ -66,7 +66,7 @@ rule multiBamSummary_deduplicated:
     params:
         deepTools_dir = home + config["deepTools_dir"],
         binSize = config["program_parameters"]["deepTools"]["binSize"],
-        labels = get_sample_labels(wildcards)
+        labels = get_sample_labels
     threads:
         24
     input:
@@ -140,7 +140,7 @@ rule bamPEFragmentSize:
     params:
         deepTools_dir = home + config["deepTools_dir"],
         plotTitle = lambda wildcards: "BAM PE " + wildcards.duplicates + " fragment size",
-        labels = get_sample_labels(wildcards)
+        labels = get_sample_labels
     threads:
         lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
     input:
@@ -174,7 +174,7 @@ rule bamPEFragmentSize_deduplicated:
     params:
         deepTools_dir = home + config["deepTools_dir"],
         plotTitle = lambda wildcards: "BAM PE " + wildcards.duplicates + " fragment size",
-        labels = get_sample_labels(wildcards)
+        labels = get_sample_labels
     threads:
         lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
     input:
@@ -209,7 +209,7 @@ rule plotFingerprint:
     params:
         deepTools_dir = home + config["deepTools_dir"],
         plotTitle = lambda wildcards: "BAM PE " + wildcards.duplicates + " fingerprint",
-        labels = get_sample_labels(wildcards)
+        labels = get_sample_labels
     threads:
         lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
     input:
@@ -246,7 +246,7 @@ rule plotFingerprint_deduplicated:
     params:
         deepTools_dir = home + config["deepTools_dir"],
         plotTitle = lambda wildcards: "BAM PE " + wildcards.duplicates + " fingerprint",
-        labels = get_sample_labels(wildcards)
+        labels = get_sample_labels
     threads:
         lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
     input:
