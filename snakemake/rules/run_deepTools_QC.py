@@ -16,14 +16,11 @@ For usage, include this in your workflow.
 # global functions
 def get_sample_labels(wildcards):
     sl = []
-    slt = []
     runIDs = config["samples"][wildcards.assayID].keys()
     for i in runIDs:
         for k in config["samples"][wildcards.assayID][i].keys():
             sl.append(k)
-            return(sl)
-        slt = slt.append(sl)
-    return(slt)
+    return(sl)
 
 
 rule multiBamSummary:
@@ -106,7 +103,8 @@ rule multiBamSummary_deduplicated:
 rule plotCorrelation_heatmap:
     params:
         deepTools_dir = home + config["deepTools_dir"],
-        plotTitle = lambda wildcards: "Correlation heatmap - " + wildcards.duplicates
+        plotTitle = lambda wildcards: "Correlation heatmap - " + wildcards.duplicates,
+        labels = get_sample_labels
     input:
         npz = "{assayID}/{outdir}/{reference_version}/deepTools/multiBamSummary/{duplicates}/results.npz"
     output:
@@ -118,6 +116,7 @@ rule plotCorrelation_heatmap:
                                                    --corMethod spearman \
                                                    --skipZeros \
                                                    --plotTitle "{params.plotTitle}" \
+                                                   --labels {params.labels} \
                                                    --whatToPlot heatmap \
                                                    --colorMap RdYlBu \
                                                    --plotNumbers \
@@ -155,7 +154,7 @@ rule bamPEFragmentSize:
                reference_version = config["references"][REF_GENOME]["version"][0],
                unit = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
                qual = config["alignment_quality"],
-               suffix = ["bam", "bam.bai"]),
+               suffix = ["bam"]),
         expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_marked/{unit}.Q{qual}.sorted.MkDup.{suffix}",
                assayID = "ChIP-Seq",
                runID = "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq",
@@ -224,7 +223,7 @@ rule plotFingerprint:
                reference_version = config["references"][REF_GENOME]["version"][0],
                unit = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
                qual = config["alignment_quality"],
-               suffix = ["bam", "bam.bai"]),
+               suffix = ["bam"]),
         expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_marked/{unit}.Q{qual}.sorted.MkDup.{suffix}",
                assayID = "ChIP-Seq",
                runID = "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq",
