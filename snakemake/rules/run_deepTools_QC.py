@@ -103,8 +103,7 @@ rule multiBamSummary_deduplicated:
 rule plotCorrelation_heatmap:
     params:
         deepTools_dir = home + config["deepTools_dir"],
-        plotTitle = lambda wildcards: "Correlation heatmap - " + wildcards.duplicates,
-        labels = get_sample_labels
+        plotTitle = lambda wildcards: "Correlation heatmap - " + wildcards.duplicates
     input:
         npz = "{assayID}/{outdir}/{reference_version}/deepTools/multiBamSummary/{duplicates}/results.npz"
     output:
@@ -112,11 +111,10 @@ rule plotCorrelation_heatmap:
         "{assayID}/{outdir}/{reference_version}/deepTools/plotCorrelation/{duplicates}/heatmap_SpearmanCorr_readCounts.tab"
     shell:
         """
-            {params.deepTools_dir}/plotCorrelation -in {input.npz} \
+            {params.deepTools_dir}/plotCorrelation --corData {input.npz} \
                                                    --corMethod spearman \
                                                    --skipZeros \
                                                    --plotTitle "{params.plotTitle}" \
-                                                   --labels {params.labels} \
                                                    --whatToPlot heatmap \
                                                    --colorMap RdYlBu \
                                                    --plotNumbers \
@@ -134,8 +132,8 @@ rule plotPCA:
         "{assayID}/{outdir}/{reference_version}/deepTools/plotPCA/{duplicates}/PCA_readCounts.png"
     shell:
         """
-            {params.deepTools_dir}/plotPCA -in {input.npz} \
-                                           -o {output} \
+            {params.deepTools_dir}/plotPCA --corData {input.npz} \
+                                           --plotFile {output} \
                                            --plotTitle "{params.plotTitle}"
         """
 
