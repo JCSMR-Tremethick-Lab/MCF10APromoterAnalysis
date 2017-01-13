@@ -13,13 +13,22 @@ Rules for running deepTools QC/QC on ChIP-Seq data
 For usage, include this in your workflow.
 """
 
+# global functions
+def get_sample_labels(wildcards):
+    fn = []
+    runIDs = config["samples"][wildcards.assayID].keys()
+    for i in runIDs:
+        for k in config["samples"][wildcards.assayID][i].keys():
+            fn.append(k)
+    return(fn)
+
 rule multiBamSummary:
     version:
         0.2
     params:
         deepTools_dir = home + config["deepTools_dir"],
         binSize = config["program_parameters"]["deepTools"]["binSize"],
-        labels = lambda wildcards: ' '.join("{!s}".format(key) for (key) in config["samples"][wildcards.assayID][wildcards.runID].keys())
+        labels = get_sample_labels(wildcards)
     threads:
         24
     input:
@@ -57,7 +66,7 @@ rule multiBamSummary_deduplicated:
     params:
         deepTools_dir = home + config["deepTools_dir"],
         binSize = config["program_parameters"]["deepTools"]["binSize"],
-        labels = lambda wildcards: ' '.join("{!s}".format(key) for (key) in config["samples"][wildcards.assayID][wildcards.runID].keys())
+        labels = get_sample_labels(wildcards)
     threads:
         24
     input:
@@ -130,7 +139,8 @@ rule plotPCA:
 rule bamPEFragmentSize:
     params:
         deepTools_dir = home + config["deepTools_dir"],
-        labels = lambda wildcards: ' '.join("{!s}".format(key) for (key) in config["samples"][wildcards.assayID][wildcards.runID].keys()),
+        plotTitle = lambda wildcards: "BAM PE " + wildcards.duplicates + " fragment size",
+        labels = get_sample_labels(wildcards)
     threads:
         lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
     input:
@@ -163,8 +173,8 @@ rule bamPEFragmentSize:
 rule bamPEFragmentSize_deduplicated:
     params:
         deepTools_dir = home + config["deepTools_dir"],
-        labels = lambda wildcards: ' '.join("{!s}".format(key) for (key) in config["samples"][wildcards.assayID][wildcards.runID].keys()),
-        plotTitle = lambda wildcards: "BAM PE " + wildcards.duplicates + " fragment size"
+        plotTitle = lambda wildcards: "BAM PE " + wildcards.duplicates + " fragment size",
+        labels = get_sample_labels(wildcards)
     threads:
         lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
     input:
@@ -198,7 +208,8 @@ rule bamPEFragmentSize_deduplicated:
 rule plotFingerprint:
     params:
         deepTools_dir = home + config["deepTools_dir"],
-        plotTitle = lambda wildcards: "BAM PE " + wildcards.duplicates + " fingerprint"
+        plotTitle = lambda wildcards: "BAM PE " + wildcards.duplicates + " fingerprint",
+        labels = get_sample_labels(wildcards)
     threads:
         lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
     input:
@@ -226,6 +237,7 @@ rule plotFingerprint:
                                                    --numberOfProcessors {threads} \
                                                    --centerReads \
                                                    --plotTitle "{params.plotTitle}" \
+                                                   --labels {params.labels} \
                                                    --skipZeros \
                                                    --plotFile {output}
         """
@@ -233,7 +245,8 @@ rule plotFingerprint:
 rule plotFingerprint_deduplicated:
     params:
         deepTools_dir = home + config["deepTools_dir"],
-        plotTitle = lambda wildcards: "BAM PE " + wildcards.duplicates + " fingerprint"
+        plotTitle = lambda wildcards: "BAM PE " + wildcards.duplicates + " fingerprint",
+        labels = get_sample_labels(wildcards)
     threads:
         lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
     input:
@@ -261,6 +274,7 @@ rule plotFingerprint_deduplicated:
                                                    --numberOfProcessors {threads} \
                                                    --centerReads \
                                                    --plotTitle "{params.plotTitle}" \
+                                                   --labels {params.labels} \
                                                    --skipZeros \
                                                    --plotFile {output}
         """
