@@ -161,7 +161,7 @@ rule bamPEFragmentSize:
                qual = config["alignment_quality"],
                suffix = ["bam"])
     output:
-        "{assayID}/{outdir}/{reference_version}/deepTools/bamPEFragmentSize/duplicates_marked/histogram_duplicates_marked.png"
+        "{assayID}/{outdir}/{reference_version}/deepTools/bamPEFragmentSize/{duplicates}/histogram_duplicates_marked.png"
     shell:
         """
             {params.deepTools_dir}/bamPEFragmentSize --bamfiles {input} \
