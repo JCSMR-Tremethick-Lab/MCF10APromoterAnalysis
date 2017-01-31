@@ -127,7 +127,7 @@ rule all:
                mode = ["normal"],
                region = "allGenes",
                suffix = ["pdf", "data", "bed"]),
-        expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{duplicates}/{sample}.{suffix}",
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{duplicates}/{sample_group}.{suffix}",
                assayID = "ChIP-Seq",
                runID = "merged",
                outdir = config["processed_dir"],
