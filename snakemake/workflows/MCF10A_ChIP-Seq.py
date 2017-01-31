@@ -21,8 +21,8 @@ include_prefix = home + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/rule
 #    include_prefix + "perform_cutadapt.py"
 # include:
 #     include_prefix + "run_bowtie2.py"
-# include:
-#     include_prefix + "bam_processing.py"
+include:
+    include_prefix + "bam_processing.py"
 # include:
 #     include_prefix + "run_deepTools_QC.py"
 include:
@@ -140,4 +140,13 @@ rule all:
                plotType = "se",
                mode = ["normal"],
                region = "allGenes",
-               suffix = ["pdf", "data", "bed"])
+               suffix = ["pdf", "data", "bed"]),
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{duplicates}/{sample}.{suffix}",
+               assayID = "ChIP-Seq",
+               runID = "merged",
+               outdir = config["processed_dir"],
+               reference_version = config["references"][REF_GENOME]["version"][0],
+               application = "bowtie2",
+               duplicates = ["duplicates_marked", "duplicates_removed"],
+               sample = config["samples"]["ChIP-Seq"]["replicates"],
+               suffix = ["bam", "bam.bai"]))

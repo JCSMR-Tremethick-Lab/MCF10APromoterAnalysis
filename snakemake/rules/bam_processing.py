@@ -19,8 +19,20 @@ from snakemake.exceptions import MissingInputException
 # set some local variables
 home = os.environ['HOME']
 
+def bam_merge_input(wildcards):
+    fn = []
+    path = "/".join((wildcards["assayID"],
+                     wildcards["runID"],
+                     wildcards["outdir"],
+                     wildcards["reference_version"]
+                     wildcards["application"],
+                     wildcards["duplicates"]))
+    for i in config["sample"]["replicates"]:
+        fn.append("/".join((path, ".".join((i, "Q20.sorted.bam")))))
+    return(fn)
+
 rule:
-    version: 0.1
+    version: 0.2
 
 # rules
 rule bam_quality_filter:
@@ -89,5 +101,23 @@ rule bam_rmdup_index:
         rules.bam_rmdup.output
     output:
         protected("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_removed/{unit}.Q{qual}.sorted.DeDup.bam.bai")
+    shell:
+        "samtools index {input} {output}"
+
+rule bam_merge:
+    version:
+        0.2
+    input:
+        bam_merge_input
+    output:
+        protected("{processed_dir}/{genome_version}/duplicates_removed/{sample}.Q20.DeDup.sorted.bam")
+    wrapper:
+        "file://" + wrapper_dir + "/samtools/merge/wrapper.py"
+
+rule index_merged_bam:
+    input:
+        rules.bam_merge.output
+    output:
+        protected("{processed_dir}/{genome_version}/duplicates_removed/{sample}.Q20.DeDup.sorted.bam.bai")
     shell:
         "samtools index {input} {output}"

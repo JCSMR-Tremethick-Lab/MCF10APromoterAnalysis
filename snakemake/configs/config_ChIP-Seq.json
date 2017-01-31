@@ -77,6 +77,13 @@
         "Inp_10A_TGFb_high_rep1" : ["Inp_10A_TGFb_high_rep1/Florida_5_S5_R1_001.fastq.gz", "Inp_10A_TGFb_high_rep1/Florida_5_S5_R2_001.fastq.gz"],
         "Inp_10A_WT_high_rep1" : ["Inp_10A_high_rep1/Florida_1_S1_R1_001.fastq.gz", "Inp_10A_high_rep1/Florida_1_S1_R2_001.fastq.gz"],
         "Inp_10A_WT_high_rep2" : ["Inp_10A_high_rep2/Florida_3_S3_R1_001.fastq.gz", "Inp_10A_high_rep2/Florida_3_S3_R2_001.fastq.gz"]
+      },
+      "replicates" :
+      {
+        "H2AZ_10A_high" : ["H2AZ_10A_high_rep1", "H2AZ_10A_high_rep2"],
+        "Inp_10A_WT_high" : ["Inp_10A_WT_high_rep1", "Inp_10A_WT_high_rep2"],
+        "Inp_10A_TGFb_high" : ["Inp_10A_TGFb_high_rep1", "Inp_10A_TGFb_high_rep2"],
+        "Inp_shZ_10A_high" : ["Inp_shZ_10A_high_rep2"]
       }
     }
   },

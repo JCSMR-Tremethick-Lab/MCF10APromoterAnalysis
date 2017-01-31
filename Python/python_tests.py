@@ -84,3 +84,26 @@ def get_sample_labels(wildcards):
         for k in config["samples"][wildcards["ChIP-Seq"]][i].keys():
             fn.append(k)
     return(fn)
+
+
+def bam_merge_input(wildcards):
+    fn = []
+    path = "/".join((wildcards["assayID"],
+                     wildcards["runID"],
+                     wildcards["outdir"],
+                     wildcards["reference_version"],
+                     wildcards["application"],
+                     wildcards["duplicates"]))
+    for i in config["samples"]["ChIP-Seq"]["replicates"][wildcards["sample"]]:
+        fn.append("/".join((path, ".".join((i, "Q20.sorted.bam")))))
+    return(fn)
+
+wildcards = {"assayID" : "ChIP-Seq",
+             "runID" : "merged",
+             "outdir" : "processed_data",
+             "reference_version": config["references"][REF_GENOME]["version"][0],
+             "application" : "bowtie2",
+             "duplicates" : "duplicates_marked",
+             "sample" : "H2AZ_10A_high"}
+
+bam_merge_input(wildcards)
