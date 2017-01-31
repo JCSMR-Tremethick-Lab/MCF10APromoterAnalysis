@@ -49,6 +49,19 @@
   {
     "ChIP-Seq" :
     {
+      "merged" :
+      {
+        "H2AZ_TGFb_10A_high_rep1" : ["H2AZ_TGFb_10A_high_rep1/Florida_9_S4_R1_001.fastq.gz", "/H2AZ_TGFb_10A_high_rep1/Florida_9_S4_R2_001.fastq.gz"],
+        "H2AZ_TGFb_10A_high_rep2" : ["H2AZ_TGFb_10A_high_rep2/Florida_10_S5_R1_001.fastq.gz", "H2AZ_TGFb_10A_high_rep2/Florida_10_S5_R2_001.fastq.gz"],
+        "Inp_TGFb_10A_high_rep2" : ["Inp_TGFb_10A_high_rep2/Florida_8_S3_R1_001.fastq.gz", "Inp_TGFb_10A_high_rep2/Florida_8_S3_R2_001.fastq.gz"],
+        "Inp_shZ_10A_high_rep1" : ["Inp_shZ_10A_high_rep1/Florida_6_S1_R1_001.fastq.gz", "Inp_shZ_10A_high_rep1/Florida_6_S1_R1_001.fastq.gz"],
+        "Inp_shZ_10A_high_rep2" : ["Inp_shZ_10A_high_rep2/Florida_7_S2_R1_001.fastq.gz", "Inp_shZ_10A_high_rep2/Florida_7_S2_R2_001.fastq.gz"],
+        "H2AZ_10A_high_rep1" : ["H2AZ_10A_high_rep1/Florida_2_S2_R1_001.fastq.gz", "H2AZ_10A_high_rep1/Florida_2_S2_R2_001.fastq.gz"],
+        "H2AZ_10A_high_rep2" : ["H2AZ_10A_high_rep2/Florida_4_S4_R1_001.fastq.gz", "H2AZ_10A_high_rep2/Florida_4_S4_R2_001.fastq.gz"],
+        "Inp_10A_TGFb_high_rep1" : ["Inp_10A_TGFb_high_rep1/Florida_5_S5_R1_001.fastq.gz", "Inp_10A_TGFb_high_rep1/Florida_5_S5_R2_001.fastq.gz"],
+        "Inp_10A_WT_high_rep1" : ["Inp_10A_high_rep1/Florida_1_S1_R1_001.fastq.gz", "Inp_10A_high_rep1/Florida_1_S1_R2_001.fastq.gz"],
+        "Inp_10A_WT_high_rep2" : ["Inp_10A_high_rep2/Florida_3_S3_R1_001.fastq.gz", "Inp_10A_high_rep2/Florida_3_S3_R2_001.fastq.gz"]
+      },
       "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq" :
       {
         "H2AZ_TGFb_10A_high_rep1" : ["H2AZ_TGFb_10A_high_rep1/Florida_9_S4_R1_001.fastq.gz", "/H2AZ_TGFb_10A_high_rep1/Florida_9_S4_R2_001.fastq.gz"],
@@ -97,6 +110,48 @@
       "ignoreForNormalization" : ["MT X"],
       "binSize" : ["10000"],
       "threads" : "4"
+      "regionFiles" :
+      {
+        "GRCh37_hg19_ensembl75" :
+        {
+          "allGenes" : "/Data/References/Annotations/Homo_sapiens/GRCh37_hg19_ensembl75/allGenes.bed"
+        },
+        "GRCh38_ensembl84" :
+        {
+          "allGenes" : "/Data/References/Annotations/Homo_sapiens/GRCh38_ensembl84/allGenes.bed",
+        }
+      },
+      "bamCoverage" :
+      {
+        "MNase" :
+        {
+          "--binSize" : "1",
+          "--smoothLength" : "30"
+        },
+        "normal" :
+        {
+          "--centerReads" : " ",
+          "--binSize" : "50",
+          "--smoothLength" : "30"
+        }
+      },
+      "computeMatrix" :
+      {
+        "scale-regions" :
+        {
+          "--upstream" : "1500",
+          "--downstream" : "1500",
+          "--regionBodyLength" : "5000",
+          "--unscaled5prime" : "200",
+          "--unscaled3prime" : "200"
+        },
+        "reference-point" :
+        {
+          "--upstream" : "1500",
+          "--downstream" : "1500",
+          "--referencePoint" : ""
+        }
+      }
     },
     "picard_tools" :
     {

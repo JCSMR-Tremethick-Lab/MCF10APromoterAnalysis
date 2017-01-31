@@ -25,6 +25,8 @@ include:
     include_prefix + "bam_processing.py"
 include:
     include_prefix + "run_deepTools_QC.py"
+inlucde:
+    include_prefix + "run_deepTools.py"
 
 # define global variables such as reference version of genome so that it can be accessed
 # throughout the whole worfklow
@@ -124,4 +126,18 @@ rule all:
                reference_version = config["references"][REF_GENOME]["version"][0],
                unit = config["samples"]["ChIP-Seq"]["NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq"],
                qual = config["alignment_quality"],
-               suffix = ["bam", "bam.bai"])
+               suffix = ["bam", "bam.bai"]),
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{command}/{duplicates}/{referencePoint}/{plotType}.{mode}.{region}.{suffix}",
+               assayID = "ChIP-Seq",
+               runID = "merged",
+               outdir = config["processed_dir"],
+               reference_version = config["references"][REF_GENOME]["version"][0],
+               application = "deepTools",
+               tool = "plotProfile",
+               command = ["reference-point", "scale-regions"],
+               duplicates = ["duplicates_marked", "duplicates_removed"],
+               referencePoint = "TSS",
+               plotType = "se",
+               mode = ["MNase", "normal"],
+               region = "allGenes",
+               suffix = ["pdf", "data", "bed"])

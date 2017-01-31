@@ -16,5 +16,71 @@ def get_replicates_chip(wildcards):
 wildcards = dict()
 wildcards = {"digest" : "H", "sample" : "MCF10A_TGFb", "Input" : "Input", "ChIP" : "H2AZ"}
 
-with open("snakemake/configs/config_PromoterCapSeq.json") as data_file:
+with open("snakemake/configs/config_ChIP-Seq.json") as data_file:
     config = json.load(data_file)
+
+with open("snakemake/configs/config.json") as data_file:
+    config = json.load(data_file)
+
+with open("/Users/u1001407/Development/JCSMR-Tremethick-Lab/H2AZ_EMT/snakemake/configs/config.json") as data_file:
+    config = json.load(data_file)
+
+
+with open("config.json") as data_file:
+    config = json.load(data_file)
+
+
+' '.join("{!s}={!r}".format(key, val) for (key, val) in cli_parameters(wildcards).items())
+
+# this returns a single string from multiple dictionary items, including keys and values - great for generating program CLI parameters
+' '.join("{!s}={!s}".format(key, val) for (key, val) in config["program_parameters"]["deepTools"]["computeMatrix"]["reference-point"].items())
+
+def cli_parameters_computeMatrix(wildcards):
+    a = config["program_parameters"][wildcards.application][wildcards.tool][wildcards.mode]
+    if wildcards.mode == "reference-point":
+        a["--referencePoint"] = wildcards.referencePoint
+    return(a)
+
+def cli_parameters_bamCoverage(wildcards):
+    a = config["program_parameters"][wildcards["application"]][wildcards["tool"]][wildcards["mode"]]
+    b = str()
+    for (key, val) in a.items():
+        if val == " ":
+            f = key + " "
+            b = b + f
+        else:
+            f = key + "=" + val + " "
+            b = b + f
+    if wildcards["mode"] == "MNase":
+        b = b + "--MNase"
+    return(b.rstrip())
+
+
+b = b + join("{!s}={!s}".format(key, val))
+    #b = ' '.join("{!s}={!s}".format(key, val.strip("\\'")) for (key, val) in a.items())
+
+
+cli_parameters(wildcards)
+cli_parameters_bamCoverage(wildcards)
+
+', '.join("{!s}={!r}".format(key, val) for (key, val) in config["samples"]["ChIP-Seq"]["NB501086_0011_MNekrasov_MDCK_JCSMR_ChIPseq"].items())
+' '.join("{!s}".format(key) for (key) in config["samples"]["ChIP-Seq"]["NB501086_0011_MNekrasov_MDCK_JCSMR_ChIPseq"].keys())
+
+' '.join("{!s}".format(key) for (key) in config["samples"]["ChIP-Seq"].keys())
+config["samples"]["ChIP-Seq"][runIDs]
+
+pprint(key,val) for (key, val) in config["samples"]["ChIP-Seq"]["NB501086_0011_MNekrasov_MDCK_JCSMR_ChIPseq"].items())
+
+wildcards = dict()
+wildcards = {"mode" : "MNase", "tool" : "bamCoverage", "application" : "deepTools"}
+wildcards = {"mode" : "normal", "tool" : "bamCoverage", "application" : "deepTools"}
+
+wildcards = {"referencePoint" : "TSS", "mode" : "reference-point"}
+wildcards = {"ChIP-Seq" : "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq"}
+def get_sample_labels(wildcards):
+    fn = []
+    runIDs = config["samples"]["ChIP-Seq"].keys()
+    for i in runIDs:
+        for k in config["samples"][wildcards["ChIP-Seq"]][i].keys():
+            fn.append(k)
+    return(fn)
