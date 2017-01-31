@@ -95,7 +95,7 @@ rule deepTools_QC_deduplicated:
 
 rule all:
     input:
-        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/{duplicates}/{sample}.Q{qual}.sorted.MkDup.{suffix}",
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/{duplicates}/{sample}.Q{qual}.sorted.{suffix}",
                assayID = "ChIP-Seq",
                runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
                outdir = config["processed_dir"],
@@ -104,7 +104,7 @@ rule all:
                sample = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
                qual = config["alignment_quality"],
                suffix = ["bam", "bam.bai"]),
-        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/{duplicates}/{sample}.Q{qual}.sorted.DeDup.{suffix}",
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/{duplicates}/{sample}.Q{qual}.sorted.{suffix}",
                assayID = "ChIP-Seq",
                runID = "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq",
                outdir = config["processed_dir"],
