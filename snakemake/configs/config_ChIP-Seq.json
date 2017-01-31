@@ -118,7 +118,7 @@
         },
         "GRCh38_ensembl84" :
         {
-          "allGenes" : "/Data/References/Annotations/Homo_sapiens/GRCh38_ensembl84/allGenes.bed",
+          "allGenes" : "/Data/References/Annotations/Homo_sapiens/GRCh38_ensembl84/allGenes.bed"
         }
       },
       "bamCoverage" :
