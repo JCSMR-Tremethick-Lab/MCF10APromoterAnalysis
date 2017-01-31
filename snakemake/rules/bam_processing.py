@@ -27,7 +27,7 @@ def bam_merge_input(wildcards):
                      wildcards["reference_version"],
                      wildcards["application"],
                      wildcards["duplicates"]))
-    for i in config["samples"]["ChIP-Seq"]["replicates"][wildcards["sample"]]:
+    for i in config["samples"]["ChIP-Seq"]["replicates"][wildcards["sample_group"]]:
         fn.append("/".join((path, ".".join((i, "Q20.sorted.bam")))))
     return(fn)
 
@@ -64,7 +64,7 @@ rule bam_mark_duplicates:
     input:
         rules.bam_sort.output
     output:
-        protected("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_marked/{unit}.Q{qual}.sorted.MkDup.bam")
+        protected("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_marked/{unit}.Q{qual}.sorted.bam")
     shell:
         """
             java -Djava.io.tmpdir={params.temp} \
@@ -82,7 +82,7 @@ rule bam_index:
     input:
         rules.bam_mark_duplicates.output
     output:
-        protected("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_marked/{unit}.Q{qual}.sorted.MkDup.bam.bai")
+        protected("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_marked/{unit}.Q{qual}.sorted.bam.bai")
     shell:
         "samtools index {input} {output}"
 
@@ -90,7 +90,7 @@ rule bam_rmdup:
     input:
         rules.bam_mark_duplicates.output
     output:
-        protected("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_removed/{unit}.Q{qual}.sorted.DeDup.bam")
+        protected("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_removed/{unit}.Q{qual}.sorted.bam")
     shell:
         "samtools rmdup {input} {output}"
 
@@ -100,7 +100,7 @@ rule bam_rmdup_index:
     input:
         rules.bam_rmdup.output
     output:
-        protected("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_removed/{unit}.Q{qual}.sorted.DeDup.bam.bai")
+        protected("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_removed/{unit}.Q{qual}.sorted.bam.bai")
     shell:
         "samtools index {input} {output}"
 
@@ -110,7 +110,7 @@ rule bam_merge:
     input:
         bam_merge_input
     output:
-        protected("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{duplicates}/{sample}.bam")
+        protected("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{duplicates}/{sample_group}.bam")
     run:
         if len(input > 1):
             shell("samtools merge --threads {threads} {params} {output} {input}")
@@ -121,6 +121,6 @@ rule index_merged_bam:
     input:
         rules.bam_merge.output
     output:
-        protected("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{duplicates}/{sample}.bam.bai")
+        protected("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{duplicates}/{sample_group}.bam.bai")
     shell:
         "samtools index {input} {output}"
