@@ -109,7 +109,7 @@
       "SES_numer_of_samples" : ["10000000.0"],
       "ignoreForNormalization" : ["MT X"],
       "binSize" : ["10000"],
-      "threads" : "4"
+      "threads" : "8",
       "regionFiles" :
       {
         "GRCh37_hg19_ensembl75" :
