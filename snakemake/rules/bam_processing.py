@@ -24,10 +24,10 @@ def bam_merge_input(wildcards):
     path = "/".join((wildcards["assayID"],
                      wildcards["runID"],
                      wildcards["outdir"],
-                     wildcards["reference_version"]
+                     wildcards["reference_version"],
                      wildcards["application"],
                      wildcards["duplicates"]))
-    for i in config["sample"]["replicates"]:
+    for i in config["samples"]["ChIP-Seq"]["replicates"][wildcards["sample"]]:
         fn.append("/".join((path, ".".join((i, "Q20.sorted.bam")))))
     return(fn)
 
@@ -110,14 +110,17 @@ rule bam_merge:
     input:
         bam_merge_input
     output:
-        protected("{processed_dir}/{genome_version}/duplicates_removed/{sample}.Q20.DeDup.sorted.bam")
-    wrapper:
-        "file://" + wrapper_dir + "/samtools/merge/wrapper.py"
+        protected("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{duplicates}/{sample}.bam")
+    run:
+        if len(input > 1):
+            shell("samtools merge --threads {threads} {params} {output} {input}")
+        else:
+            shell("ln -s {input} {output}")
 
 rule index_merged_bam:
     input:
         rules.bam_merge.output
     output:
-        protected("{processed_dir}/{genome_version}/duplicates_removed/{sample}.Q20.DeDup.sorted.bam.bai")
+        protected("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{duplicates}/{sample}.bam.bai")
     shell:
         "samtools index {input} {output}"
