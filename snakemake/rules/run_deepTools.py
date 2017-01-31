@@ -33,7 +33,7 @@ def cli_parameters_bamCoverage(wildcards):
         b = b + "--MNase"
     return(b.rstrip())
 
-def get_computeMatrix_input(wildcards, REF_GENOME):
+def get_computeMatrix_input(wildcards):
     fn = []
     path = "/".join((wildcards["assayID"],
                      wildcards["runID"],
@@ -82,7 +82,7 @@ rule computeMatrix:
     threads:
         lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
     input:
-        file = get_computeMatrix_input(wildcards, REF_GENOME),
+        file = get_computeMatrix_input,
         region = lambda wildcards: home + config["program_parameters"]["deepTools"]["regionFiles"][wildcards.region][wildcards.reference_version]
     output:
         matrix_gz = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{command}/{duplicates}/{referencePoint}/{region}_{mode}.matrix.gz"
