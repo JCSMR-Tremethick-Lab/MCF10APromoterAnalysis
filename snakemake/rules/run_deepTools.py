@@ -33,12 +33,12 @@ def cli_parameters_bamCoverage(wildcards):
         b = b + "--MNase"
     return(b.rstrip())
 
-def get_computeMatrix_input(wildcards):
+def get_computeMatrix_input(wildcards, REF_GENOME):
     fn = []
     path = "/".join((wildcards["assayID"],
                      wildcards["runID"],
                      config["processed_dir"],
-                     config["references"]["CanFam3.1"]["version"][0],
+                     config["references"][REF_GENOME]["version"][0],
                      wildcards["application"],
                      "bamCoverage",
                      wildcards["mode"],
