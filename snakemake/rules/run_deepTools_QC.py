@@ -35,18 +35,10 @@ rule multiBamSummary:
     input:
         expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_marked/{unit}.Q{qual}.sorted.MkDup.{suffix}",
                assayID = "ChIP-Seq",
-               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
-               outdir = config["processed_dir"],
-               reference_version = config["references"][REF_GENOME]["version"][0],
-               unit = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
-               qual = config["alignment_quality"],
-               suffix = ["bam"]),
-        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_marked/{unit}.Q{qual}.sorted.MkDup.{suffix}",
-               assayID = "ChIP-Seq",
                runID = "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq",
                outdir = config["processed_dir"],
                reference_version = config["references"][REF_GENOME]["version"][0],
-               unit = config["samples"]["ChIP-Seq"]["NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq"],
+               unit = config["samples"]["ChIP-Seq"]["merged"],
                qual = config["alignment_quality"],
                suffix = ["bam"])
     output:
@@ -73,18 +65,10 @@ rule multiBamSummary_deduplicated:
     input:
         expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_removed/{unit}.Q{qual}.sorted.DeDup.{suffix}",
                assayID = "ChIP-Seq",
-               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
-               outdir = config["processed_dir"],
-               reference_version = config["references"][REF_GENOME]["version"][0],
-               unit = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
-               qual = config["alignment_quality"],
-               suffix = ["bam"]),
-        expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_removed/{unit}.Q{qual}.sorted.DeDup.{suffix}",
-               assayID = "ChIP-Seq",
                runID = "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq",
                outdir = config["processed_dir"],
                reference_version = config["references"][REF_GENOME]["version"][0],
-               unit = config["samples"]["ChIP-Seq"]["NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq"],
+               unit = config["samples"]["ChIP-Seq"]["merged"],
                qual = config["alignment_quality"],
                suffix = ["bam"])
     output:
