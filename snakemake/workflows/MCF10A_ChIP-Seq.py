@@ -25,7 +25,7 @@ include:
     include_prefix + "bam_processing.py"
 include:
     include_prefix + "run_deepTools_QC.py"
-inlucde:
+include:
     include_prefix + "run_deepTools.py"
 
 # define global variables such as reference version of genome so that it can be accessed
