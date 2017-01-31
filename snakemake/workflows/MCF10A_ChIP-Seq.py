@@ -135,4 +135,4 @@ rule all:
                application = "bowtie2",
                duplicates = ["duplicates_marked", "duplicates_removed"],
                sample_group = config["samples"]["ChIP-Seq"]["replicates"],
-               suffix = ["bam", "bam.bai"]))
+               suffix = ["bam", "bam.bai"])
