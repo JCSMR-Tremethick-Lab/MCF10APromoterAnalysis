@@ -82,7 +82,7 @@
       {
         "H2AZ_10A_high" : ["H2AZ_10A_high_rep1", "H2AZ_10A_high_rep2"],
         "Inp_10A_WT_high" : ["Inp_10A_WT_high_rep1", "Inp_10A_WT_high_rep2"],
-        "Inp_10A_TGFb_high" : ["Inp_10A_TGFb_high_rep1", "Inp_10A_TGFb_high_rep2"],
+        "Inp_10A_TGFb_high" : ["Inp_10A_TGFb_high_rep1", "Inp_TGFb_10A_high_rep2"],
         "Inp_shZ_10A_high" : ["Inp_shZ_10A_high_rep2"]
       }
     }
