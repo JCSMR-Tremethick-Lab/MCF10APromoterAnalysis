@@ -134,7 +134,8 @@ rule all:
                runID = "merged",
                outdir = config["processed_dir"],
                reference_version = config["references"][REF_GENOME]["version"][0],
-               application = "bowtie2",
+               application = "samtools",
+               command = "merge",
                duplicates = ["duplicates_marked", "duplicates_removed"],
                sample_group = ["H2AZ_10A_high", "Inp_10A_WT_high", "Inp_10A_TGFb_high", "Inp_shZ_10A_high"],
                suffix = ["bam", "bam.bai"])
