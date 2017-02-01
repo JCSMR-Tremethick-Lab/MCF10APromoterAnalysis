@@ -19,18 +19,6 @@ from snakemake.exceptions import MissingInputException
 # set some local variables
 home = os.environ['HOME']
 
-def bam_merge_input(wildcards):
-    fn = []
-    path = "/".join((wildcards["assayID"],
-                     wildcards["runID"],
-                     wildcards["outdir"],
-                     wildcards["reference_version"],
-                     wildcards["application"],
-                     wildcards["duplicates"]))
-    for i in config["samples"]["ChIP-Seq"]["replicates"][wildcards["sample_group"]]:
-        fn.append("/".join((path, ".".join((i, "Q20.sorted.bam")))))
-    return(fn)
-
 rule:
     version: 0.2
 
@@ -101,26 +89,5 @@ rule bam_rmdup_index:
         rules.bam_rmdup.output
     output:
         protected("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/duplicates_removed/{sample}.Q{qual}.sorted.bam.bai")
-    shell:
-        "samtools index {input} {output}"
-
-rule bam_merge:
-    version:
-        0.2
-    input:
-        bam_merge_input
-    output:
-        protected("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{duplicates}/{sample_group}.bam")
-    run:
-        if len(input > 1):
-            shell("samtools merge --threads {threads} {params} {output} {input}")
-        else:
-            shell("ln -s {input} {output}")
-
-rule index_merged_bam:
-    input:
-        rules.bam_merge.output
-    output:
-        protected("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{duplicates}/{sample_group}.bam.bai")
     shell:
         "samtools index {input} {output}"
