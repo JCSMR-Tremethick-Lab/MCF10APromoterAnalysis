@@ -34,6 +34,8 @@ def bam_merge_input(wildcards):
 rule bam_merge:
     version:
         0.2
+    params:
+        cwd = os.getcwd()
     input:
         bam_merge_input
     output:
@@ -42,7 +44,7 @@ rule bam_merge:
         if (len(input) > 1):
             shell("samtools merge --threads {threads} {params} {output} {input}")
         else:
-            shell("ln -s {input} {output}")
+            shell("ln -s {params.cwd}{input} {output}")
 
 rule index_merged_bam:
     input:
