@@ -44,9 +44,9 @@ rule bam_merge:
         protected("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{command}/{duplicates}/{sample_group}.bam")
     run:
         if (len(input) > 1):
-            shell("samtools merge --threads {threads} {params} {output} {input}")
+            shell("samtools merge --threads {threads} {output} {input}")
         else:
-            shell("ln -s {params.cwd}{input} {output}")
+            shell("ln -s {params.cwd}/{input} {output}")
 
 rule index_merged_bam:
     input:
