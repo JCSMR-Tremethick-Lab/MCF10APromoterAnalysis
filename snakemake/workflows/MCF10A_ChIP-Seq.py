@@ -34,66 +34,66 @@ include:
 # throughout the whole worfklow
 REF_GENOME = config["references"]["genomes"][1]
 
-rule run_cutadapt:
-    input:
-        expand("{assayID}/{runID}/{outdir}/{trim_data}/{sample}_{suffix}.QT.CA.fastq.gz",
-               assayID = "ChIP-Seq",
-               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
-               outdir = config["processed_dir"],
-               trim_data = config["trim_dir"],
-               sample = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
-               suffix = ["R1_001", "R2_001"]),
-        expand("{assayID}/{runID}/{outdir}/{trim_data}/{sample}_{suffix}.QT.CA.fastq.gz",
-               assayID = "ChIP-Seq",
-               runID = "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq",
-               outdir = config["processed_dir"],
-               trim_data = config["trim_dir"],
-               sample = config["samples"]["ChIP-Seq"]["NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq"],
-               suffix = ["R1_001", "R2_001"])
-
-rule deepTools_QC:
-    input:
-        expand("{assayID}/{outdir}/{reference_version}/deepTools/plotCorrelation/{duplicates}/heatmap_SpearmanCorr_readCounts.{suffix}",
-               assayID = "ChIP-Seq",
-               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
-               outdir = config["processed_dir"],
-               reference_version = config["references"][REF_GENOME]["version"][0],
-               duplicates = ["duplicates_marked", "duplicates_removed"],
-               suffix = ["png", "tab"]),
-        expand("{assayID}/{outdir}/{reference_version}/deepTools/plotPCA/{duplicates}/PCA_readCounts.png",
-               assayID = "ChIP-Seq",
-               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
-               outdir = config["processed_dir"],
-               reference_version = config["references"][REF_GENOME]["version"][0],
-               duplicates = ["duplicates_marked", "duplicates_removed"]),
-        expand("{assayID}/{outdir}/{reference_version}/deepTools/plotFingerprint/{duplicates}/fingerprints_{duplicates}.png",
-               assayID = "ChIP-Seq",
-               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
-               outdir = config["processed_dir"],
-               reference_version = config["references"][REF_GENOME]["version"][0],
-               duplicates = ["duplicates_marked"]),
-        expand("{assayID}/{outdir}/{reference_version}/deepTools/bamPEFragmentSize/{duplicates}/histogram_{duplicates}.png",
-               assayID = "ChIP-Seq",
-               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
-               outdir = config["processed_dir"],
-               reference_version = config["references"][REF_GENOME]["version"][0],
-               duplicates = ["duplicates_marked"])
-
-rule deepTools_QC_deduplicated:
-    input:
-        expand("{assayID}/{outdir}/{reference_version}/deepTools/plotFingerprint/{duplicates}/fingerprints_{duplicates}.png",
-               assayID = "ChIP-Seq",
-               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
-               outdir = config["processed_dir"],
-               reference_version = config["references"][REF_GENOME]["version"][0],
-               duplicates = ["duplicates_removed"]),
-        expand("{assayID}/{outdir}/{reference_version}/deepTools/bamPEFragmentSize/{duplicates}/histogram_{duplicates}.png",
-               assayID = "ChIP-Seq",
-               runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
-               outdir = config["processed_dir"],
-               reference_version = config["references"][REF_GENOME]["version"][0],
-               duplicates = ["duplicates_removed"])
-
+# rule run_cutadapt:
+#     input:
+#         expand("{assayID}/{runID}/{outdir}/{trim_data}/{sample}_{suffix}.QT.CA.fastq.gz",
+#                assayID = "ChIP-Seq",
+#                runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
+#                outdir = config["processed_dir"],
+#                trim_data = config["trim_dir"],
+#                sample = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
+#                suffix = ["R1_001", "R2_001"]),
+#         expand("{assayID}/{runID}/{outdir}/{trim_data}/{sample}_{suffix}.QT.CA.fastq.gz",
+#                assayID = "ChIP-Seq",
+#                runID = "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq",
+#                outdir = config["processed_dir"],
+#                trim_data = config["trim_dir"],
+#                sample = config["samples"]["ChIP-Seq"]["NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq"],
+#                suffix = ["R1_001", "R2_001"])
+#
+# rule deepTools_QC:
+#     input:
+#         expand("{assayID}/{outdir}/{reference_version}/deepTools/plotCorrelation/{duplicates}/heatmap_SpearmanCorr_readCounts.{suffix}",
+#                assayID = "ChIP-Seq",
+#                runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
+#                outdir = config["processed_dir"],
+#                reference_version = config["references"][REF_GENOME]["version"][0],
+#                duplicates = ["duplicates_marked", "duplicates_removed"],
+#                suffix = ["png", "tab"]),
+#         expand("{assayID}/{outdir}/{reference_version}/deepTools/plotPCA/{duplicates}/PCA_readCounts.png",
+#                assayID = "ChIP-Seq",
+#                runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
+#                outdir = config["processed_dir"],
+#                reference_version = config["references"][REF_GENOME]["version"][0],
+#                duplicates = ["duplicates_marked", "duplicates_removed"]),
+#         expand("{assayID}/{outdir}/{reference_version}/deepTools/plotFingerprint/{duplicates}/fingerprints_{duplicates}.png",
+#                assayID = "ChIP-Seq",
+#                runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
+#                outdir = config["processed_dir"],
+#                reference_version = config["references"][REF_GENOME]["version"][0],
+#                duplicates = ["duplicates_marked"]),
+#         expand("{assayID}/{outdir}/{reference_version}/deepTools/bamPEFragmentSize/{duplicates}/histogram_{duplicates}.png",
+#                assayID = "ChIP-Seq",
+#                runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
+#                outdir = config["processed_dir"],
+#                reference_version = config["references"][REF_GENOME]["version"][0],
+#                duplicates = ["duplicates_marked"])
+#
+# rule deepTools_QC_deduplicated:
+#     input:
+#         expand("{assayID}/{outdir}/{reference_version}/deepTools/plotFingerprint/{duplicates}/fingerprints_{duplicates}.png",
+#                assayID = "ChIP-Seq",
+#                runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
+#                outdir = config["processed_dir"],
+#                reference_version = config["references"][REF_GENOME]["version"][0],
+#                duplicates = ["duplicates_removed"]),
+#         expand("{assayID}/{outdir}/{reference_version}/deepTools/bamPEFragmentSize/{duplicates}/histogram_{duplicates}.png",
+#                assayID = "ChIP-Seq",
+#                runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
+#                outdir = config["processed_dir"],
+#                reference_version = config["references"][REF_GENOME]["version"][0],
+#                duplicates = ["duplicates_removed"])
+#
 
 rule all:
     input:
