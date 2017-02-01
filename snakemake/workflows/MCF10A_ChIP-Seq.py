@@ -27,8 +27,8 @@ include_prefix = home + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/rule
 #     include_prefix + "run_deepTools_QC.py"
 include:
     include_prefix + "run_deepTools.py"
-include:
-    include_prefix + "bam_processing_stage2.py"
+# include:
+#     include_prefix + "bam_processing_stage2.py"
 
 # define global variables such as reference version of genome so that it can be accessed
 # throughout the whole worfklow
@@ -129,16 +129,16 @@ rule all:
         #        mode = ["normal"],
         #        region = "allGenes",
         #        suffix = ["pdf", "data", "bed"]),
-        expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{command}/{duplicates}/{sample_group}.{suffix}",
-               assayID = "ChIP-Seq",
-               runID = "merged",
-               outdir = config["processed_dir"],
-               reference_version = config["references"][REF_GENOME]["version"][0],
-               application = "samtools",
-               command = "merge",
-               duplicates = ["duplicates_marked", "duplicates_removed"],
-               sample_group = ["H2AZ_10A_high", "Inp_10A_WT_high", "Inp_10A_TGFb_high", "Inp_shZ_10A_high"],
-               suffix = ["bam", "bam.bai"]),
+        # expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{command}/{duplicates}/{sample_group}.{suffix}",
+        #        assayID = "ChIP-Seq",
+        #        runID = "merged",
+        #        outdir = config["processed_dir"],
+        #        reference_version = config["references"][REF_GENOME]["version"][0],
+        #        application = "samtools",
+        #        command = "merge",
+        #        duplicates = ["duplicates_marked", "duplicates_removed"],
+        #        sample_group = ["H2AZ_10A_high", "Inp_10A_WT_high", "Inp_10A_TGFb_high", "Inp_shZ_10A_high"],
+        #        suffix = ["bam", "bam.bai"]),
         expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{mode}/{duplicates}/{scaleFactors}/{treatment}_vs_{control}_{mode}_{ratio}_RPKM.bw",
                assayID = "ChIP-Seq",
                runID = "merged",
