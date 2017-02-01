@@ -36,6 +36,8 @@ rule bam_merge:
         0.2
     params:
         cwd = os.getcwd()
+    threads:
+        lambda wildcards: int(str(config["program_parameters"]["bt2_params"]["threads"]).strip("['']"))
     input:
         bam_merge_input
     output:
