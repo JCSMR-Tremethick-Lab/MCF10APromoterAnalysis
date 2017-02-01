@@ -81,6 +81,7 @@
       "replicates" :
       {
         "H2AZ_10A_high" : ["H2AZ_10A_high_rep1", "H2AZ_10A_high_rep2"],
+        "H2AZ_TGFb_10A" : ["H2AZ_TGFb_10A_high_rep1", "H2AZ_TGFb_10A_high_rep2"],
         "Inp_10A_WT_high" : ["Inp_10A_WT_high_rep1", "Inp_10A_WT_high_rep2"],
         "Inp_10A_TGFb_high" : ["Inp_10A_TGFb_high_rep1", "Inp_TGFb_10A_high_rep2"],
         "Inp_shZ_10A_high" : ["Inp_shZ_10A_high_rep2"]
@@ -109,7 +110,6 @@
         "threads" : "7",
         "platform" : ["Illumina"]
     },
-
     "deepTools" :
     {
       "SES_sample_length" : ["1000"],
@@ -144,6 +144,20 @@
           "--centerReads" : " ",
           "--binSize" : "50",
           "--smoothLength" : "30"
+        }
+      },
+      "bamCompare" :
+      {
+        "MNase" :
+        {
+          "--binSize" : "1",
+          "--smoothLength" : "30"
+        },
+        "normal" :
+        {
+          "--centerReads" : " ",
+          "--binSize" : "25",
+          "--smoothLength" : "60"
         }
       },
       "computeMatrix" :

@@ -118,3 +118,30 @@ rule plotProfile:
                                                --outFileSortedRegions {output.regions} \
                                                --plotType {wildcards.plotType}
         """
+
+rule bam_compare_pooled_replicates:
+    version:
+        0.1
+    params:
+        deepTools_dir = home + config["deepTools_dir"],
+        ignore = config["program_parameters"]["deepTools"]["ignoreForNormalization"],
+        program_parameters = cli_parameters_bamCoverage
+    threads:
+        lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
+    input:
+        control = "{assayID}/{runID}/{outdir}/{reference_version}/samtools/merge/{duplicates}/{control}.bam",
+        treatment = "{assayID}/{runID}/{outdir}/{reference_version}/samtools/merge/{duplicates}/{treatment}.bam"
+    output:
+        "{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{mode}/{duplicates}/{scaleFactors}/{treatment}_vs_{control}_{mode}_{ratio}_RPKM.bw"
+    shell:
+        """
+            {params.deepTools_dir}/bamCompare --bamfile1 {input.treatment} \
+                                              --bamfile2 {input.control} \
+                                              --outFileName {output} \
+                                              --scaleFactorsMethod {wildcards.scaleFactors} \
+                                              --ratio {wildcards.ratio} \
+                                              --numberOfProcessors {threads} \
+                                              --normalizeUsingRPKM \
+                                              --ignoreForNormalization {params.ignore} \
+                                              --skipNonCoveredRegions
+        """
