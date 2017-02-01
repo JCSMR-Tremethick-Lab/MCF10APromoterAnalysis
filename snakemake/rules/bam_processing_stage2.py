@@ -39,7 +39,7 @@ rule bam_merge:
     output:
         protected("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{command}/{duplicates}/{sample_group}.bam")
     run:
-        if len(input > 1):
+        if (len(input) > 1):
             shell("samtools merge --threads {threads} {params} {output} {input}")
         else:
             shell("ln -s {input} {output}")
