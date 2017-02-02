@@ -165,3 +165,16 @@ rule all:
                treatment = "H2AZ_TGFb_10A",
                control = "Inp_10A_TGFb_high",
                ratio = "log2")
+
+rule bamCoverage_replicates:
+    input:
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{mode}/{duplicates}/{sample_group}_{mode}_RPKM.bw",
+               assayID = "ChIP-Seq",
+               runID = "merged",
+               outdir = config["processed_dir"],
+               reference_version = config["references"][REF_GENOME]["version"][0],
+               application = "deepTools",
+               tool = "bamCoverage",
+               mode = ["normal", "MNase"],
+               duplicates = ["duplicates_marked", "duplicates_removed"],
+               sample_group = ["H2AZ_10A_high", "Inp_10A_WT_high", "Inp_10A_TGFb_high", "Inp_shZ_10A_high"])
