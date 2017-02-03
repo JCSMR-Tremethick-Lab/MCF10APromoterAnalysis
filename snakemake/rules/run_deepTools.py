@@ -69,8 +69,7 @@ rule bamCoverage:
                                            {params.program_parameters} \
                                            --numberOfProcessors {threads} \
                                            --normalizeUsingRPKM \
-                                           --ignoreForNormalization {params.ignore}\
-                                           --skipNonCoveredRegions
+                                           --ignoreForNormalization {params.ignore}
         """
 
 rule computeMatrix:
@@ -142,8 +141,7 @@ rule bam_compare_pooled_replicates:
                                               --ratio {wildcards.ratio} \
                                               --numberOfProcessors {threads} \
                                               --normalizeUsingRPKM \
-                                              --ignoreForNormalization {params.ignore} \
-                                              --skipNonCoveredRegions
+                                              --ignoreForNormalization {params.ignore}
         """
 
 rule bam_coverage_pooled_replicates:
@@ -167,6 +165,5 @@ rule bam_coverage_pooled_replicates:
                                                {params.program_parameters} \
                                                --numberOfProcessors {threads} \
                                                --normalizeUsingRPKM \
-                                               --ignoreForNormalization {params.ignore}\
-                                               --skipNonCoveredRegions
+                                               --ignoreForNormalization {params.ignore}
         """
