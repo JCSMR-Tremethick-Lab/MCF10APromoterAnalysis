@@ -142,7 +142,7 @@
         "normal" :
         {
           "--centerReads" : " ",
-          "--binSize" : "50",
+          "--binSize" : "10",
           "--smoothLength" : "30"
         }
       },
