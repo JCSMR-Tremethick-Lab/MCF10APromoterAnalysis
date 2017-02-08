@@ -29,7 +29,7 @@ def bam_merge_input(wildcards):
                      "bowtie2",
                      wildcards["duplicates"]))
     for i in config["samples"]["ChIP-Seq"]["replicates"][wildcards["sampleGroup"]]:
-        fn.append("/".join((path, ".".join((i, "".join("Q", config["alignment_quality"]),"sorted.bam")))))
+        fn.append("/".join((path, ".".join((i, ("".join("Q", config["alignment_quality"])),"sorted.bam")))))
     return(fn)
 
 rule run_bam_merge:
@@ -46,13 +46,21 @@ rule run_bam_merge:
 
 rule bam_merge:
     version:
-        0.2
+        0.3
     params:
         cwd = os.getcwd()
     threads:
         lambda wildcards: int(str(config["program_parameters"]["bt2_params"]["threads"]).strip("['']"))
     input:
-        bam_merge_input
+        lambda wildcards: expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/{duplicates}/{unit}.Q{qual}.{suffix}",
+                                 assayID = wildcards["assayID"],
+                                 runID = wildcards["runID"],
+                                 outdir = wildcards["outdir"],
+                                 reference_version = wildcards["reference_version"],
+                                 duplicates = wildcards["duplicates"],
+                                 unit = config["samples"]["ChIP-Seq"]["replicates"][wildcards["sampleGroup"]],
+                                 qual = config["alignment_quality"],
+                                 suffix = "sorted.bam")
     output:
         protected("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{command}/{duplicates}/{sampleGroup}.bam")
     run:
