@@ -18,6 +18,7 @@ from snakemake.exceptions import MissingInputException
 
 # set some local variables
 home = os.environ['HOME']
+REF_GENOME = config["references"]["genomes"][1]
 
 def bam_merge_input(wildcards):
     fn = []
@@ -42,7 +43,7 @@ rule run_bam_merge:
                command = "merge",
                duplicates = ["duplicates_marked", "duplicates_removed"],
                sampleGroup = ["H2AZ_10A_high", "H2AZ_TGFb_10A", "Inp_10A_WT_high", "Inp_10A_TGFb_high", "Inp_shZ_10A_high"])
-    
+
 rule bam_merge:
     version:
         0.2
