@@ -34,7 +34,7 @@ def bam_merge_input(wildcards):
 
 rule run_bam_merge:
     input:
-        expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{command}/{duplicates}/{sampleGroup}.bam",
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{command}/{duplicates}/{sampleGroup}.{suffix}",
                assayID = "ChIP-Seq",
                runID = "merged",
                outdir = config["processed_dir"],
@@ -42,7 +42,8 @@ rule run_bam_merge:
                application = "samtools",
                command = "merge",
                duplicates = ["duplicates_marked", "duplicates_removed"],
-               sampleGroup = ["H2AZ_10A_high", "H2AZ_TGFb_10A", "Inp_10A_WT_high", "Inp_10A_TGFb_high", "Inp_shZ_10A_high"])
+               sampleGroup = ["H2AZ_10A_high", "H2AZ_TGFb_10A", "Inp_10A_WT_high", "Inp_10A_TGFb_high", "Inp_shZ_10A_high"],
+               suffix = ["bam", "bam.bai"])
 
 rule bam_merge:
     version:
