@@ -177,4 +177,4 @@ rule bamCoverage_replicates:
                tool = "bamCoverage",
                mode = ["normal", "MNase"],
                duplicates = ["duplicates_marked", "duplicates_removed"],
-               sample_group = ["H2AZ_10A_high", "Inp_10A_WT_high", "Inp_10A_TGFb_high", "Inp_shZ_10A_high"])
+               sample_group = ["H2AZ_10A_high", "H2AZ_TGFb_10A", "Inp_10A_WT_high", "Inp_10A_TGFb_high", "Inp_shZ_10A_high"])

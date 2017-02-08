@@ -156,8 +156,8 @@
         "normal" :
         {
           "--centerReads" : " ",
-          "--binSize" : "25",
-          "--smoothLength" : "60"
+          "--binSize" : "10",
+          "--smoothLength" : "30"
         }
       },
       "computeMatrix" :
