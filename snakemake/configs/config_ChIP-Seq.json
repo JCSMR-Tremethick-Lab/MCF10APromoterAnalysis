@@ -121,11 +121,15 @@
       {
         "GRCh37_hg19_ensembl75" :
         {
-          "allGenes" : "/Data/References/Annotations/Homo_sapiens/GRCh37_hg19_ensembl75/allGenes.bed"
+          "allGenes" : "/Data/References/Annotations/Homo_sapiens/GRCh37_hg19_ensembl75/allGenes.bed",
+          "TanEMTup" : "/Data/References/Annotations/Homo_sapiens/GRCh37_hg19_ensembl75/Tan_et_al_EMT_up_genes.bed",
+          "TanEMTdown" : "/Data/References/Annotations/Homo_sapiens/GRCh37_hg19_ensembl75/Tan_et_al_EMT_down_genes.bed"
         },
         "GRCh37_hg19_ensembl75_ERCC" :
         {
-          "allGenes" : "/Data/References/Annotations/Homo_sapiens/GRCh37_hg19_ensembl75/allGenes.bed"
+          "allGenes" : "/Data/References/Annotations/Homo_sapiens/GRCh37_hg19_ensembl75/allGenes.bed",
+          "TanEMTup" : "/Data/References/Annotations/Homo_sapiens/GRCh37_hg19_ensembl75/Tan_et_al_EMT_up_genes.bed",
+          "TanEMTdown" : "/Data/References/Annotations/Homo_sapiens/GRCh37_hg19_ensembl75/Tan_et_al_EMT_down_genes.bed"
         },
         "GRCh38_ensembl84" :
         {
