@@ -31,6 +31,18 @@ def bam_merge_input(wildcards):
         fn.append("/".join((path, ".".join((i, "Q", config["alignment_quality"],".sorted.bam")))))
     return(fn)
 
+rule run_bam_merge:
+    input:
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{command}/{duplicates}/{sampleGroup}.bam",
+               assayID = "ChIP-Seq",
+               runID = "merged",
+               outdir = config["processed_dir"],
+               reference_version = config["references"][REF_GENOME]["version"][0],
+               application = "samtools",
+               command = "merge",
+               duplicates = ["duplicates_marked", "duplicates_removed"],
+               sampleGroup = ["H2AZ_10A_high", "H2AZ_TGFb_10A", "Inp_10A_WT_high", "Inp_10A_TGFb_high", "Inp_shZ_10A_high"])
+    
 rule bam_merge:
     version:
         0.2
