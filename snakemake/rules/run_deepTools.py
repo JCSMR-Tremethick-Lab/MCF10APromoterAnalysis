@@ -19,6 +19,13 @@ def cli_parameters_computeMatrix(wildcards):
         a["--referencePoint"] = wildcards.referencePoint
     return(a)
 
+def cli_parameters_normalization(wildcards):
+    if wildcards["norm"] == "RPKM":
+        a = "--normalizeUsingRPKM"
+    else if wildcards["norm"] == "1xcoverage":
+        a = "--normalizeTo1x"
+    return(a)
+
 def cli_parameters_bamCoverage(wildcards):
     a = config["program_parameters"][wildcards["application"]][wildcards["tool"]][wildcards["mode"]]
     b = str()
@@ -146,11 +153,12 @@ rule bam_compare_pooled_replicates:
 
 rule bam_coverage_pooled_replicates:
     version:
-        0.1
+        0.2
     params:
         deepTools_dir = home + config["deepTools_dir"],
         ignore = config["program_parameters"]["deepTools"]["ignoreForNormalization"],
-        program_parameters = cli_parameters_bamCoverage
+        program_parameters = cli_parameters_bamCoverage,
+        normalization = lambda wildcards: cli_parameters_normalization(wildcards)
     threads:
         lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
     input:
@@ -165,6 +173,6 @@ rule bam_coverage_pooled_replicates:
                                                --outFileFormat bigwig \
                                                {params.program_parameters} \
                                                --numberOfProcessors {threads} \
-                                               --normalizeUsingRPKM \
+                                               {params.normalization} \
                                                --ignoreForNormalization {params.ignore}
         """
