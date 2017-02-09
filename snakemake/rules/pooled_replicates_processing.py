@@ -48,6 +48,21 @@ rule run_computeMatrix_pooled_replicates_single_matrix:
                region = ["allGenes", "TanEMTup", "TanEMTdown"],
                mode = ["MNase", "normal"])
 
+rule run_plotProfile_pooled_replicates:
+    input:
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{command}/{duplicates}/{referencePoint}/allSamples_{plotType}.{mode}.{region}.{suffix}",
+                assayID = ASSAYID,
+                runID = RUNID,
+                outdir = OUTDIR,
+                reference_version = REFVERSION,
+                application = "deepTools",
+                tool = "plotProfile",
+                command = ["reference-point", "scale-regions"],
+                duplicates = ["duplicates_marked", "duplicates_removed"],
+                referencePoint = "TSS",
+                region = ["allGenes", "TanEMTup", "TanEMTdown"],
+                mode = ["MNase", "normal"],
+                suffix = ["pdf", "bed", "data"])
 
 rule computeMatrix_pooled_replicates:
     version:
@@ -106,4 +121,24 @@ rule computeMatrix_pooled_replicates_single_matrix:
                                                  --numberOfProcessors {threads} \
                                                  {params.program_parameters} \
                                                  --outFileName {output.matrix_gz}
+        """
+
+rule plotProfile_pooled_replicates:
+    version:
+        0.1
+    params:
+        deepTools_dir = home + config["deepTools_dir"],
+    input:
+        matrix_gz = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/computeMatrix/{command}/{duplicates}/{referencePoint}/allSamples_{region}_{mode}.matrix.gz"
+    output:
+        figure = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{command}/{duplicates}/{referencePoint}/allSamples_{plotType}.{mode}.{region}.pdf",
+        data = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{command}/{duplicates}/{referencePoint}/allSamples_{plotType}.{mode}.{region}.data",
+        regions = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{command}/{duplicates}/{referencePoint}/allSamples_{plotType}.{mode}.{region}.bed"
+    shell:
+        """
+            {params.deepTools_dir}/plotProfile --matrixFile {input.matrix_gz} \
+                                               --outFileName {output.figure} \
+                                               --outFileNameData {output.data} \
+                                               --outFileSortedRegions {output.regions} \
+                                               --plotType {wildcards.plotType}
         """
