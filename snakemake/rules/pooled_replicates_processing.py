@@ -60,6 +60,7 @@ rule run_plotProfile_pooled_replicates:
                 command = ["reference-point", "scale-regions"],
                 duplicates = ["duplicates_marked", "duplicates_removed"],
                 referencePoint = "TSS",
+                plotType = "se",
                 region = ["allGenes", "TanEMTup", "TanEMTdown"],
                 mode = ["MNase", "normal"],
                 suffix = ["pdf", "bed", "data"])
