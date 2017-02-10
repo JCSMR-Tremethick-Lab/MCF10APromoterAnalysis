@@ -168,7 +168,7 @@ rule all:
 
 rule bamCoverage_replicates:
     input:
-        expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{mode}/{duplicates}/{sample_group}_{mode}_RPKM.bw",
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{mode}/{duplicates}/{sample_group}_{mode}_{norm}.bw",
                assayID = "ChIP-Seq",
                runID = "merged",
                outdir = config["processed_dir"],
@@ -177,4 +177,5 @@ rule bamCoverage_replicates:
                tool = "bamCoverage",
                mode = ["normal", "MNase"],
                duplicates = ["duplicates_marked", "duplicates_removed"],
-               sample_group = ["H2AZ_10A_high", "H2AZ_TGFb_10A", "Inp_10A_WT_high", "Inp_10A_TGFb_high", "Inp_shZ_10A_high"])
+               sample_group = ["H2AZ_10A_high", "H2AZ_TGFb_10A", "Inp_10A_WT_high", "Inp_10A_TGFb_high", "Inp_shZ_10A_high"],
+               norm = ["RPKM", "1xcoverage"])

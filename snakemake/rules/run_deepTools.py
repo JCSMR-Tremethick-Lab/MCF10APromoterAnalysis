@@ -21,9 +21,9 @@ def cli_parameters_computeMatrix(wildcards):
 
 def cli_parameters_normalization(wildcards):
     if wildcards["norm"] == "RPKM":
-        a = "--normalizeUsingRPKM"
+        a = "--normalizeUsingRPKM", config["references"][REF_GENOME]["effectiveSize"]
     else if wildcards["norm"] == "1xcoverage":
-        a = "--normalizeTo1x"
+        a = " ".join(("--normalizeTo1x", config["references"][REF_GENOME]["effectiveSize"]))
     return(a)
 
 def cli_parameters_bamCoverage(wildcards):
