@@ -22,7 +22,7 @@ def cli_parameters_computeMatrix(wildcards):
 def cli_parameters_normalization(wildcards):
     if wildcards["norm"] == "RPKM":
         a = "--normalizeUsingRPKM"
-    else if wildcards["norm"] == "1xcoverage":
+    elif wildcards["norm"] == "1xcoverage":
         a = " ".join(("--normalizeTo1x", config["references"][REF_GENOME]["effectiveSize"]))
     return(a)
 
