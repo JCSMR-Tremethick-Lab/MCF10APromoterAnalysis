@@ -112,7 +112,7 @@ rule computeMatrix_pooled_replicates_single_matrix:
                                        sampleGroup = ["H2AZ_10A_high", "H2AZ_TGFb_10A", "Inp_10A_WT_high", "Inp_10A_TGFb_high", "Inp_shZ_10A_high"],
                                        region = wildcards["region"],
                                        mode = wildcards["mode"],
-                                       norm = wildcars["norm"]),
+                                       norm = wildcards["norm"]),
         region = lambda wildcards: home + config["program_parameters"]["deepTools"]["regionFiles"][wildcards["reference_version"]][wildcards.region]
     output:
         matrix_gz = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/computeMatrix/{command}/{duplicates}/{referencePoint}/allSamples_{region}_{mode}.{norm}.matrix.gz"
