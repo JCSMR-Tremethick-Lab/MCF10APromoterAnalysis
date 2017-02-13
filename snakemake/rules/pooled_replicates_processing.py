@@ -20,7 +20,7 @@ def cli_parameters_computeMatrix(wildcards):
 
 rule run_computeMatrix_pooled_replicates:
     input:
-        expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/computeMatrix/{command}/{duplicates}/{referencePoint}/{sampleGroup}_{region}_{mode}.matrix.gz",
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/computeMatrix/{command}/{duplicates}/{referencePoint}/{sampleGroup}_{region}_{mode}.{norm}.matrix.gz",
                assayID = ASSAYID,
                runID = RUNID,
                outdir = OUTDIR,
@@ -31,11 +31,12 @@ rule run_computeMatrix_pooled_replicates:
                referencePoint = "TSS",
                sampleGroup = ["H2AZ_10A_high", "H2AZ_TGFb_10A", "Inp_10A_WT_high", "Inp_10A_TGFb_high", "Inp_shZ_10A_high"],
                region = ["allGenes", "TanEMTup", "TanEMTdown"],
-               mode = ["MNase", "normal"])
+               mode = ["MNase", "normal"],
+               norm = ["RPKM", "1xcoverage"])
 
 rule run_computeMatrix_pooled_replicates_single_matrix:
     input:
-        expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/computeMatrix/{command}/{duplicates}/{referencePoint}/{sampleGroup}_{region}_{mode}.matrix.gz",
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/computeMatrix/{command}/{duplicates}/{referencePoint}/{sampleGroup}_{region}_{mode}.{norm}.matrix.gz",
                assayID = ASSAYID,
                runID = RUNID,
                outdir = OUTDIR,
@@ -46,11 +47,12 @@ rule run_computeMatrix_pooled_replicates_single_matrix:
                referencePoint = "TSS",
                sampleGroup = "allSamples",
                region = ["allGenes", "TanEMTup", "TanEMTdown"],
-               mode = ["MNase", "normal"])
+               mode = ["MNase", "normal"],
+               norm = ["RPKM", "1xcoverage"])
 
 rule run_plotProfile_pooled_replicates:
     input:
-        expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{command}/{duplicates}/{referencePoint}/allSamples_{plotType}.{mode}.{region}.{suffix}",
+        expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{command}/{duplicates}/{referencePoint}/allSamples_{plotType}.{mode}.{region}.{norm}.{suffix}",
                 assayID = ASSAYID,
                 runID = RUNID,
                 outdir = OUTDIR,
@@ -63,7 +65,8 @@ rule run_plotProfile_pooled_replicates:
                 plotType = "se",
                 region = ["allGenes", "TanEMTup", "TanEMTdown"],
                 mode = ["MNase", "normal"],
-                suffix = ["pdf", "bed", "data"])
+                suffix = ["pdf", "bed", "data"],
+                norm = ["RPKM", "1xcoverage"])
 
 rule computeMatrix_pooled_replicates:
     version:
@@ -74,10 +77,10 @@ rule computeMatrix_pooled_replicates:
     threads:
         lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
     input:
-        file = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/bamCoverage/{mode}/{duplicates}/{sampleGroup}_{mode}_RPKM.bw",
+        file = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/bamCoverage/{mode}/{duplicates}/{sampleGroup}_{mode}_{norm}.bw",
         region = lambda wildcards: home + config["program_parameters"]["deepTools"]["regionFiles"][wildcards["reference_version"]][wildcards.region]
     output:
-        matrix_gz = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/computeMatrix/{command}/{duplicates}/{referencePoint}/{sampleGroup}_{region}_{mode}.matrix.gz"
+        matrix_gz = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/computeMatrix/{command}/{duplicates}/{referencePoint}/{sampleGroup}_{region}_{mode}.{norm}.matrix.gz"
     shell:
         """
             {params.deepTools_dir}/computeMatrix {wildcards.command} \
@@ -99,7 +102,7 @@ rule computeMatrix_pooled_replicates_single_matrix:
     threads:
         lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
     input:
-        file = lambda wildcards: expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/bamCoverage/{mode}/{duplicates}/{sampleGroup}_{mode}_RPKM.bw",
+        file = lambda wildcards: expand("{assayID}/{runID}/{outdir}/{reference_version}/{application}/bamCoverage/{mode}/{duplicates}/{sampleGroup}_{mode}_{norm}.bw",
                                        assayID = ASSAYID,
                                        runID = RUNID,
                                        outdir = OUTDIR,
@@ -108,10 +111,11 @@ rule computeMatrix_pooled_replicates_single_matrix:
                                        duplicates = wildcards["duplicates"],
                                        sampleGroup = ["H2AZ_10A_high", "H2AZ_TGFb_10A", "Inp_10A_WT_high", "Inp_10A_TGFb_high", "Inp_shZ_10A_high"],
                                        region = wildcards["region"],
-                                       mode = wildcards["mode"]),
+                                       mode = wildcards["mode"],
+                                       norm = wildcars["norm"]),
         region = lambda wildcards: home + config["program_parameters"]["deepTools"]["regionFiles"][wildcards["reference_version"]][wildcards.region]
     output:
-        matrix_gz = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/computeMatrix/{command}/{duplicates}/{referencePoint}/allSamples_{region}_{mode}.matrix.gz"
+        matrix_gz = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/computeMatrix/{command}/{duplicates}/{referencePoint}/allSamples_{region}_{mode}.{norm}.matrix.gz"
     shell:
         """
             {params.deepTools_dir}/computeMatrix {wildcards.command} \
@@ -130,11 +134,11 @@ rule plotProfile_pooled_replicates:
     params:
         deepTools_dir = home + config["deepTools_dir"],
     input:
-        matrix_gz = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/computeMatrix/{command}/{duplicates}/{referencePoint}/allSamples_{region}_{mode}.matrix.gz"
+        matrix_gz = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/computeMatrix/{command}/{duplicates}/{referencePoint}/allSamples_{region}_{mode}.{norm}.matrix.gz"
     output:
-        figure = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{command}/{duplicates}/{referencePoint}/allSamples_{plotType}.{mode}.{region}.pdf",
-        data = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{command}/{duplicates}/{referencePoint}/allSamples_{plotType}.{mode}.{region}.data",
-        regions = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{command}/{duplicates}/{referencePoint}/allSamples_{plotType}.{mode}.{region}.bed"
+        figure = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{command}/{duplicates}/{referencePoint}/allSamples_{plotType}.{mode}.{region}.{norm}.pdf",
+        data = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{command}/{duplicates}/{referencePoint}/allSamples_{plotType}.{mode}.{region}.{norm}.data",
+        regions = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{command}/{duplicates}/{referencePoint}/allSamples_{plotType}.{mode}.{region}.{norm}.bed"
     shell:
         """
             {params.deepTools_dir}/plotProfile --matrixFile {input.matrix_gz} \
