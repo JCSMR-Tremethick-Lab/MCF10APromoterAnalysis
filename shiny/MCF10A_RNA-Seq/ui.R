@@ -1,33 +1,21 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-# 
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
+library(markdown)
+library(DT)
 
 # Define UI for application that draws a histogram
-shinyUI(fluidPage(
-  
-  # Application title
-  titlePanel("Old Faithful Geyser Data"),
-  
-  # Sidebar with a slider input for number of bins 
-  sidebarLayout(
-    sidebarPanel(
-       sliderInput("bins",
-                   "Number of bins:",
-                   min = 1,
-                   max = 50,
-                   value = 30)
-    ),
+shinyUI(
+  fluidPage(
     
-    # Show a plot of the generated distribution
+    # Application title
+    titlePanel("MCF10A RNA-Seq analysis - Version 0.1"),
+    
     mainPanel(
-       plotOutput("distPlot")
+      tabsetPanel(type = "tabs",
+                  tabPanel("Global DE - TGFb vs WT", DT::dataTableOutput("global_de_tgfb")),
+                  tabPanel("Global DE - shZ KD vs WT", DT::dataTableOutput("global_de_shZ")),
+                  tabPanel("Global Gene Expression  - TGFb vs WT", DT::dataTableOutput("global_expression_tgfb")),
+                  tabPanel("Global Gene Expression  - shZ vs WT", DT::dataTableOutput("global_expression_shZ"))
+      )
     )
   )
-))
+)
