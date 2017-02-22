@@ -3,6 +3,7 @@
 .Rhistory
 .RData
 .Ruserdata
+*.rda
 *.sh.o*
 *.sh.e*
 *.sh.po*
