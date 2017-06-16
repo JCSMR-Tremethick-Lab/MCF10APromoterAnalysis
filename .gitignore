@@ -8,3 +8,4 @@
 *.sh.e*
 *.sh.po*
 R/MCF10A_RNA-Seq_Analysis_*/*
+*.pdf
