@@ -66,20 +66,10 @@ analysis_version <- "2"
 sleuth_results_output <- paste("sleuthResults_", annotationVersion, "_V", analysis_version, ".rda", sep = "")
 sleuth_resultsCompressed_file <- paste("sleuthResultsCompressed_", annotationVersion, "_V", analysis_version, ".rda", sep = "")
 
-# read in data ------------------------------------------------------------
-dataPath <- lDir(pathPrefix, 
-                 paste("Data/Tremethick/Breast/",
-                       runNo, "/",
-                       runID,
-                       "/processed_data/", 
-                       annotationVersion,
-                       "/HTSeq/count/", sep = ""))
-files <- list.files(path = dataPath, full.names = T)
-names(files) <- list.files(path = dataPath, full.names = F)
-
 # preparing annotation data from Ensembl ----------------------------------
 
 if (length(grep("UCSC", annotationVersion)) > 0) {
+  mart <- biomaRt::useEnsembl(biomart = biomart, dataset = dataset, host = ensemblHost)
   annotationDataPath <- paste("~/Data/References/Annotations/Homo_sapiens/", annotationVersion, "/", sep = "")
   ucscTranscripts_file <- paste(annotationDataPath, "ucscTranscripts_", annotationVersion, ".rda", sep = "")
   load(ucscTranscripts_file)
@@ -93,7 +83,6 @@ if (length(grep("UCSC", annotationVersion)) > 0) {
   t2g <- dplyr::rename(t2g, target_id = TXNAME, gene_id = GENEID)
   t2g <- t2g[!is.na(t2g$gene_id)]
   t2g$gene_id <- as.integer(t2g$gene_id)
-  t2g <- t2g[select]
   t2g <- merge(t2g, ucscGenes, by.x = "gene_id", by.y = "entrezgene", all.x = T, all.y = F)
 } else {
   ensGenes_file <- paste(annotationDataPath, "ensGenes_", annotationVersion, ".rda", sep = "")
