@@ -75,7 +75,7 @@ rule create_domains_file:
     output:
         "{sample}.{chr1}.{chr2}.{res}.domains"
     params:
-        genomeSizeFile = os.environ['HOME'] + "/Data/References/Annotations/Homo_sapiens/hg19/UCSC/hg19.chrom.sizes.sorted"
+        genomeSizeFile = os.environ['HOME'] + "/Data/References/Annotations/Homo_sapiens/hg19/UCSC/hg19.chrom.sizes.sorted",
         bedtools_location = bedtools_location
     shell:
         """"
