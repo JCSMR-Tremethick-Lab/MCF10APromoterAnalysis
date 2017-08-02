@@ -28,6 +28,6 @@ rule prepare_armatus_input:
             cut -f 2- -d " " {input} | sed "1d" - | tr " " "\t" > {output}
         """
 
-rull all:
+rule all:
     input:
         "shZ-rep2.10.10.40k.tsv"
