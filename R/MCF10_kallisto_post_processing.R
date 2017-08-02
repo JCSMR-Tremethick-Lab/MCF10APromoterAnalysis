@@ -79,11 +79,13 @@ if (length(grep("UCSC", annotationVersion)) > 0) {
                              filters = "entrezgene",
                              values = ucscTranscripts$GENEID,
                              mart = mart)
+  ucscGenes$entrezgene <- as.character(ucscGenes$entrezgene)
   t2g <- data.table::as.data.table(ucscTranscripts) 
   t2g <- dplyr::rename(t2g, target_id = TXNAME, gene_id = GENEID)
   t2g <- t2g[!is.na(t2g$gene_id)]
-  t2g$gene_id <- as.integer(t2g$gene_id)
+  t2g$gene_id <- as.character(t2g$gene_id)
   t2g <- merge(t2g, ucscGenes, by.x = "gene_id", by.y = "entrezgene", all.x = T, all.y = F)
+  setcolorder(t2g, c(2,1,3:8))
 } else {
   ensGenes_file <- paste(annotationDataPath, "ensGenes_", annotationVersion, ".rda", sep = "")
   ensTranscripts_file <- paste(annotationDataPath, "ensTranscripts_", annotationVersion, ".rda", sep = "")
@@ -193,7 +195,8 @@ txi <- tximport::tximport(files,
                           type = "kallisto",
                           geneIdCol = gene_id,
                           txIdCol = target_id,
-                          tx2gene = t2g[,c(1,2)])
+                          tx2gene = t2g[,c(1,2)],
+                          ignoreTxVersion = F)
 # perform PCA for first inspection of data --------------------------------
 sd1 <- apply(txi$abundance, 1, sd)
 summary(sd1)
@@ -204,6 +207,10 @@ sample_id <- sample_id[grep(paste(names(files), collapse = "|"), sample_id)]
 condition <- condition[grep(paste(names(files), collapse = "|"), names(condition))]
 kal_dirs <- kal_dirs[grep(paste(names(files), collapse = "|"), names(kal_dirs))]
 ade4::s.class(pca1$li, fac = as.factor(condition))
+
+# analysis of first MCF10A sequencing run:
+# evidently shZ and WT samples were swapped. have to check which one shows H2A.Z knockdown
+
 # treat D6 and D8 samples separately
 # pcaD6 <- ade4::dudi.pca(t(txi$abundance[sd1 > 3, grep("D6", colnames(txi$abundance))]), scannf = F, nf = 6)
 # pdf(paste("PCA_MCF10A_wt_vs_TGFb_", annotationVersion, ".pdf", sep = ""))
