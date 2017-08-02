@@ -13,10 +13,9 @@ localrules:
     all
 
 wrapper_dir = os.environ['HOME'] + "/Development/snakemake-wrappers/bio"
-
 include_prefix= os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/rules/"
-
 armatus_bin = os.environ['HOME'] + "/bin/armatus-linux-x64"
+bedtools_location = os.environ['HOME'] + "/miniconda3/envs/chrom3d/bin/"
 
 SAMPLES = ["shZ-rep2.10.10.40k" ,
            "shZ-rep2.11.11.40k" ,
@@ -68,8 +67,30 @@ rule run_armatus:
             ~/bin/armatus-linux-x64 -i {input} -g 1.0 -s 0.5 -o {params.prefix} -r 40000 -c {wildcards.chr1}
         """
 
+rule create_domains_file:
+    version:
+        0.1
+    input:
+        "{sample}.{chr1}.{chr2}.{res}.consensus.txt"
+    output:
+        "{sample}.{chr1}.{chr2}.{res}.domains"
+    params:
+        genomeSizeFile = os.environ['HOME'] + "/Data/References/Annotations/Homo_sapiens/hg19/UCSC/hg19.chrom.sizes.sorted"
+        bedtools_location = bedtools_location
+    shell:
+        """"
+            cat {input} | \
+            sort -k1,1 -k2,2n - |\
+            {params.bedtools_location}/mergeBed -i - |\
+            awk '{print "chr"$1 "\t" $2 "\t" $3 "\tdomain"}' - |\
+            {params.bedtools_location}/bedtools complement -i {input} -g {params.genomeSizeFile} |\
+            sort -k1,1 -k2,2n - |\
+            awk '{if($4=="domain") print $0; else print $1 "\t" $2 "\t" $3 "\tgap"}'  > {output}
+        """"
+
+
 
 rule all:
     input:
-        expand("{sample}.consensus.txt",
+        expand("{sample}.domains",
                sample = SAMPLES)
