@@ -45,7 +45,7 @@ SAMPLES = ["shZ-rep2.10.10.40k" ,
 rule prepare_armatus_input:
     version: 0.1
     input:
-        "{sample}.{chr1}.{chr2}.{res}"
+        "{sample}.{chr1}.{chr2}.{res}.mat"
     output:
         "{sample}.{chr1}.{chr2}.{res}.gz"
     threads: 1
