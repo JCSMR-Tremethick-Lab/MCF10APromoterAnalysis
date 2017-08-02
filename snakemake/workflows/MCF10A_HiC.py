@@ -71,4 +71,5 @@ rule run_armatus:
 
 rule all:
     input:
-        input: ["{sample}.consensus.txt".format(sample=sample) for sample in SAMPLES]
+        expand("{sample}.consensus.txt",
+               sample = SAMPLES)
