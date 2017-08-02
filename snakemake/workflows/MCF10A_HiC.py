@@ -19,7 +19,7 @@ include_prefix= os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/Breast/s
 rule prepare_armatus_input:
     version: 0.1
     input:
-        glob_wildcards("{sample}.{chr1}.{chr2}.{res}.mat")
+        "{sample}.{chr1}.{chr2}.{res}.mat"
     output:
         "{sample}.{chr1}.{chr2}.{res}.tsv"
     threads: 1
