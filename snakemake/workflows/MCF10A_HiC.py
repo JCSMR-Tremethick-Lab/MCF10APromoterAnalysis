@@ -47,4 +47,4 @@ rule run_armatus:
 
 rule all:
     input:
-        "shZ-rep2.10.10.40k.tsv"
+        "shZ-rep2.10.10.40k.consensus.txt"
