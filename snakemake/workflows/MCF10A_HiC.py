@@ -18,10 +18,34 @@ include_prefix= os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/Breast/s
 
 armatus_bin = os.environ['HOME'] + "/bin/armatus-linux-x64"
 
+SAMPLES = ["shZ-rep2.10.10.40k" ,
+           "shZ-rep2.11.11.40k" ,
+           "shZ-rep2.1.1.40k" ,
+           "shZ-rep2.12.12.40k" ,
+           "shZ-rep2.13.13.40k" ,
+           "shZ-rep2.14.14.40k" ,
+           "shZ-rep2.15.15.40k" ,
+           "shZ-rep2.16.16.40k" ,
+           "shZ-rep2.17.17.40k" ,
+           "shZ-rep2.18.18.40k" ,
+           "shZ-rep2.19.19.40k" ,
+           "shZ-rep2.20.20.40k" ,
+           "shZ-rep2.21.21.40k" ,
+           "shZ-rep2.22.22.40k" ,
+           "shZ-rep2.2.2.40k" ,
+           "shZ-rep2.3.3.40k" ,
+           "shZ-rep2.4.4.40k" ,
+           "shZ-rep2.5.5.40k" ,
+           "shZ-rep2.6.6.40k" ,
+           "shZ-rep2.7.7.40k" ,
+           "shZ-rep2.8.8.40k" ,
+           "shZ-rep2.9.9.40k" ,
+           "shZ-rep2.X.X.40k"]
+
 rule prepare_armatus_input:
     version: 0.1
     input:
-        "{sample}.{chr1}.{chr2}.{res}.mat"
+        "{sample}.{chr1}.{chr2}.{res}"
     output:
         "{sample}.{chr1}.{chr2}.{res}.gz"
     threads: 1
@@ -47,4 +71,4 @@ rule run_armatus:
 
 rule all:
     input:
-        "shZ-rep2.10.10.40k.consensus.txt"
+        input: ["{sample}.consensus.txt".format(sample=sample) for sample in SAMPLES]
