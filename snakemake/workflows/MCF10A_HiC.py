@@ -41,7 +41,7 @@ rule run_armatus:
         prefix = "{sample}.{chr1}.{chr2}.{res}"
     shell:
         """
-            armatus_bin -i {input} -g 1.0 -s 0.5 -o {params.prefix} -r 40000 -c {wildcards.chr1}
+            ~/bin/armatus-linux-x64 -i {input} -g 1.0 -s 0.5 -o {params.prefix} -r 40000 -c {wildcards.chr1}
         """
 
 
