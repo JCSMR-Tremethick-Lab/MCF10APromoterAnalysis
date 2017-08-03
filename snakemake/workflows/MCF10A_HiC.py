@@ -89,11 +89,11 @@ rule convert_list_to_coo:
     output:
         "40k_list/{sample}.{chr1}.{chr2}.{res}.coo"
     params:
-	bash_dir = os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/Breast/bash/"
+	   bash_dir = os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/Breast/bash"
     shell:
-	"""
-		{params.bash_dir}convert_list_to_coo.sh {input} {output}
-	"""
+    	"""
+    		{params.bash_dir}/convert_list_to_coo.sh {input} {output}
+    	"""
 
 rule all:
     input:
