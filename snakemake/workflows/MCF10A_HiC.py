@@ -107,7 +107,7 @@ rule make_NCHG_input:
         "intra_chr_bedpe/{sample}.{chr1}.{chr2}.{res}.domains.RAW.bedpe"
     shell:
         """
-            {params.bash_dir}/make_NCHG_input.sh {input.domains} {input.coo} {wildcards.chr1} > {output}
+            {params.bash_dir}/make_NCHG_input.sh {input.domains} {input.coo} chr{wildcards.chr1} > {output}
         """
 
 rule all:
