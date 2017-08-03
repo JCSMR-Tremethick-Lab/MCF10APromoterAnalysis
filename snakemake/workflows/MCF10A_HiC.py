@@ -89,7 +89,7 @@ rule convert_list_to_coo:
     input:
         "40k_list/{sample}.{chr1}.{chr2}.{res}.txt"
     output:
-        "40k_list/{sample}.{chr1}.{chr2}.{res}.coo"
+        "intra_chr_RAWobserved/{sample}.{chr1}.{chr2}.{res}.coo"
     shell:
     	"""
     		{params.bash_dir}/convert_list_to_coo.sh {input} {output}
