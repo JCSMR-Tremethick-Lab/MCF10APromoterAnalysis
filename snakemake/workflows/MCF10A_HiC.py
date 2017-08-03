@@ -44,9 +44,9 @@ SAMPLES = ["shZ-rep2.10.10.40k" ,
 rule prepare_armatus_input:
     version: 0.1
     input:
-        "{sample}.{chr1}.{chr2}.{res}.mat"
+        "40k_intra/{sample}.{chr1}.{chr2}.{res}.mat"
     output:
-        "{sample}.{chr1}.{chr2}.{res}.gz"
+        "40k_intra/{sample}.{chr1}.{chr2}.{res}.gz"
     threads: 1
     shell:
         """
@@ -57,9 +57,9 @@ rule run_armatus:
     version:
         0.1
     input:
-        "{sample}.{chr1}.{chr2}.{res}.gz"
+        "40k_intra/{sample}.{chr1}.{chr2}.{res}.gz"
     output:
-        "{sample}.{chr1}.{chr2}.{res}.consensus.txt"
+        "40k_intra/{sample}.{chr1}.{chr2}.{res}.consensus.txt"
     params:
         prefix = "{sample}.{chr1}.{chr2}.{res}"
     shell:
@@ -71,9 +71,9 @@ rule create_domains_file:
     version:
         0.1
     input:
-        "{sample}.{chr1}.{chr2}.{res}.consensus.txt"
+        "40k_intra/{sample}.{chr1}.{chr2}.{res}.consensus.txt"
     output:
-        "{sample}.{chr1}.{chr2}.{res}.domains"
+        "40k_intra/{sample}.{chr1}.{chr2}.{res}.domains"
     params:
         genomeSizeFile = os.environ['HOME'] + "/Data/References/Annotations/Homo_sapiens/hg19/UCSC/hg19.chrom.sizes.sorted",
         bedtools_location = bedtools_location
@@ -81,9 +81,21 @@ rule create_domains_file:
         """"
         """"
 
-
+rule convert_list_to_coo:
+    version:
+        0.1
+    input:
+        "40k_list/{sample}.{chr1}.{chr2}.{res}.txt"
+    outpout:
+        "40k_list/{sample}.{chr1}.{chr2}.{res}.coo"
+    shell:
+        """
+            sed 's/-/ /g' {input} | sed 's/k/000/g' | awk '{if($5!=0.0) printf("%s\t%s\t%s\n",$2-40000,$4-40000,$5)}' > {output}
+        """
 
 rule all:
     input:
-        expand("{sample}.domains",
+        expand("40k_intra/{sample}.domains",
+               sample = SAMPLES),
+        expand("40k_list/{sample}.coo",
                sample = SAMPLES)
