@@ -79,7 +79,7 @@ rule create_domains_file:
         bedtools_location = bedtools_location
     shell:
         """"
-            cat {input} | sort -k1,1 -k2,2n - | {params.bedtools_location}/mergeBed -i - | awk '{print "chr"$1 "\t" $2 "\t" $3 "\tdomain"}' - | {params.bedtools_location}/complementBed -i {input} -g {params.genomeSizeFile} | sort -k1,1 -k2,2n - | awk '{if($4=="domain") print $0; else print $1 "\t" $2 "\t" $3 "\tgap"}' > {output}
+   	cat {input} | sort -k1,1 -k2,2n - | {params.bedtools_location}/mergeBed -i - | awk '{print "chr"$1 "\\t" $2 "\\t" $3 "\\tdomain"}' - | {params.bedtools_location}/complementBed -i {input} -g {params.genomeSizeFile} | sort -k1,1 -k2,2n - | awk '{if($4=="domain") print $0; else print $1 "\\t" $2 "\\t" $3 "\\tgap"}' > {output}
         """"
 
 
