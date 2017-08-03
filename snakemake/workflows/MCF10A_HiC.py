@@ -99,5 +99,5 @@ rule all:
     input:
 #        expand("40k_intra/{sample}.domains",
 #              sample = SAMPLES),
-        expand("40k_list/{sample}.coo",
+        expand("intra_chr_RAWobserved/{sample}.coo",
                sample = SAMPLES)
