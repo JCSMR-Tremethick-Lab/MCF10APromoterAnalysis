@@ -360,7 +360,7 @@ rule convert_1MB_inter_list_to_coo:
         "1M_inter_chr_RAWobserved/{sample}.{chr1}.{chr2}.{res}.coo"
     shell:
     	"""
-    		{params.bash_dir}/convert_list_to_coo.sh {input} {output}
+    		{params.bash_dir}/convert_list_to_coo_1M_inter.sh {input} {output}
     	"""
 
 rule make_NCHG_input:
