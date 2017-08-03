@@ -87,7 +87,7 @@ rule convert_list_to_coo:
         0.1
     input:
         "40k_list/{sample}.{chr1}.{chr2}.{res}.txt"
-    outpout:
+    output:
         "40k_list/{sample}.{chr1}.{chr2}.{res}.coo"
     shell:
         """
