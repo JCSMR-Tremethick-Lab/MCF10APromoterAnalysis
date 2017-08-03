@@ -385,8 +385,8 @@ rule make_interchr_NCHG_input:
         python_bin = os.environ['HOME'] + "/miniconda3/envs/chrom3d/bin/python"
     input:
         coo = "1M_inter_chr_RAWobserved/{sample}.{chr1}.{chr2}.{res}.coo",
-        blacklist = "~/Data/References/Annotations/Homo_sapiens/hg19/UCSC/unmappable_blacklist.bed",
-        genomeSizeFile = "~/Data/References/Annotations/Homo_sapiens/hg19/UCSC/hg19.chrom.sizes.sorted"
+        blacklist = os.environ['HOME'] + "/Data/References/Annotations/Homo_sapiens/hg19/UCSC/unmappable_blacklist.bed",
+        genomeSizeFile = os.environ['HOME'] + "/Data/References/Annotations/Homo_sapiens/hg19/UCSC/hg19.chrom.sizes.sorted"
     output:
         "inter_chr_bedpe/{sample}.{chr1}.{chr2}.{res}.RAW.bedpe"
     shell:
