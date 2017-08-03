@@ -67,19 +67,19 @@ rule run_armatus:
             ~/bin/armatus-linux-x64 -i {input} -g 1.0 -s 0.5 -o {params.prefix} -r 40000 -c {wildcards.chr1}
         """
 
-rule create_domains_file:
-    version:
-        0.1
-    input:
-        "40k_intra/{sample}.{chr1}.{chr2}.{res}.consensus.txt"
-    output:
-        "40k_intra/{sample}.{chr1}.{chr2}.{res}.domains"
-    params:
-        genomeSizeFile = os.environ['HOME'] + "/Data/References/Annotations/Homo_sapiens/hg19/UCSC/hg19.chrom.sizes.sorted",
-        bedtools_location = bedtools_location
-    shell:
-        """"
-        """"
+# rule create_domains_file:
+#     version:
+#         0.1
+#     input:
+#         "40k_intra/{sample}.{chr1}.{chr2}.{res}.consensus.txt"
+#     output:
+#         "40k_intra/{sample}.{chr1}.{chr2}.{res}.domains"
+#     params:
+#         genomeSizeFile = os.environ['HOME'] + "/Data/References/Annotations/Homo_sapiens/hg19/UCSC/hg19.chrom.sizes.sorted",
+#         bedtools_location = bedtools_location
+#     shell:
+#         """"
+#         """"
 
 rule convert_list_to_coo:
     version:
