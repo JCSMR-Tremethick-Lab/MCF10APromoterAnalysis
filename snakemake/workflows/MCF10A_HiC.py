@@ -90,7 +90,7 @@ rule convert_list_to_coo:
         "40k_list/{sample}.{chr1}.{chr2}.{res}.coo"
     shell:
         """
-            sed 's/-/ /g' {input} | sed 's/k/000/g' | awk '{if($5!=0.0) printf("%s\t%s\t%s\n",$2-40000,$4-40000,$5)}' > {output}
+            sed 's/-/ /g' {input} | sed 's/k/000/g' | awk '{if($5!=0.0) printf("%s\\t%s\\t%s\\n",$2-40000,$4-40000,$5)}' > {output}
         """
 
 rule all:
