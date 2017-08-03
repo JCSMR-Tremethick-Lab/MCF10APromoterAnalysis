@@ -391,7 +391,7 @@ rule make_interchr_NCHG_input:
         "inter_chr_bedpe/{sample}.{chr1}.{chr2}.{res}.RAW.bedpe"
     shell:
         """
-            {params.python_bin} {params.python_dir}/make_interchr_NCHG_input.sh {input.coo} {input.blacklist} {input.genomeSizeFile} chr{wildcards.chr1} chr{wildcards.chr2} > {output}
+            {params.python_bin} {params.python_dir}/make_interchr_NCHG_input.py {input.coo} {input.blacklist} {input.genomeSizeFile} chr{wildcards.chr1} chr{wildcards.chr2} > {output}
         """
 
 rule all:
