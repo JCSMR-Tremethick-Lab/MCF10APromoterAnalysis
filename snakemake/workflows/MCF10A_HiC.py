@@ -84,12 +84,12 @@ rule run_armatus:
 rule convert_list_to_coo:
     version:
         0.1
+    params:
+        bash_dir = os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/Breast/bash"
     input:
         "40k_list/{sample}.{chr1}.{chr2}.{res}.txt"
     output:
         "40k_list/{sample}.{chr1}.{chr2}.{res}.coo"
-    params:
-	   bash_dir = os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/Breast/bash"
     shell:
     	"""
     		{params.bash_dir}/convert_list_to_coo.sh {input} {output}
