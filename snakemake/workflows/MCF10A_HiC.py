@@ -388,7 +388,7 @@ rule make_interchr_NCHG_input:
         blacklist = "~/Data/References/Annotations/Homo_sapiens/hg19/UCSC/unmappable_blacklist.bed",
         genomeSizeFile = "~/Data/References/Annotations/Homo_sapiens/hg19/UCSC/hg19.chrom.sizes.sorted"
     output:
-        "inter_chr_bedpe/{sample}.{chr1}.{chr2}.{res}.domains.RAW.bedpe"
+        "inter_chr_bedpe/{sample}.{chr1}.{chr2}.{res}.RAW.bedpe"
     shell:
         """
             {params.python_bin} {params.python_dir}/make_interchr_NCHG_input.sh {input.coo} {input.blacklist} {input.genomeSizeFile} chr{wildcards.chr1} chr{wildcards.chr2} > {output}
@@ -400,5 +400,5 @@ rule all:
 #              sample = SAMPLES),
         expand("intra_chr_bedpe/{sample}.domains.RAW.bedpe",
                sample = SAMPLES),
-        expand("1M_inter_chr_RAWobserved/{sample}.coo",
+        expand("inter_chr_bedpe/{sample}.RAW.bedpe",
                sample = INTERCHR)
