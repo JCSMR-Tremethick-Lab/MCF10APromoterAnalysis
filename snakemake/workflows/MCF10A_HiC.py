@@ -95,9 +95,24 @@ rule convert_list_to_coo:
     		{params.bash_dir}/convert_list_to_coo.sh {input} {output}
     	"""
 
+rule make_NCHG_input:
+    version:
+        0.1
+    params:
+        bash_dir = os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/Breast/bash"
+    input:
+        coo = "intra_chr_RAWobserved/{sample}.{chr1}.{chr2}.{res}.coo",
+        domains = "40k_intra/{sample}.{chr1}.{chr2}.{res}.consensus.domains"
+    output:
+        "intra_chr_bedpe/{sample}.{chr1}.{chr2}.{res}.domains.RAW.bedpe"
+    shell:
+        """
+            {params.bash_dir}/make_NCHG_input.sh {input.domains} {input.coo} {wildcards.chr1} > {output}
+        """
+
 rule all:
     input:
 #        expand("40k_intra/{sample}.domains",
 #              sample = SAMPLES),
-        expand("intra_chr_RAWobserved/{sample}.coo",
+        expand("intra_chr_bedpe/{sample}.domains.RAW.bedpe",
                sample = SAMPLES)
