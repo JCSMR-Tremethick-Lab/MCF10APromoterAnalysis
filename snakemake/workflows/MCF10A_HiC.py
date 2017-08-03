@@ -341,7 +341,7 @@ rule convert_list_to_coo:
     params:
         bash_dir = os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/Breast/bash"
     input:
-        "40k_list/{sample}.{chr1}.{chr2}.{res}"
+        "40k_list/{sample}.{chr1}.{chr2}.{res}.txt"
     output:
         "intra_chr_RAWobserved/{sample}.{chr1}.{chr2}.{res}.coo"
     shell:
@@ -355,14 +355,13 @@ rule convert_1MB_inter_list_to_coo:
     params:
         bash_dir = os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/Breast/bash"
     input:
-        "1M_intra_inter_list/{sample}.{chr1}.{chr2}.{res}"
+        "1M_intra_inter_list/{sample}.{chr1}.{chr2}.{res}.txt"
     output:
         "1M_inter_chr_RAWobserved/{sample}.{chr1}.{chr2}.{res}.coo"
     shell:
     	"""
     		{params.bash_dir}/convert_list_to_coo.sh {input} {output}
     	"""
-
 
 rule make_NCHG_input:
     version:
