@@ -95,7 +95,7 @@ rule convert_list_to_coo:
 
 rule all:
     input:
-        expand("40k_intra/{sample}.domains",
-               sample = SAMPLES),
+#        expand("40k_intra/{sample}.domains",
+#              sample = SAMPLES),
         expand("40k_list/{sample}.coo",
                sample = SAMPLES)
