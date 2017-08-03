@@ -377,6 +377,22 @@ rule make_NCHG_input:
         """
             {params.bash_dir}/make_NCHG_input.sh {input.domains} {input.coo} chr{wildcards.chr1} > {output}
         """
+rule make_interchr_NCHG_input:
+    version:
+        0.1
+    params:
+        python_dir = os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/Breast/Python",
+        python_bin = os.environ['HOME'] + "/miniconda3/envs/chrom3d/bin/python"
+    input:
+        coo = "1M_inter_chr_RAWobserved/{sample}.{chr1}.{chr2}.{res}.coo",
+        blacklist = "~/Data/References/Annotations/Homo_sapiens/hg19/UCSC/unmappable_blacklist.bed",
+        genomeSizeFile = "~/Data/References/Annotations/Homo_sapiens/hg19/UCSC/hg19.chrom.sizes.sorted"
+    output:
+        "inter_chr_bedpe/{sample}.{chr1}.{chr2}.{res}.domains.RAW.bedpe"
+    shell:
+        """
+            {params.python_bin} {params.python_dir}/make_interchr_NCHG_input.sh {input.coo} {input.blacklist} {input.genomeSizeFile} chr{wildcards.chr1} chr{wildcards.chr2} > {output}
+        """
 
 rule all:
     input:
