@@ -384,5 +384,5 @@ rule all:
 #              sample = SAMPLES),
         expand("intra_chr_bedpe/{sample}.domains.RAW.bedpe",
                sample = SAMPLES),
-        expand("1M_intra_inter_list/{sample}.coo",
+        expand("1M_inter_chr_RAWobserved/{sample}.coo",
                sample = INTERCHR)
