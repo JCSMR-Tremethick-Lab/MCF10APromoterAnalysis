@@ -20,7 +20,7 @@ from snakemake.exceptions import MissingInputException
 home = os.environ['HOME']
 
 rule:
-    version: 0.2
+    version: 0.3
 
 # rules
 rule bam_quality_filter:
@@ -35,14 +35,15 @@ rule bam_quality_filter:
 
 rule bam_sort:
     params:
-        qual = config["alignment_quality"],
-        threads = "2"
+        qual = config["alignment_quality"]
+    threads:
+        4
     input:
         rules.bam_quality_filter.output
     output:
         "{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/sorted/{sample}.Q{qual}.sorted.bam"
     shell:
-        "samtools sort -@ {params.threads} {input} -T {wildcards.sample}.Q{params.qual}.sorted -o {output}"
+        "samtools sort -@ {threads} {input} -T {wildcards.sample}.Q{params.qual}.sorted -o {output}"
 
 rule bam_mark_duplicates:
     params:
