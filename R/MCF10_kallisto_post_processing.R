@@ -25,12 +25,12 @@ lDir <- function(x, y){
 
 # get snakemake run configuration -----------------------------------------
 runConfig <- jsonlite::fromJSON("~/Development/JCSMR-Tremethick-Lab/Breast/snakemake/configs/config_RNA-Seq.json")
-runNo <- names(runConfig$samples)[1]
+runNo <- names(runConfig$samples)[2]
 refVersion <- "hg19"
 annotationVersion <- runConfig$references[[refVersion]]$version
-annotationVersion <- annotationVersion[3]
-#runID <- "NB501086_0082_RDomaschenz_JCSMR_mRNAseq" # second run
-runID <- "NB501086_0067_RDomaschenz_JCSMR_RNASeq" # first run
+annotationVersion <- annotationVersion[1]
+runID <- "NB501086_0082_RDomaschenz_JCSMR_mRNAseq" # second run
+#runID <- "NB501086_0067_RDomaschenz_JCSMR_RNASeq" # first run
 
 # global variables --------------------------------------------------------
 if (refVersion == "hg38"){
@@ -155,7 +155,8 @@ if (length(grep("UCSC", annotationVersion)) > 0) {
     mybiotypes <- ensGenes$gene_biotype
     names(mybiotypes) <- ensGenes$ensembl_gene_id
     save(mybiotypes, file = myBiotypes_file)
-    mychroms <- data.frame(Chr = ensGenes$chromosome_name, GeneStart = ensGenes$start_position, GeneEnd = ensGenes$end_position)
+    mychroms <- read.delim("/home/sebastian/Data/References/Genomes/Homo_sapiens/GRCh37_hg19_ensembl75/toplevel/Homo_sapiens.GRCh37.75.dna.toplevel.fa.fai", header = F, sep = "\t")
+    mychroms <- Seqinfo(seqnames = as.character(mychroms$V1), seqlengths = mychroms$V2, genome = "GRCh37.75")
     save(mychroms, file = myChroms_file)
     } else {
     load(ensGenes_file)
