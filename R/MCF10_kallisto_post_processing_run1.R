@@ -29,19 +29,19 @@ runNo <- names(runConfig$samples)[1]
 refVersion <- "hg19"
 annotationVersion <- runConfig$references[[refVersion]]$version
 annotationVersion <- annotationVersion[1]
-#runID <- "NB501086_0082_RDomaschenz_JCSMR_mRNAseq" # second run
 runID <- "NB501086_0067_RDomaschenz_JCSMR_RNASeq" # first run
 
 # global variables --------------------------------------------------------
 if (refVersion == "hg38"){
   ensemblHost <- "mar2016.archive.ensembl.org"
-  } else if (refVersion == "hg19"){
+} else if (refVersion == "hg19"){
   ensemblHost <- "grch37.ensembl.org"
 }
 
 dataset <- "hsapiens_gene_ensembl"
 biomart <- "ensembl"
 colors <- RColorBrewer::brewer.pal(3, "Set2")
+biotype <- "protein_coding"
 
 if (amILocal("JCSMR027564ML")){
   pathPrefix <- "~/mount/gduserv"
@@ -75,11 +75,11 @@ if (length(grep("UCSC", annotationVersion)) > 0) {
   ucscTranscripts_file <- paste(annotationDataPath, "ucscTranscripts_", annotationVersion, ".rda", sep = "")
   load(ucscTranscripts_file)
   ucscGenes <- biomaRt::getBM(attributes = c("external_gene_name",
-                                            "description",
-                                            "entrezgene"),
-                             filters = "entrezgene",
-                             values = ucscTranscripts$GENEID,
-                             mart = mart)
+                                             "description",
+                                             "entrezgene"),
+                              filters = "entrezgene",
+                              values = ucscTranscripts$GENEID,
+                              mart = mart)
   ucscGenes$entrezgene <- as.character(ucscGenes$entrezgene)
   t2g <- data.table::as.data.table(ucscTranscripts) 
   t2g <- dplyr::rename(t2g, target_id = TXNAME, gene_id = GENEID)
@@ -100,43 +100,48 @@ if (length(grep("UCSC", annotationVersion)) > 0) {
     mart <- biomaRt::useEnsembl(biomart = biomart, dataset = dataset, host = ensemblHost)
     attribs <- biomaRt::listAttributes(mart)
     ensGenes <- biomaRt::getBM(attributes = c("ensembl_gene_id",
-      "external_gene_name",
-      "chromosome_name",
-      "start_position",
-      "end_position",
-      "strand",
-      "band",
-      "description",
-      "percentage_gene_gc_content", # renames in current ensembl release
-      "gene_biotype",
-      "entrezgene"),
-      mart = mart)
+                                              "external_gene_name",
+                                              "chromosome_name",
+                                              "start_position",
+                                              "end_position",
+                                              "strand",
+                                              "band",
+                                              "description",
+                                              "percentage_gene_gc_content", # renames in current ensembl release
+                                              "gene_biotype",
+                                              "entrezgene"),
+                               mart = mart)
     ensGenes <- data.table::as.data.table(ensGenes)
     save(ensGenes, file = ensGenes_file)
-  
+    
     # get Ensembl transcripts
     ensTranscripts <- biomaRt::getBM(attributes = c("ensembl_transcript_id",
                                                     "ensembl_gene_id",
                                                     "transcript_length",
                                                     "version", 
                                                     "transcript_version",
+                                                    "transcript_biotype",
                                                     "external_gene_name"),
                                      mart = mart,
                                      filter = "ensembl_gene_id",
                                      values = ensGenes$ensembl_gene_id)
     save(ensTranscripts, file = ensTranscripts_file)
     # create t2g object
-    t2g <- as.data.table(ensTranscripts[, c("ensembl_transcript_id", 
-                                            "ensembl_gene_id", 
-                                            "external_gene_name", 
-                                            "version", 
-                                            "transcript_version")])
+    t2g <- data.table::data.table(ensTranscripts[, c("ensembl_transcript_id", 
+                                                      "ensembl_gene_id", 
+                                                      "external_gene_name", 
+                                                      "version", 
+                                                      "transcript_version",
+                                                      "transcript_biotype")])
+    if (is.null(biotype) == FALSE){
+      t2g <- subset(t2g, transcript_biotype == biotype)
+    }
     t2g <- dplyr::rename(t2g, target_id = ensembl_transcript_id, gene_id = ensembl_gene_id, ext_gene = external_gene_name)
     if(length(grep("ERCC", ensGenes_file)) > 0){
       erccGenes <- import("~/Data/References/Transcriptomes/ERCC/ERCC92.gtf")
-      erccGenes <- data.frame(target_id = erccGenes$gene_id, 
-                              gene_id = erccGenes$gene_id, 
-                              ext_gene = erccGenes$gene_id)
+      erccGenes <- data.table::data.table(target_id = erccGenes$gene_id, 
+                                          gene_id = erccGenes$gene_id, 
+                                          ext_gene = erccGenes$gene_id)
       erccGenes$version <- 1
       erccGenes$transcript_version <- 1
       erccGenes$transcript_biotype <- "spike_in"
@@ -146,6 +151,7 @@ if (length(grep("UCSC", annotationVersion)) > 0) {
     if(refVersion == "hg38"){
       t2g$ensembl_transcript_id <- paste(t2g$ensembl_transcript_id, t2g$transcript_version, sep = ".")
     }
+    t2g <- subset(t2g, select = c("target_id", "gene_id", "ext_gene", "transcript_biotype"))
     save(t2g, file = t2g_file)
     
     mylength <- sapply(ensGenes$ensembl_gene_id, function(x){
@@ -161,7 +167,7 @@ if (length(grep("UCSC", annotationVersion)) > 0) {
     mychroms <- read.delim("/home/sebastian/Data/References/Genomes/Homo_sapiens/GRCh37_hg19_ensembl75/toplevel/Homo_sapiens.GRCh37.75.dna.toplevel.fa.fai", header = F, sep = "\t")
     mychroms <- Seqinfo(seqnames = as.character(mychroms$V1), seqlengths = mychroms$V2, genome = "GRCh37.75")
     save(mychroms, file = myChroms_file)
-    } else {
+  } else {
     load(ensGenes_file)
     load(ensTranscripts_file)
     load(myLength_file)
@@ -171,6 +177,7 @@ if (length(grep("UCSC", annotationVersion)) > 0) {
     load(t2g_file)
   }
 }
+  
 # load kallisto data with tximport and inspect via PCA -------------------------
 base_dir <- paste(pathPrefix, 
                   "Data/Tremethick/Breast",
@@ -183,16 +190,10 @@ base_dir <- paste(pathPrefix,
 
 sample_id <- dir(base_dir)
 kal_dirs <- sapply(sample_id, function(id) file.path(base_dir, id))
-#sample_id[c(1,2,7,8)] <- unlist(lapply(strsplit(sample_id[c(1,2,7,8)], "_"), function(x) paste(x[1], "wt", x[2], x[3], sep = "_")))
-#condition <- c(rep("MCF10A_wt", 6), rep("MCF10A_shZ", 3), rep("MCF10A_TGFb", 3))
 condition <- unlist(lapply(strsplit(sample_id, "_"), function(x) paste(x[1:2], collapse = "_")))
 names(condition) <- sample_id
 files <- paste(kal_dirs, "abundance.h5", sep = "/")
 names(files) <- sample_id
-
-# modified 2017-05-24: only contrast MCF10Ca1a vs MCF10Ca1a_shZ
-#files <- files[grep("Ca1a", names(files))]
-
 
 # import kallisto data ----------------------------------------------------
 txi <- tximport::tximport(files, 
@@ -212,64 +213,29 @@ condition <- condition[grep(paste(names(files), collapse = "|"), names(condition
 kal_dirs <- kal_dirs[grep(paste(names(files), collapse = "|"), names(kal_dirs))]
 ade4::s.class(pca1$li, fac = as.factor(condition))
 
-# analysis of first MCF10A sequencing run:
-# evidently shZ and WT samples were swapped. have to check which one shows H2A.Z knockdown
-
-# treat D6 and D8 samples separately
-# pcaD6 <- ade4::dudi.pca(t(txi$abundance[sd1 > 3, grep("D6", colnames(txi$abundance))]), scannf = F, nf = 6)
-# pdf(paste("PCA_MCF10A_wt_vs_TGFb_", annotationVersion, ".pdf", sep = ""))
-# ade4::s.arrow(pcaD6$li) # should remove MCF10AD6_3
-# ade4::s.class(pcaD6$li, fac = as.factor(condition[grep("D6", names(condition))]))
-# dev.off()
-# 
-# pcaD8 <- ade4::dudi.pca(t(txi$abundance[sd1 > 3, grep("D8", colnames(txi$abundance))]), scannf = F, nf = 6)
-# pdf(paste("PCA_MCF10A_wt_vs_shZ_", annotationVersion, ".pdf", sep = ""))
-# ade4::s.arrow(pcaD8$li) # should remove MCF10AD8_1
-# ade4::s.class(pcaD8$li, fac = as.factor(condition[grep("D8", names(condition))]))
-# dev.off()
-# PCA shows that there is a WT sample at each timepoint with outlier behaviour
-# quarantinedSamples <- c("MCF10AD8_1", "MCF10AD6_3")
-
 
 # prepare sample to condition table for sleuth processing -----------------
+# analysis of first MCF10A sequencing run:
+# evidently shZ and WT samples were swapped. have to check which one shows H2A.Z knockdown
+# looks like:
+# MCF10A_shZ_rep2 is WT
+# MCF10A_wt_rep2 is shZ
+
+sample_id[grep("MCF10A_shZ_rep2|MCF10A_wt_rep2", sample_id)] <- c("MCF10A_wt_rep2", "MCF10A_shZ_rep2")
+names(files) <- sample_id
+condition <- unlist(lapply(strsplit(sample_id, "_"), function(x) paste(x[1:2], collapse = "_")))
+names(condition) <- sample_id
 s2c <- data.frame(sample = sample_id, condition = condition)
-s2c$condition <- factor(unlist(lapply(strsplit(as.character(s2c$condition), "D"), function(x) x[1])))
 s2c <- dplyr::mutate(s2c, path = kal_dirs)
 s2c$sample <- as.character(s2c$sample)
-#s2c$condition <- relevel(s2c$condition, ref = "MCF10Ca1a_wt")
-#s2c$condition <- relevel(s2c$condition, ref = "MCF10a_wt")
-# remove the quarantined samples
-#selected <- ! s2c$sample %in% quarantinedSamples
-#s2c <- s2c[selected,]
-# make separate sets for different contrasts for shZ and TGFb
-# s2c.mcf10a_vs_mcf10a_shZ <- s2c[grep("D8", s2c$sample),]
-# s2c.mcf10a_vs_mcf10a_shZ$condition <- droplevels(s2c.mcf10a_vs_mcf10a_shZ$condition)
-# s2c.mcf10a_vs_mcf10a_shZ$condition <- relevel(s2c.mcf10a_vs_mcf10a_shZ$condition, "MCF10A_wt")
-# s2c.mcf10a_vs_mcf10a_TGFb <- s2c[grep("D6", s2c$sample),]
-# s2c.mcf10a_vs_mcf10a_TGFb$condition <- droplevels(s2c.mcf10a_vs_mcf10a_TGFb$condition)
-# s2c.mcf10a_vs_mcf10a_TGFb$condition <- relevel(s2c.mcf10a_vs_mcf10a_TGFb$condition, "MCF10A_wt")
-# 
-# # collate list()
-# s2c.list <- list(MCF10A_vs_shZ = s2c.mcf10a_vs_mcf10a_shZ,
-#                  MCF10A_vs_TGFb = s2c.mcf10a_vs_mcf10a_TGFb)
-# s2c.list <- list(MCF10Ca1aWT_vs_MCF10Ca1ashZ = s2c)
-
-s2c.mcf10awt_vs_mcf10a_shz <- s2c[grep("MCF10A_shZ|MCF10A_wt", s2c$sample), ]
-s2c.mcf10awt_vs_mcf10a_tgfb <- s2c[grep("MCF10A_wt|MCF10A_TGFb", s2c$sample), ]
-s2c.mcf10ca1awt_vs_mcf10ca1a_shZ <- s2c[grep("MCF10Ca1a_wt|MCF10Ca1a_shZ", s2c$sample), ]
-
-s2c.list <- list(MCF10Ca1a_vs_MCF10Ca1ashZ = s2c.mcf10ca1awt_vs_mcf10ca1a_shZ)
+s2c$condition <- relevel(s2c$condition, ref = "MCF10Ca1a_wt")
 ################################################################################
 # actual processing using sleuth------------------------------------------------
 if(!file.exists(sleuth_results_output)){
-  results <- lapply(names(s2c.list), function(x){
-    s2c.list[[x]]$condition <- droplevels(s2c.list[[x]]$condition)
-    s2c.list[[x]]$condition <- relevel(s2c.list[[x]]$condition, ref = levels(s2c.list[[x]]$condition)[grep("wt", levels(s2c.list[[x]]$condition))])
-    design <- model.matrix(~ condition, data = s2c.list[[x]])
-    print(paste("Processing ", x, " transcript-level analysis",sep = ""))
+    design <- model.matrix(~ condition, data = s2c)
     #-----------------------------------------------------------------------------
     # transcript-level DE
-    so <- sleuth::sleuth_prep(s2c.list[[x]], ~ condition, target_mapping = t2g)
+    so <- sleuth::sleuth_prep(s2c, ~ condition, target_mapping = t2g)
     so <- sleuth::sleuth_fit(so, formula = design)
     so <- sleuth::sleuth_fit(so, ~1, "reduced")
     so <- sleuth::sleuth_lrt(so, "reduced", "full")
@@ -285,7 +251,7 @@ if(!file.exists(sleuth_results_output)){
     kt_wide <- tidyr::spread(kt[, c("target_id", "sample", "tpm")], sample, tpm)
     kt_wide <- data.table::as.data.table(kt_wide)
     data.table::setkey(kt_wide, "target_id")
-    so.gene <- sleuth::sleuth_prep(s2c.list[[x]], ~ condition, target_mapping = t2g, aggregation_column = "ext_gene")
+    so.gene <- sleuth::sleuth_prep(s2c, ~ condition, target_mapping = t2g, aggregation_column = "ext_gene")
     so.gene <- sleuth::sleuth_fit(so.gene, formula = design)
     so.gene <- sleuth::sleuth_fit(so.gene, ~1, "reduced")
     so.gene <- sleuth::sleuth_lrt(so.gene, "reduced", "full")
@@ -295,6 +261,7 @@ if(!file.exists(sleuth_results_output)){
     rt.gene.list <- lapply(colnames(design)[grep("Intercept", colnames(design), invert = T)], function(x){
       rt.gene <- sleuth::sleuth_results(so.gene, x)
       rt.gene <- rt.gene[order(rt.gene$qval),]
+      rt.gene <- data.table::data.table(rt.gene)
     })
     names(rt.gene.list) <- colnames(design)[grep("Intercept", colnames(design), invert = T)]
     # gene-level expression is summed from transcript level data (sum(TPM))
@@ -335,8 +302,8 @@ if(!file.exists(sleuth_resultsCompressed_file)){
   resultsCompressed <- lapply(names(resultsCompressed), function(x) {
     resultsCompressed[[x]]$kallisto_table_wide <- resultsCompressed[[x]]$kallisto_table_wide[, c("target_id", s2c.list[[x]]$sample)]
     return(resultsCompressed[[x]])
-  names(resultsCompressed) <- names(s2c.list)
-  save(resultsCompressed, file = sleuth_resultsCompressed_file)
+    names(resultsCompressed) <- names(s2c.list)
+    save(resultsCompressed, file = sleuth_resultsCompressed_file)
   })
 } else {
   load(sleuth_resultsCompressed_file)
@@ -368,12 +335,12 @@ tab3 <- as.data.frame(tab3)
 
 # load("tab3.rda")
 tab4 <- data.frame(cbind(tab3[,1],
-                   apply(tab3[,c(2,3)], 1, mean),
-                   apply(tab3[,c(4,5)], 1, mean),
-                   apply(tab3[,c(6,7)], 1, mean),
-                   apply(tab3[,c(8,9)], 1, mean),
-                   apply(tab3[,c(10,11)], 1, mean),
-                   tab3[,c(12:20)]))
+                         apply(tab3[,c(2,3)], 1, mean),
+                         apply(tab3[,c(4,5)], 1, mean),
+                         apply(tab3[,c(6,7)], 1, mean),
+                         apply(tab3[,c(8,9)], 1, mean),
+                         apply(tab3[,c(10,11)], 1, mean),
+                         tab3[,c(12:20)]))
 colnames(tab4)[1] <- "ensembl_gene_id"
 colnames(tab4)[2:6] <- unlist(lapply(strsplit(colnames(tab3)[seq(2,11,2)], "_"), function(x) paste(x[1:2], collapse = "_")))
 
