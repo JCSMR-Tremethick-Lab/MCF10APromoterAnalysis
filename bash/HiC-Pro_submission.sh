@@ -1,0 +1,1 @@
+~/bin/HiC-Pro_2.10.0/bin/HiC-Pro -i /home/skurscheid/Data/Tremethick/Breast/HiC/HiCPro_input_run2/ -o /home/skurscheid/Data/Tremethick/Breast/HiC/HiCPro_output_run3/ -c /home/skurscheid/Data/Tremethick/Breast/HiC/HiCPro_input_run2/config-hicpro.txt -s mapping -p
