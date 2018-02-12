@@ -29,8 +29,8 @@ runNo <- names(runConfig$samples)[1]
 refVersion <- "hg19"
 annotationVersion <- runConfig$references[[refVersion]]$version
 annotationVersion <- annotationVersion[1]
-#runID <- "NB501086_0082_RDomaschenz_JCSMR_mRNAseq" # second run
-runID <- "NB501086_0067_RDomaschenz_JCSMR_RNASeq" # first run
+runID <- "NB501086_0082_RDomaschenz_JCSMR_mRNAseq" # second run
+#runID <- "NB501086_0067_RDomaschenz_JCSMR_RNASeq" # first run
 
 # global variables --------------------------------------------------------
 if (refVersion == "hg38"){
@@ -63,7 +63,7 @@ getwd()
 list.files()
 
 # file names for data output  ---------------------------------------------
-analysis_version <- "2"
+analysis_version <- ""
 sleuth_results_output <- paste("sleuthResults_", annotationVersion, "_V", analysis_version, ".rda", sep = "")
 sleuth_resultsCompressed_file <- paste("sleuthResultsCompressed_", annotationVersion, "_V", analysis_version, ".rda", sep = "")
 
@@ -184,8 +184,8 @@ base_dir <- paste(pathPrefix,
 sample_id <- dir(base_dir)
 kal_dirs <- sapply(sample_id, function(id) file.path(base_dir, id))
 #sample_id[c(1,2,7,8)] <- unlist(lapply(strsplit(sample_id[c(1,2,7,8)], "_"), function(x) paste(x[1], "wt", x[2], x[3], sep = "_")))
-#condition <- c(rep("MCF10A_wt", 6), rep("MCF10A_shZ", 3), rep("MCF10A_TGFb", 3))
-condition <- unlist(lapply(strsplit(sample_id, "_"), function(x) paste(x[1:2], collapse = "_")))
+condition <- c(rep("MCF10A_wt", 6), rep("MCF10A_shZ", 3), rep("MCF10A_TGFb", 3))
+#condition <- unlist(lapply(strsplit(sample_id, "_"), function(x) paste(x[1:2], collapse = "_")))
 names(condition) <- sample_id
 files <- paste(kal_dirs, "abundance.h5", sep = "/")
 names(files) <- sample_id
