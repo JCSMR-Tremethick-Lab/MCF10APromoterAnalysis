@@ -12,6 +12,7 @@ rule:
 localrules:
     all
 
+home = os.environ['HOME']
 wrapper_dir = os.environ['HOME'] + "/Development/snakemake-wrappers/bio"
 include_prefix= os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/rules/"
 armatus_bin = os.environ['HOME'] + "/bin/armatus-linux-x64"
@@ -42,11 +43,12 @@ rule ice_normalisation:
         eps = "0.1",
         output_bias = "1",
         verbose = "1"
+    log:
+	"logs/{sample}/ice_{distance}.log"
     input:
         raw_contacts = "hic_results/matrix/{sample}/raw/{distance}/{sample}_{distance}.matrix"
     output:
         iced_contacts = "hic_results/matrix/{sample}/iced/{distance}/{sample}_{distance}_iced.matrix"
-    log:
     shell:
         """
             {params.pythonBin} {params.iceBin} --results_filename {output.iced_contacts}\
@@ -57,8 +59,7 @@ rule ice_normalisation:
                                                --remove-all-zeros-loci\
                                                --output-bias {params.output_bias}\
                                                --verbose {params.verbose}\
-                                               {input.raw_contacts}\
-                                               >> {log}
+                                               {input.raw_contacts} >> {log}
         """
 
 iced_matrices=expand("hic_results/matrix/{sample}/iced/{distance}/{sample}_{distance}_iced.matrix",
@@ -134,4 +135,4 @@ rule all:
         #        sample = SAMPLES),
         # expand("inter_chr_bedpe/{sample}.RAW.bedpe",
         #        sample = INTERCHR)
-    iced_contacts
+    	iced_matrices
