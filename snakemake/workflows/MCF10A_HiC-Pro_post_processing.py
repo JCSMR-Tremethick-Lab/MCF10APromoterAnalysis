@@ -56,7 +56,7 @@ rule ice_normalisation:
                                                --filter_low_counts_perc {params.filter_low_counts_perc}\
                                                --filter_high_counts_perc {params.filter_high_counts_perc}\
                                                --max_iter {params.max_iter}\
-                                               -eps {params.eps}\
+                                               --eps {params.eps}\
                                                --remove-all-zeros-loci\
                                                --output-bias {params.output_bias}\
                                                --verbose {params.verbose}\
