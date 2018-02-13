@@ -130,7 +130,8 @@ rule all:
     input:
 #        expand("40k_intra/{sample}.domains",
 #              sample = SAMPLES),
-        expand("intra_chr_bedpe/{sample}.domains.RAW.bedpe",
-               sample = SAMPLES),
-        expand("inter_chr_bedpe/{sample}.RAW.bedpe",
-               sample = INTERCHR)
+        # expand("intra_chr_bedpe/{sample}.domains.RAW.bedpe",
+        #        sample = SAMPLES),
+        # expand("inter_chr_bedpe/{sample}.RAW.bedpe",
+        #        sample = INTERCHR)
+    iced_contacts
