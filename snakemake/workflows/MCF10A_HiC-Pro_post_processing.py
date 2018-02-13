@@ -5,6 +5,7 @@ __date__ = "2018-02-13"
 from snakemake.exceptions import MissingInputException
 import os
 import glob
+from os.path import join
 
 rule:
     version: 0.1
@@ -44,7 +45,7 @@ rule ice_normalisation:
         output_bias = "1",
         verbose = "1"
     log:
-	"logs/{sample}/ice_{distance}.log"
+        "logs/{sample}/ice_{distance}.log"
     input:
         raw_contacts = "hic_results/matrix/{sample}/raw/{distance}/{sample}_{distance}.matrix"
     output:
