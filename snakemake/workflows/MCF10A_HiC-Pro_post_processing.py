@@ -60,7 +60,8 @@ rule ice_normalisation:
                                                --remove-all-zeros-loci\
                                                --output-bias {params.output_bias}\
                                                --verbose {params.verbose}\
-                                               {input.raw_contacts} >> {log}
+                                               {input.raw_contacts}\
+						>> {log}
         """
 
 iced_matrices=expand("hic_results/matrix/{sample}/iced/{distance}/{sample}_{distance}_iced.matrix",
