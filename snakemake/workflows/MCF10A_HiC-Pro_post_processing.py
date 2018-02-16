@@ -85,7 +85,7 @@ rule ice_normalisation:
         """
 
 iced_matrices=expand("{step}/hic_results/matrix/{sample}/iced/{distance}/{sample}_{distance}_iced.matrix",
-		     step="HiCPro_output_run3.3",
+		             step="HiCPro_output_run3.3",
                      sample=SAMPLES,
                      distance=["1000000", "150000", "40000", "500000"])
 
@@ -159,4 +159,4 @@ rule all:
         # expand("inter_chr_bedpe/{sample}.RAW.bedpe",
         #        sample = INTERCHR)
     	iced_matrices,
-	multiqcOut
+	    multiqcOut
