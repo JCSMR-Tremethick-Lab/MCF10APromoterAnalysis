@@ -32,6 +32,26 @@ SAMPLES = ["MCF10A_shH2AZ_1",
            "MCF10CA1A_2",
            "MCF10CA1A_3"]
 
+rule bowtie2_statistics:
+    version:
+        0.1
+    params:
+        multiqcBin="/home/sebastian/miniconda3/bin/multiqc"
+    log:
+    input:
+        "{step}/logs/{sample}"
+    output:
+        "{step}/logs/{sample}/{sample}_multiqc_report.html"
+    input:
+        """
+            {params.multiqcBin} {input} --filename {output}
+        """
+
+multiqcOut=expand("{step}/logs/{sample}/{sample}_multiqc_report.html",
+                  step="HiCPro_output_run3",
+                  sample=SAMPLES)
+
+
 rule ice_normalisation:
     version:
         0.1
