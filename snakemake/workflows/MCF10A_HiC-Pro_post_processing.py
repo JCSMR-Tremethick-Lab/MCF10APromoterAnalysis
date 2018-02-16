@@ -65,11 +65,11 @@ rule ice_normalisation:
         output_bias = "1",
         verbose = "1"
     log:
-        "logs/{sample}/ice_{distance}.log"
+        "{step}/logs/{sample}/ice_{distance}.log"
     input:
-        raw_contacts = "hic_results/matrix/{sample}/raw/{distance}/{sample}_{distance}.matrix"
+        raw_contacts = "{step}/hic_results/matrix/{sample}/raw/{distance}/{sample}_{distance}.matrix"
     output:
-        iced_contacts = "hic_results/matrix/{sample}/iced/{distance}/{sample}_{distance}_iced.matrix"
+        iced_contacts = "{step}/hic_results/matrix/{sample}/iced/{distance}/{sample}_{distance}_iced.matrix"
     shell:
         """
             {params.pythonBin} {params.iceBin} --results_filename {output.iced_contacts}\
@@ -84,7 +84,8 @@ rule ice_normalisation:
 						>> {log}
         """
 
-iced_matrices=expand("hic_results/matrix/{sample}/iced/{distance}/{sample}_{distance}_iced.matrix",
+iced_matrices=expand("{step}/hic_results/matrix/{sample}/iced/{distance}/{sample}_{distance}_iced.matrix",
+		     step="HiCPro_output_run3.3",
                      sample=SAMPLES,
                      distance=["1000000", "150000", "40000", "500000"])
 
@@ -157,4 +158,5 @@ rule all:
         #        sample = SAMPLES),
         # expand("inter_chr_bedpe/{sample}.RAW.bedpe",
         #        sample = INTERCHR)
-    	iced_matrices
+    	iced_matrices,
+	multiqcOut
