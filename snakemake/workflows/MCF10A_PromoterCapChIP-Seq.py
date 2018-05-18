@@ -39,10 +39,10 @@ rule bowtie2_pe:
     threads:
         8
     input:
-        trimmed_read1 = "{assayID}/{processed_dir}/{trim_data}/{unit}_end1.fastq.gz",
-        trimmed_read2 = "{assayID}/{processed_dir}/{trim_data}/{unit}_end2.fastq.gz"
+        trimmed_read1 = "{outdir}/trimmed/{unit}_end1.fastq.gz",
+        trimmed_read2 = "{outdir}/trimmed/{unit}_end2.fastq.gz"
     output:
-        temp("{assayID}/{outdir}/{reference_version}/bowtie2/{sample}.bam")
+        temp("{outdir}/{reference_version}/bowtie2/{unit}.bam")
     shell:
         """
             bowtie2 \
@@ -65,9 +65,9 @@ rule bam_quality_filter:
     params:
         qual = config["alignment_quality"]
     input:
-        rules.bowtie2_pe.output
+	"{outdir}/{reference_version}/bowtie2/{unit}.bam"
     output:
-        temp("{assayID}/{outdir}/{reference_version}/bowtie2/quality_filtered/Q{qual}/{unit}.bam")
+        temp("{outdir}/{reference_version}/bowtie2/quality_filtered/Q{qual}/{unit}.bam")
     shell:
         "samtools view -b -h -q {params.qual} {input} > {output}"
 
@@ -77,9 +77,9 @@ rule bam_sort:
     threads:
         4
     input:
-        rules.bam_quality_filter.output
+	"{outdir}/{reference_version}/bowtie2/Q{qual}/{unit}.bam"
     output:
-        temp("{assayID}/{outdir}/{reference_version}/bowtie2/sorted/Q{qual}/{unit}.bam")
+        temp("{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/{unit}.bam")
     shell:
         "samtools sort -@ {threads} {input} -T {wildcards.unit}.Q{params.qual}.sorted -o {output}"
 
@@ -89,9 +89,9 @@ rule bam_mark_duplicates:
         picard = home + config["picard"],
         temp = home + config["temp_dir"]
     input:
-        rules.bam_sort.output
+	"{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/{unit}.bam"
     output:
-        temp("{assayID}/{outdir}/{reference_version}/bowtie2/sorted/Q{qual}/duplicates_marked/{unit}.bam")
+        temp("{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/duplicates_marked/{unit}.bam")
     shell:
         """
             java -Djava.io.tmpdir={params.temp} \
@@ -105,9 +105,9 @@ rule bam_mark_duplicates:
 
 rule bam_rmdup:
     input:
-        rules.bam_mark_duplicates.output
+	"{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/duplicates_marked/{unit}.bam"
     output:
-        protected("{assayID}/{outdir}/{reference_version}/bowtie2/sorted/Q{qual}/duplicates_removed/{unit}.bam")
+	protected("{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/duplicates_removed/{unit}.bam")
     shell:
         "samtools rmdup {input} {output}"
 
@@ -115,19 +115,18 @@ rule bam_rmdup_index:
     params:
         qual = config["alignment_quality"]
     input:
-        rules.bam_rmdup.output
+	"{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/duplicates_removed/{unit}.bam"
     output:
-        protected("{assayID}/{outdir}/{reference_version}/bowtie2/sorted/Q{qual}/duplicates_removed/{unit}.bam.bai")
+        protected("{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/duplicates_removed/{unit}.bam.bai")
     shell:
         "samtools index {input} {output}"
 
 rule all:
     input:
-        expand("{assayID}/{outdir}/{reference_version}/bowtie2/sorted/Q{qual}/duplicates_removed/{unit}.{suffix}",
-               assayID = "PromoterSeqCap",
+        expand("{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/duplicates_removed/{unit}.{suffix}",
                outdir = config["processed_dir"],
                reference_version = config["references"][REF_GENOME]["version"],
                duplicates = "duplicates_removed",
-               sample = config["units"],
+               unit = config["units"],
                qual = config["alignment_quality"],
                suffix = ["bam", "bam.bai"]),
