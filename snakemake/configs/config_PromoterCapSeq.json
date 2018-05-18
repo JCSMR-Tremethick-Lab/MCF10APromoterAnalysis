@@ -1,4 +1,22 @@
 {
+  "references" :
+    {
+    "genomes" : ["hg38", "hg19"],
+    "hg38" :
+      {
+        "version" : "GRCh38_ensembl84_ERCC",
+        "genome" : "/Data/References/Genomes/Homo_sapiens/GRCh38_ensembl84/primary/Homo_sapiens.GRCh38.dna.primary_assembly.fa",
+      },
+    "hg19" :
+    {
+      "version" : ["GRCh37_hg19_UCSC"],
+      "effectiveSize" : "2451960000",
+      },
+      "bowtie2" :
+      {
+        "GRCh37_hg19_UCSC" : "/home/sebastian/Data/References/Genomes/Homo_sapiens/GRCh37_hg19_UCSC/GRCh37_hg19_UCSC"
+      }
+    },
   "parameters" :
   {
     "macs2" :
@@ -71,8 +89,11 @@
     }
   },
   "processed_dir" : "processed_data",
-  "data_dir" : "bam",
-  "alignment_quality" : "20",
-  "deepTools_dir" : "~/miniconda2/envs/deepTools/bin",
-  "macs2_dir" : "~/miniconda2/envs/deepTools/bin"
+  "raw_dir" : "fastq",
+  "trim_dir" : "trimmed",
+  "alignment_quality" : "10",
+  "deepTools_dir" : "/miniconda3/envs/deepTools/bin",
+  "macs2_dir" : "/miniconda3/envs/deepTools/bin",
+  "picard" : "/bin/picard.jar",
+  "temp_dir" : "/temp"
 }
