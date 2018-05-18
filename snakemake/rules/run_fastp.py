@@ -14,6 +14,8 @@ For usage, include this in your workflow.
 """
 
 rule run_fastp:
+    version:
+        0.1
     threads:
         4
     params:
