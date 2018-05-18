@@ -42,7 +42,7 @@ rule bowtie2_statistics:
         "{step}/logs/{sample}"
     output:
         "{step}/logs/{sample}/{sample}_multiqc_report.html"
-    input:
+    shell:
         """
             {params.multiqcBin} {input} --filename {output}
         """
@@ -158,5 +158,5 @@ rule all:
         #        sample = SAMPLES),
         # expand("inter_chr_bedpe/{sample}.RAW.bedpe",
         #        sample = INTERCHR)
-    	iced_matrices,
+    	#iced_matrices,
 	    multiqcOut
