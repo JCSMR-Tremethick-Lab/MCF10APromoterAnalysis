@@ -23,7 +23,7 @@ include:
 
 # define global variables such as reference version of genome so that it can be accessed
 # throughout the whole worfklow
-REF_GENOME = config["references"]["genomes"][0]
+REF_GENOME = config["references"]["genomes"][1]
 
 # set local variables
 home = os.environ['HOME']
