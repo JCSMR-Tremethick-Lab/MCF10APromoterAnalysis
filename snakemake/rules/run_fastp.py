@@ -22,8 +22,8 @@ rule run_fastp:
         read1 = "fastq/{unit}.end1.fastq.gz",
         read2 = "fastq/{unit}.end2.fastq.gz"
     output:
-        trimmed_read1 = "{trim_data}/{unit}_end1.fastq.gz",
-        trimmed_read2 = "{trim_data}/{unit}_end2.fastq.gz",
+        trimmed_read1 = "{trim_data}/{unit}.end1.fastq.gz",
+        trimmed_read2 = "{trim_data}/{unit}.end2.fastq.gz",
         report_html = "{trim_data}/{unit}_report.html",
         report_json = "{trim_data}/{unit}_report.json"
     shell:
