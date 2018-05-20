@@ -72,7 +72,7 @@ rule bam_quality_filter:
     input:
         rules.bowtie2_pe.output
     output:
-        temp("{outdir}/{reference_version}/bowtie2/{unit}.Q{params.qual}.bam")
+        temp("{outdir}/{reference_version}/bowtie2/{unit}.qfiltered.bam")
     shell:
         "samtools view -b -h -q {params.qual} {input} > {output}"
 
@@ -84,7 +84,7 @@ rule bam_sort:
     input:
         rules.bam_quality_filter.output
     output:
-        temp("{outdir}/{reference_version}/bowtie2/{unit}.Q{params.qual}.sorted.bam")
+        temp("{outdir}/{reference_version}/bowtie2/{unit}.qfiltered.sorted.bam")
     shell:
         "samtools sort -@ {threads} {input} -T {wildcards.unit}.Q{params.qual}.sorted -o {output}"
 
@@ -96,7 +96,7 @@ rule bam_mark_duplicates:
     input:
         rules.bam_sort.output
     output:
-        temp("{outdir}/{reference_version}/bowtie2/{unit}.Q{params.qual}.sorted.duplicates_marked.bam")
+        temp("{outdir}/{reference_version}/bowtie2/{unit}.qfiltered.sorted.duplicates_marked.bam")
     shell:
         """
             java -Djava.io.tmpdir={params.temp} \
