@@ -19,7 +19,7 @@ wildcards = {"digest" : "H", "sample" : "MCF10A_TGFb", "Input" : "Input", "ChIP"
 with open("snakemake/configs/config_ChIP-Seq.json") as data_file:
     config = json.load(data_file)
 
-with open("snakemake/configs/config.json") as data_file:
+with open("configs/config.json") as data_file:
     config = json.load(data_file)
 
 with open("/Users/u1001407/Development/JCSMR-Tremethick-Lab/H2AZ_EMT/snakemake/configs/config.json") as data_file:
@@ -107,3 +107,14 @@ wildcards = {"assayID" : "ChIP-Seq",
              "sample" : "H2AZ_10A_high"}
 
 bam_merge_input(wildcards)
+
+
+expand("{assayID}/{runID}/{outdir}/{reference_version}/bowtie2/{duplicates}/{sample}.Q{qual}.sorted.{suffix}",
+   assayID = "ChIP-Seq",
+   runID = "SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq",
+   outdir = config["processed_dir"],
+   reference_version = config["references"][REF_GENOME]["version"],
+   duplicates = ["duplicates_marked", "duplicates_removed"],
+   sample = config["samples"]["ChIP-Seq"]["SN501_0087_DTremethick_JCSMR_MCF10A_ChIPSeq"],
+   qual = config["alignment_quality"],
+   suffix = ["bam", "bam.bai"])
