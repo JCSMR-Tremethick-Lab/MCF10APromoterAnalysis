@@ -51,13 +51,13 @@ rule bowtie2_pe:
             --no-discordant \
             --maxins {params.max_in} \
             --threads {threads}\
-            --rg-id '{wildcards.sample}' \
-            --rg 'LB:{wildcards.sample}' \
-            --rg 'SM:{wildcards.sample}' \
+            --rg-id '{wildcards.unit}' \
+            --rg 'LB:{wildcards.unit}' \
+            --rg 'SM:{wildcards.unit}' \
             --rg 'PL:Illumina' \
             --rg 'PU:NA' \
-            -1 {input.read1} \
-            -2 {input.read2} \
+            -1 {input.trimmed_read1} \
+            -2 {input.trimmed_read2} \
             | samtools view -Sb - > {output}
         """
 
