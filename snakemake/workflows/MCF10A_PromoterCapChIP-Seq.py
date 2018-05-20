@@ -44,8 +44,8 @@ rule bowtie2_pe:
     threads:
         8
     input:
-        trimmed_read1 = read_trimming("trimmed/{unit}.end1.fastq.gz"),
-        trimmed_read2 = read_trimming("trimmed/{unit}.end2.fastq.gz")
+        trimmed_read1 = read_trimming("fastq/trimmed/{unit}.end1.fastq.gz"),
+        trimmed_read2 = read_trimming("fastq/trimmed/{unit}.end2.fastq.gz")
     output:
         temp("{outdir}/{reference_version}/bowtie2/{unit}.bam")
     shell:
