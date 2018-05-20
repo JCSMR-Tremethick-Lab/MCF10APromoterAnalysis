@@ -72,7 +72,7 @@ rule bam_quality_filter:
     input:
         "{outdir}/{reference_version}/bowtie2/{unit}.bam"
     output:
-        temp("{outdir}/{reference_version}/bowtie2/quality_filtered/Q{qual}/{unit}.bam")
+        temp("{outdir}/{reference_version}/bowtie2/Q{qual}/{unit}.bam")
     shell:
         "samtools view -b -h -q {params.qual} {input} > {output}"
 
