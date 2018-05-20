@@ -19,8 +19,8 @@ wrapper_dir = home + "/Development/snakemake-wrappers/bio"
 include_prefix = home + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/rules/"
 subworkflow_prefix = home + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/subworkflows/"
 
-include:
-    include_prefix + "run_fastp.py"
+#include:
+#    include_prefix + "run_fastp.py"
 
 # define global variables such as reference version of genome so that it can be accessed
 # throughout the whole worfklow
