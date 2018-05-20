@@ -35,42 +35,11 @@ subworkflow read_trimming:
     workdir: "."
     snakefile: subworkflow_prefix + "run_fastp.py"
 
-rule bowtie2_pe:
-    version:
-        "0.2"
-    params:
-        max_in = 250,
-        bt2_index = home + config["references"][REF_GENOME]["bowtie2"][REF_VERSION]
-    threads:
-        8
-    input:
-        trimmed_read1 = read_trimming("fastq/{unit}.end1.trimmed.fastq.gz"),
-        trimmed_read2 = read_trimming("fastq/{unit}.end2.trimmed.fastq.gz")
-    output:
-        temp("{outdir}/{reference_version}/bowtie2/{unit}.bam")
-    shell:
-        """
-            bowtie2 \
-            -x {params.bt2_index}\
-            --no-mixed \
-            --no-discordant \
-            --maxins {params.max_in} \
-            --threads {threads}\
-            --rg-id '{wildcards.unit}' \
-            --rg 'LB:{wildcards.unit}' \
-            --rg 'SM:{wildcards.unit}' \
-            --rg 'PL:Illumina' \
-            --rg 'PU:NA' \
-            -1 {input.trimmed_read1} \
-            -2 {input.trimmed_read2} \
-            | samtools view -Sb - > {output}
-        """
-
 rule bam_quality_filter:
     params:
         qual = config["alignment_quality"]
     input:
-        rules.bowtie2_pe.output
+        read_trimming("{outdir}/{reference_version}/bowtie2/{unit}.bam")
     output:
         temp("{outdir}/{reference_version}/bowtie2/{unit}.qfiltered.bam")
     shell:
