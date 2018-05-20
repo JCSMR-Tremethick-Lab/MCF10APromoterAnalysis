@@ -27,4 +27,4 @@ rule run_fastp:
         report_html = "{trim_data}/{unit}_report.html",
         report_json = "{trim_data}/{unit}_report.json"
     shell:
-        "fastp -i {read1} -I {read2} -o {trimmed_read1} -O {trimmed_read2} --html {report_html} --json {report_json} --thread {threads}"
+        "fastp -i {input.read1} -I {input.read2} -o {output.trimmed_read1} -O {output.trimmed_read2} --html {output.report_html} --json {output.report_json} --thread {threads}"
