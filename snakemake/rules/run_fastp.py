@@ -18,17 +18,14 @@ rule run_fastp:
         0.1
     threads:
         4
-    params:
-        trim_data = config["trim_dir"],
-        raw_data = config["raw_dir"]
     input:
-        read1 = "{assayID}/fastq/{unit}.end1.fastq.gz",
-        read2 = "{assayID}/fastq/{unit}.end2.fastq.gz"
+        read1 = "fastq/{unit}.end1.fastq.gz",
+        read2 = "fastq/{unit}.end2.fastq.gz"
     output:
-        trimmed_read1 = "{assayID}/{processed_dir}/{trim_data}/{unit}_end1.fastq.gz",
-        trimmed_read2 = "{assayID}/{processed_dir}/{trim_data}/{unit}_end2.fastq.gz",
-        report_html = "{assayID}/{processed_dir}/{trim_data}/{unit}_report.html",
-        report_json = "{assayID}/{processed_dir}/{trim_data}/{unit}_report.json"
+        trimmed_read1 = "{processed_dir}/{trim_data}/{unit}.end1.fastq.gz",
+        trimmed_read2 = "{processed_dir}/{trim_data}/{unit}.end2.fastq.gz",
+        report_html = "{processed_dir}/{trim_data}/{unit}_report.html",
+        report_json = "{processed_dir}/{trim_data}/{unit}_report.json"
     shell:
         """
             fastp -i {read1} -I {read2} -o {trimmed_read1} -O {trimmed_read2} --html {report_html} --json {report_json} --thread {threads}
