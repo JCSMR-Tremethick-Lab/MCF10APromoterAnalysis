@@ -70,7 +70,7 @@ rule bam_quality_filter:
     params:
         qual = config["alignment_quality"]
     input:
-        "{outdir}/{reference_version}/bowtie2/{unit}.bam"
+        rules.bowtie2_pe.output
     output:
         temp("{outdir}/{reference_version}/bowtie2/Q{qual}/{unit}.bam")
     shell:
@@ -82,7 +82,7 @@ rule bam_sort:
     threads:
         4
     input:
-        "{outdir}/{reference_version}/bowtie2/Q{qual}/{unit}.bam"
+        rules.bam_quality_filter.output
     output:
         temp("{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/{unit}.bam")
     shell:
@@ -94,7 +94,7 @@ rule bam_mark_duplicates:
         picard = home + config["picard"],
         temp = home + config["temp_dir"]
     input:
-        "{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/{unit}.bam"
+        rules.bam_sort.output
     output:
         temp("{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/duplicates_marked/{unit}.bam")
     shell:
@@ -110,7 +110,7 @@ rule bam_mark_duplicates:
 
 rule bam_rmdup:
     input:
-        "{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/duplicates_marked/{unit}.bam"
+        rules.bam_mark_duplicates.output
     output:
         protected("{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/duplicates_removed/{unit}.bam")
     shell:
@@ -120,7 +120,7 @@ rule bam_rmdup_index:
     params:
         qual = config["alignment_quality"]
     input:
-        "{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/duplicates_removed/{unit}.bam"
+        rules.bam_rmdup.output
     output:
         protected("{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/duplicates_removed/{unit}.bam.bai")
     shell:
