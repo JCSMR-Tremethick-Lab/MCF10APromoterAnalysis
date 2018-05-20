@@ -25,10 +25,10 @@ rule run_fastp:
         read1 = "{assayID}/fastq/{unit}.end1.fastq.gz",
         read2 = "{assayID}/fastq/{unit}.end2.fastq.gz"
     output:
-        trimmed_read1 = "{assayID}/{processed_dir}/{trim_data}/{unit}_end1.fastq.gz",
-        trimmed_read2 = "{assayID}/{processed_dir}/{trim_data}/{unit}_end2.fastq.gz",
-        report_html = "{assayID}/{processed_dir}/{trim_data}/{unit}_report.html",
-        report_json = "{assayID}/{processed_dir}/{trim_data}/{unit}_report.json"
+        trimmed_read1 = "{assayID}/{trim_data}/{unit}_end1.fastq.gz",
+        trimmed_read2 = "{assayID}/{trim_data}/{unit}_end2.fastq.gz",
+        report_html = "{assayID}/{trim_data}/{unit}_report.html",
+        report_json = "{assayID}/{trim_data}/{unit}_report.json"
     shell:
         """
             fastp -i {read1} -I {read2} -o {trimmed_read1} -O {trimmed_read2} --html {report_html} --json {report_json} --thread {threads}
