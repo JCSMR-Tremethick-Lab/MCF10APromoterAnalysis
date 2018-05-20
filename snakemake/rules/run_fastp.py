@@ -18,12 +18,9 @@ rule run_fastp:
         0.1
     threads:
         4
-    params:
-        trim_data = config["trim_dir"],
-        raw_data = config["raw_dir"]
     input:
-        read1 = "{assayID}/fastq/{unit}.end1.fastq.gz",
-        read2 = "{assayID}/fastq/{unit}.end2.fastq.gz"
+        read1 = "fastq/{unit}.end1.fastq.gz",
+        read2 = "fastq/{unit}.end2.fastq.gz"
     output:
         trimmed_read1 = "{assayID}/{trim_data}/{unit}_end1.fastq.gz",
         trimmed_read2 = "{assayID}/{trim_data}/{unit}_end2.fastq.gz",
