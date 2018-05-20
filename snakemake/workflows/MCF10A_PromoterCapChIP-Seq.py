@@ -72,7 +72,7 @@ rule bam_quality_filter:
     input:
         rules.bowtie2_pe.output
     output:
-        temp("{outdir}/{reference_version}/bowtie2/Q{qual}/{unit}.bam")
+        temp("{outdir}/{reference_version}/bowtie2/{unit}.Q{qual}.bam")
     shell:
         "samtools view -b -h -q {params.qual} {input} > {output}"
 
@@ -84,7 +84,7 @@ rule bam_sort:
     input:
         rules.bam_quality_filter.output
     output:
-        temp("{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/{unit}.bam")
+        temp("{outdir}/{reference_version}/bowtie2/{unit}.Q{qual}.sorted.bam")
     shell:
         "samtools sort -@ {threads} {input} -T {wildcards.unit}.Q{params.qual}.sorted -o {output}"
 
@@ -96,7 +96,7 @@ rule bam_mark_duplicates:
     input:
         rules.bam_sort.output
     output:
-        temp("{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/duplicates_marked/{unit}.bam")
+        temp("{outdir}/{reference_version}/bowtie2/{unit}.Q{qual}.sorted.duplicates_marked.bam")
     shell:
         """
             java -Djava.io.tmpdir={params.temp} \
@@ -112,7 +112,7 @@ rule bam_rmdup:
     input:
         rules.bam_mark_duplicates.output
     output:
-        protected("{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/duplicates_removed/{unit}.bam")
+        protected("{outdir}/{reference_version}/bowtie2/{unit}.final.bam")
     shell:
         "samtools rmdup {input} {output}"
 
@@ -122,7 +122,7 @@ rule bam_rmdup_index:
     input:
         rules.bam_rmdup.output
     output:
-        protected("{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/duplicates_removed/{unit}.bam.bai")
+        protected("{outdir}/{reference_version}/bowtie2/{unit}.final.bam.bai")
     shell:
         "samtools index {input} {output}"
 
@@ -135,7 +135,7 @@ rule run_bt2:
 
 rule all:
     input:
-        expand("{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/duplicates_removed/{unit}.{suffix}",
+        expand("{outdir}/{reference_version}/bowtie2/{unit}.final.{suffix}",
                outdir = config["processed_dir"],
                reference_version = config["references"][REF_GENOME]["version"],
                duplicates = "duplicates_removed",
