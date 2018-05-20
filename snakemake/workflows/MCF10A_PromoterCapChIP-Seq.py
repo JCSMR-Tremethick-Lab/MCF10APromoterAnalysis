@@ -121,6 +121,13 @@ rule bam_rmdup_index:
     shell:
         "samtools index {input} {output}"
 
+rule run_bt2:
+    input:
+        expand("{outdir}/{reference_version}/bowtie2/{unit}.bam",
+                outdir = config["processed_dir"],
+                reference_version = config["references"][REF_GENOME]["version"],
+                unit = config["units"])
+
 rule all:
     input:
         expand("{outdir}/{reference_version}/bowtie2/Q{qual}/sorted/duplicates_removed/{unit}.{suffix}",
@@ -129,4 +136,4 @@ rule all:
                duplicates = "duplicates_removed",
                unit = config["units"],
                qual = config["alignment_quality"],
-               suffix = ["bam", "bam.bai"]),
+               suffix = ["bam", "bam.bai"])
