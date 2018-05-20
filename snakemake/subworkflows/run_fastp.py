@@ -22,9 +22,9 @@ rule run_fastp:
         read1 = "fastq/{unit}.end1.fastq.gz",
         read2 = "fastq/{unit}.end2.fastq.gz"
     output:
-        trimmed_read1 = config["trim_dir"] + "/{unit}.end1.fastq.gz",
-        trimmed_read2 = config["trim_dir"] + "/{unit}.end2.fastq.gz",
-        report_html = config["trim_dir"] + "/{unit}_report.html",
-        report_json = config["trim_dir"] + "/{unit}_report.json"
+        trimmed_read1 = "fastq/trimmed/{unit}.end1.fastq.gz",
+        trimmed_read2 = "fastq/trimmed/{unit}.end2.fastq.gz",
+        report_html = "fastq/trimmed/{unit}_report.html",
+        report_json = "fastq/trimmed/{unit}_report.json"
     shell:
         "fastp -i {input.read1} -I {input.read2} -o {output.trimmed_read1} -O {output.trimmed_read2} --html {output.report_html} --json {output.report_json} --thread {threads}"
