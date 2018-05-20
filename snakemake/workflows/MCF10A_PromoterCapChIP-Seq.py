@@ -17,6 +17,7 @@ home = os.environ['HOME']
 wrapper_dir = home + "/Development/snakemake-wrappers/bio"
 
 include_prefix = home + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/rules/"
+subworkflow_prefix = home + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/subworkflows/"
 
 include:
     include_prefix + "run_fastp.py"
@@ -30,6 +31,10 @@ home = os.environ['HOME']
 REF_GENOME = "hg19"
 REF_VERSION = "GRCh37_hg19_UCSC"
 
+subworkflow read_trimming:
+    workdir: "."
+    snakefile: subworkflow_prefix + "run_fastp.py"
+
 rule bowtie2_pe:
     version:
         "0.2"
@@ -39,8 +44,8 @@ rule bowtie2_pe:
     threads:
         8
     input:
-        trimmed_read1 = "trimmed/{unit}.end1.fastq.gz",
-        trimmed_read2 = "trimmed/{unit}.end2.fastq.gz"
+        trimmed_read1 = read_trimming("trimmed/{unit}.end1.fastq.gz"),
+        trimmed_read2 = read_trimming("trimmed/{unit}.end2.fastq.gz")
     output:
         temp("{outdir}/{reference_version}/bowtie2/{unit}.bam")
     shell:
