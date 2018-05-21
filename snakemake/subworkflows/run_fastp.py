@@ -13,6 +13,14 @@ Rules for trimming reads with fastq
 For usage, include this in your workflow.
 """
 
+import os
+import fnmatch
+from snakemake.exceptions import MissingInputException
+
+home = os.environ['HOME']
+
+configfile: home + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/configs/config_PromoterCapSeq.json"
+
 rule run_fastp:
     version:
         0.1
@@ -22,10 +30,10 @@ rule run_fastp:
         read1 = "fastq/{unit}.end1.fastq.gz",
         read2 = "fastq/{unit}.end2.fastq.gz"
     output:
-        trimmed_read1 = "fastq/{unit}.end1.trimmed.fastq.gz",
-        trimmed_read2 = "fastq/{unit}.end2.trimmed.fastq.gz",
-        report_html = "fastq/{unit}_report.html",
-        report_json = "fastq/{unit}_report.json"
+        trimmed_read1 = "trimmed/{unit}.end1.fastq.gz",
+        trimmed_read2 = "trimmed/{unit}.end2.fastq.gz",
+        report_html = "trimmed/{unit}_report.html",
+        report_json = "trimmed/{unit}_report.json"
     shell:
         "fastp -i {input.read1} -I {input.read2} -o {output.trimmed_read1} -O {output.trimmed_read2} --html {output.report_html} --json {output.report_json} --thread {threads}"
 
@@ -38,8 +46,8 @@ rule bowtie2_pe:
     threads:
         8
     input:
-        trimmed_read1 = "fastq/{unit}.end1.trimmed.fastq.gz",
-        trimmed_read2 = "fastq/{unit}.end2.trimmed.fastq.gz"
+        trimmed_read1 = "trimmed/{unit}.end1.fastq.gz",
+        trimmed_read2 = "trimmed/{unit}.end2.fastq.gz"
     output:
         "{outdir}/{reference_version}/bowtie2/{unit}.bam"
     shell:
