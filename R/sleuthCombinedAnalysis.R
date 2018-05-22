@@ -130,12 +130,14 @@ condition <- gsub("_2", "", condition)
 condition <- gsub("_3", "", condition)
 ade4::s.class(pca1$li, fac = as.factor(condition))
 
-s2c <- data.frame(sample = sample_id, condition = condition)
-s2c <- dplyr::mutate(s2c, path = kal_dirs)
-s2c$sample <- as.character(s2c$sample)
-s2c[grep("AD6|AD8", s2c$condition),]$ condition <- "MCF10A_wt"
+s2c <- data.table::data.table(sample = sample_id, condition = condition)
+s2c <- data.table::data.table(dplyr::mutate(s2c, path = kal_dirs))
+s2c[grep("AD6|AD8", s2c$condition),]$condition <- "MCF10A_wt"
+s2c$condition <- as.factor(s2c$condition)
 s2c$condition <- relevel(s2c$condition, ref = "MCF10A_wt")
+s2c <- s2c[condition != "MCF10Ca1a_shZ"]
 s2c$condition <- droplevels(s2c$condition)
+table(s2c$condition)
 
 filter_function <- function(row, min_reads = 2, min_prop = 0.47) {
   mean(row >= min_reads) >= min_prop
@@ -151,7 +153,10 @@ if(!file.exists(sleuth_results_output)){
                             ~ condition,
                             target_mapping = t2g,
                             filter_fun = filter_function,
-                            transformation_function = log2_transform)
+                            transformation_function = log2_transform,
+                            max_bootstrap = 30, 
+                            read_bootstrap_tpm = T, 
+                            extra_bootstrap_summary = T)
   so <- sleuth::sleuth_fit(so, formula = design)
   so <- sleuth::sleuth_fit(so, ~1, "reduced")
   so <- sleuth::sleuth_lrt(so, "reduced", "full")
@@ -171,7 +176,10 @@ if(!file.exists(sleuth_results_output)){
                                  target_mapping = t2gHsap, 
                                  aggregation_column = "external_gene_name",
                                  filter_fun = filter_function,
-                                 transformation_function = log2_transform)
+                                 transformation_function = log2_transform, 
+                                 max_bootstrap = 30, 
+                                 read_bootstrap_tpm = T, 
+                                 extra_bootstrap_summary = T)
   so.gene <- sleuth::sleuth_fit(so.gene, formula = design)
   so.gene <- sleuth::sleuth_fit(so.gene, ~1, "reduced")
   so.gene <- sleuth::sleuth_lrt(so.gene, "reduced", "full")
@@ -214,8 +222,9 @@ if(!file.exists(sleuth_results_output)){
 load(paste(annotationDataPath, "emtGenes_", annotationVersion, ".rda", sep = ""))
 ucscTranscriptsSigEMTCells
 ucscTranscriptsSigEMTCells <- dplyr::rename(ucscTranscriptsSigEMTCells, target_id = external_gene_name)
+ucscGenesSigEMTCells <- ucscTranscriptsSigEMTCells[!duplicated(target_id), c("target_id", "epi_mes")]
 setkey(ucscTranscriptsSigEMTCells, "target_id")
-rt.gene.list$conditionMCF10A_TGFb[unique(ucscTranscriptsSigEMTCells$target_id)]
+rt.gene.list$conditionMCF10A_TGFb[ucscGenesSigEMTCells$target_id]
 
 key(rt.gene.list$conditionMCF10A_TGFb)
 EMT.TGFb <- na.omit(rt.gene.list$conditionMCF10A_TGFb[ucscTranscriptsSigEMTCells[!duplicated(target_id),c("target_id", "epi_mes")], 
@@ -242,4 +251,82 @@ plot(EMT.TGFb$b, -log10(EMT.TGFb$qval))
 plot(EMT.shZ$b, -log10(EMT.shZ$qval))
 
 
+
+# subgroup analysis -------------------------------------------------------
+# second rund D8 samples shZ vs WT
+s2c.shZD8 <- s2c[grep("D8", s2c$path)]
+s2c.shZD8$condition <- droplevels(s2c.shZD8$condition)
+so.gene.shZD8 <- sleuth::sleuth_prep(s2c.shZD8, ~ condition,
+                                     target_mapping = t2gHsap, 
+                                     aggregation_column = "external_gene_name",
+                                     filter_fun = filter_function,
+                                     transformation_function = log2_transform, 
+                                     max_bootstrap = 30, 
+                                     read_bootstrap_tpm = T, 
+                                     extra_bootstrap_summary = T)
+design.shZD8 <- model.matrix(~ condition, data = s2c.shZD8)
+so.gene.shZD8 <- sleuth::sleuth_fit(so.gene.shZD8, formula = design.shZD8)
+so.gene.shZD8 <- sleuth::sleuth_fit(so.gene.shZD8, ~1, "reduced")
+so.gene.shZD8 <- sleuth::sleuth_lrt(so.gene.shZD8, "reduced", "full")
+for (i in colnames(design.shZD8)[grep("Intercept", colnames(design.shZD8), invert = T)]){
+  so.gene.shZD8 <- sleuth::sleuth_wt(so.gene.shZD8, i)  
+}
+sleuth_live(so.gene.shZD8)
+rt.gene.shZD8 <- data.table::data.table(sleuth::sleuth_results(so.gene.shZD8, "conditionMCF10AshZD8"))
+setkey(rt.gene.shZD8, "target_id")
+rt.gene.shZD8.EMT <- na.omit(rt.gene.shZD8[ucscGenesSigEMTCells], cols = "pval")
+setkey(rt.gene.shZD8.EMT, "target_id")
+# first run shZ vs WT
+s2c.shZ <- s2c[grep("MCF10A_shZ_rep|MCF10A_wt_rep", s2c$sample)]
+s2c.shZ$condition <- droplevels(s2c.shZ$condition)
+so.gene.shZ <- sleuth::sleuth_prep(s2c.shZ, ~ condition,
+                                     target_mapping = t2gHsap, 
+                                     aggregation_column = "external_gene_name",
+                                     filter_fun = filter_function,
+                                     transformation_function = log2_transform, 
+                                     max_bootstrap = 30, 
+                                     read_bootstrap_tpm = T, 
+                                     extra_bootstrap_summary = T)
+design.shZ <- model.matrix(~ condition, data = s2c.shZ)
+so.gene.shZ <- sleuth::sleuth_fit(so.gene.shZ, formula = design.shZ)
+so.gene.shZ <- sleuth::sleuth_fit(so.gene.shZ, ~1, "reduced")
+so.gene.shZ <- sleuth::sleuth_lrt(so.gene.shZ, "reduced", "full")
+for (i in colnames(design.shZ)[grep("Intercept", colnames(design.shZ), invert = T)]){
+  so.gene.shZ <- sleuth::sleuth_wt(so.gene.shZ, i)  
+}
+sleuth_live(so.gene.shZ)
+rt.gene.shZ <- data.table::data.table(sleuth::sleuth_results(so.gene.shZ, "conditionMCF10A_shZ"))
+setkey(rt.gene.shZ, "target_id")
+rt.gene.shZ.EMT <- na.omit(rt.gene.shZ.EMT[ucscGenesSigEMTCells], cols = "pval")
+setkey(rt.gene.shZ.EMT, "target_id")
+table(rt.gene.shZ.EMT[b < 0 & qval < 0.1]$epi_mes)
+
+######################################
+# COMMENT: shZD8 clearly did not work
+#####################################
+
+
+# compare the two knock-down experiments ----------------------------------
+i1 <- intersect(rt.gene.shZD8.EMT$target_id, rt.gene.shZ.EMT$target_id)
+cor(rt.gene.shZD8.EMT[i1]$b, rt.gene.shZ.EMT[i1]$b)
+
+
+# plot all histone genes --------------------------------------------------
+histoneGenes <- data.table::fread("~/Development/JCSMR-Tremethick-Lab/adhoc/data.csv")
+histoneGenes <- data.table::data.table(histoneGenes[,c("hgnc_symbol", "Group")])
+tmp <- data.table::data.table(biomaRt::getBM(attributes = c("external_gene_name", "description", "ensembl_gene_id", "hgnc_symbol"),
+                                      filters = "hgnc_symbol",
+                                      values = histoneGenes$hgnc_symbol,
+                                      mart = mart))
+setkey(tmp, "hgnc_symbol")
+setkey(histoneGenes, "hgnc_symbol")
+histoneGenes <- histoneGenes[tmp]
+key(histoneGenes)
+setkey(histoneGenes, "external_gene_name")
+
+plotData <- na.omit(kt.gene[histoneGenes])[na.omit(kt.gene[histoneGenes])$tpm > 5]
+ggplot(data = plotData, aes(x = target_id, y = tpm)) + 
+  geom_boxplot(aes(colour = condition)) +
+  facet_wrap(~Group + condition, scales = "free_x", ncol = 6) +
+  theme(axis.text = element_text(angle = 45), legend.position = "none")
 
