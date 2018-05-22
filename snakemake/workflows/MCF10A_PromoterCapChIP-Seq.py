@@ -100,18 +100,23 @@ rule bam_merge:
     threads:
         8
     input:
-        lambda wildcards: expand("{outdir}/{reference_version}/bowtie2/{unit}.final.{suffix}",
+        bam = lambda wildcards: expand("{outdir}/{reference_version}/bowtie2/{unit}.final.{suffix}",
                                  outdir = wildcards["outdir"],
                                  reference_version = wildcards["reference_version"],
                                  unit = config["samples"][wildcards["condition"]][wildcards["type"]][wildcards["sample"] + "_" + wildcards["type"]],
-                                 suffix = ["bam"])
+                                 suffix = ["bam"]),
+        index = lambda wildcards: expand("{outdir}/{reference_version}/bowtie2/{unit}.final.{suffix}",
+                                 outdir = wildcards["outdir"],
+                                 reference_version = wildcards["reference_version"],
+                                 unit = config["samples"][wildcards["condition"]][wildcards["type"]][wildcards["sample"] + "_" + wildcards["type"]],
+                                 suffix = ["bam.bai"])
     output:
         protected("{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.bam")
     run:
-        if (len(input) > 1):
-            shell("samtools merge --threads {threads} {output} {input}")
+        if (len(input.bam) > 1):
+            shell("samtools merge --threads {threads} {output} {input.bam}")
         else:
-            shell("ln -s {params.cwd}/{input} {output}")
+            shell("ln -s {params.cwd}/{input.bam} {output}")
 
 rule all:
     input:
