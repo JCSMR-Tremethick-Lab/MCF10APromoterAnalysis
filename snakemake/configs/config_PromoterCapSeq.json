@@ -54,7 +54,23 @@
             "CA1a_Inp_L_r2_R1"],
   "samples" :
   {
-    "sample" : ["MCF10A", "MCF10A_TGFb", "MCF10CA1a"],
+    "sample" : ["MCF10A_WT", "MCF10A_TGFb", "MCF10CA1a_WT", "MCF10A_shH2AZ"],
+    "Total" :
+    {
+      "Input" :
+      {
+        "MCF10A_WT_Input" : ["A_Inp_H_r1_R1", "A_Inp_H_r2_R1","A_Inp_L_r1_R1", "A_Inp_L_r2_R1"],
+        "MCF10A_shH2AZ_Input" : ["A_shH2AZ_Inp_H_r1_R1", "A_shH2AZ_Inp_H_r2_R1", "A_shH2AZ_Inp_L_r1_R1", "A_shH2AZ_Inp_L_r2_R1"],
+        "MCF10A_TGFb_Input" : ["A_TGFb_Inp_H_r1_R1", "A_TGFb_Inp_H_r2_R1", "A_TGFb_Inp_L_r1_R1", "A_TGFb_Inp_L_r2_R1"],
+        "MCF10CA1a_WT_Input" : ["CA1a_Inp_H_r1_R1", "CA1a_Inp_H_r2_R1", "CA1a_Inp_L_r1_R1", "CA1a_Inp_L_r2_R1"]
+      },
+      "H2AZ" :
+      {
+        "MCF10A_WT_H2AZ" : ["A_H2AZ_H_r1_R1", "A_H2AZ_H_r2_R1", "A_H2AZ_L_r1_R1", "A_H2AZ_L_r2_R1"],
+        "MCF10A_TGFb_H2AZ" : ["A_TGFb_H2AZ_H_r1_R1", "A_TGFb_H2AZ_H_r2_R1", "A_TGFb_H2AZ_L_r1_R1", "A_TGFb_H2AZ_L_r2_R1"],
+        "MCF10CA1a_WT_H2AZ" : ["CA1a_H2AZ_H_r1_R1", "CA1a_H2AZ_H_r2_R1", "CA1a_H2AZ_L_r1_R1", "CA1a_H2AZ_L_r2_R1"]
+      }
+    },
     "H" :
     {
       "Input" :

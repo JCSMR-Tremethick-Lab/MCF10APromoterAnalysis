@@ -95,19 +95,40 @@ rule bam_rmdup_index:
     shell:
         "samtools index {input} {output}"
 
-rule run_bt2:
+rule bam_merge:
+    version:
+        0.4
+    params:
+        cwd = os.getcwd()
+    threads:
+        8
     input:
-        expand("{outdir}/{reference_version}/bowtie2/{unit}.bam",
-                outdir = config["processed_dir"],
-                reference_version = config["references"][REF_GENOME]["version"],
-                unit = config["units"])
+        lambda wildcards: expand("{outdir}/{reference_version}/bowtie2/{unit}.final.{suffix}",
+                                 outdir = wildcards["outdir"],
+                                 reference_version = wildcards["reference_version"],
+                                 unit = config["samples"][wildcards["condition"]][wildcards["type"]][wildcards["sample"]],
+                                 suffix = ["bam", "bam.bai"])
+    output:
+        protected("{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.bam")
+    run:
+        if (len(input) > 1):
+            shell("samtools merge --threads {threads} {output} {input}")
+        else:
+            shell("ln -s {params.cwd}/{input} {output}")
 
 rule all:
     input:
-        expand("{outdir}/{reference_version}/bowtie2/{unit}.final.{suffix}",
+        expand("{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.bam",
                outdir = config["processed_dir"],
                reference_version = config["references"][REF_GENOME]["version"],
-               duplicates = "duplicates_removed",
-               unit = config["units"],
-               qual = config["alignment_quality"],
-               suffix = ["bam", "bam.bai"])
+               sample = config["samples"]["sample"],
+               type = "Input",
+               condition = "Total",
+               suffix = ["bam"]),
+        expand("{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.bam",
+               outdir = config["processed_dir"],
+               reference_version = config["references"][REF_GENOME]["version"],
+               sample = ["MCF10A_WT", "MCF10A_TGFb", "MCF10CA1a_WT"],
+               type = "H2AZ",
+               condition = "Total",
+               suffix = ["bam"]),
