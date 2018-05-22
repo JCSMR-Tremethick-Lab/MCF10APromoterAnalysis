@@ -51,8 +51,8 @@ rule fastp_pe:
     threads:
         4
     input:
-        read1 = config["raw_dir"] + "/".join(get_fastq(wildcards)["fq1"].tolist()),
-        read2 = config["raw_dir"] + "/".join(get_fastq(wildcards)["fq2"].tolist())
+        read1 = lambda wildcards: config["raw_dir"] + "/" + "".join(get_fastq(wildcards)["fq1"].tolist()),
+        read2 = lambda wildcards: config["raw_dir"] + "/" + "".join(get_fastq(wildcards)["fq2"].tolist())
     output:
         trimmed_read1 = "trimmed/{sample}.end1.fastq.gz",
         trimmed_read2 = "trimmed/{sample}.end2.fastq.gz",
@@ -74,7 +74,7 @@ rule kallisto_quant:
         read2 = "trimmed/{sample}.end1.fastq.gz",
         ki = lambda wildcards: config["references"]["hg19"]["kallisto"][wildcards.reference_version]
     output:
-        protected("{processed_dir}/{reference_version}/kallisto/{unit}")
+        protected("{processed_dir}/{reference_version}/kallisto/{sample}")
     shell:
         """
             kallisto quant --index={input.ki} \
