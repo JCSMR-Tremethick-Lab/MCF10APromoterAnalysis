@@ -118,6 +118,16 @@ rule bam_merge:
         else:
             shell("ln -s {params.cwd}/{input.bam} {output}")
 
+rule index_merged:
+    version:
+        0.1
+    input:
+        rules.bam_merge.output
+    output:
+        protected("{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.bam.bai")
+    shell:
+        "samtools index {input} {output}"
+
 rule all:
     input:
         expand("{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.bam",
@@ -126,11 +136,11 @@ rule all:
                sample = config["samples"]["sample"],
                type = "Input",
                condition = "Total",
-               suffix = ["bam"]),
+               suffix = ["bam", "bam.bai"]),
         expand("{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.bam",
                outdir = config["processed_dir"],
                reference_version = "GRCh37_hg19_UCSC",
                sample = ["MCF10A_WT", "MCF10A_TGFb", "MCF10CA1a_WT"],
                type = "H2AZ",
                condition = "Total",
-               suffix = ["bam"]),
+               suffix = ["bam", "bam.bai"]),
