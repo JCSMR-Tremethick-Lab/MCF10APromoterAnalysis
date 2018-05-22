@@ -32,7 +32,7 @@ units.index = units.index.set_levels([i.astype(str) for i in units.index.levels]
 
 # functions #
 def get_fastq(wildcards):
-    return units.loc[(wildcards.sample), ["fq1", "fq2"]].dropna()
+    return units.loc[(wildcards["sample"]), ["fq1", "fq2"]].dropna()
 
 # targets #
 rule all:
@@ -41,7 +41,6 @@ rule all:
                outdir = config["processed_dir"],
                reference_version = "GRCh37_hg19_UCSC",
                sample = samples["sample"].tolist())
-
 
 # set up report #
 report: "report/workflow.rst"
@@ -52,15 +51,15 @@ rule fastp_pe:
     threads:
         4
     input:
-        get_fastq
+        read1 = config["raw_dir"] + "/".join(get_fastq(wildcards)["fq1"].tolist()),
+        read2 = config["raw_dir"] + "/".join(get_fastq(wildcards)["fq2"].tolist())
     output:
         trimmed_read1 = "trimmed/{sample}.end1.fastq.gz",
         trimmed_read2 = "trimmed/{sample}.end2.fastq.gz",
         report_html = "trimmed/{sample}_report.html",
         report_json = "trimmed/{sample}_report.json"
     shell:
-        "fastp -i {input[0]} -I {input[1]} -o {output.trimmed_read1} -O {output.trimmed_read2} --html {output.report_html} --json {output.report_json} --thread {threads}"
-
+        "fastp -i {input.read1} -I {input.read2} -o {output.trimmed_read1} -O {output.trimmed_read2} --html {output.report_html} --json {output.report_json} --thread {threads}"
 
 rule kallisto_quant:
     message:
