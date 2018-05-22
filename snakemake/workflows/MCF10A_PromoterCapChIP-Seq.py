@@ -24,9 +24,6 @@ subworkflow_prefix = home + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/
 
 # define global variables such as reference version of genome so that it can be accessed
 # throughout the whole worfklow
-REF_GENOME = config["references"]["genomes"][1]
-
-# set local variables
 home = os.environ['HOME']
 REF_GENOME = "hg19"
 REF_VERSION = "GRCh37_hg19_UCSC"
@@ -106,8 +103,8 @@ rule bam_merge:
         lambda wildcards: expand("{outdir}/{reference_version}/bowtie2/{unit}.final.{suffix}",
                                  outdir = wildcards["outdir"],
                                  reference_version = wildcards["reference_version"],
-                                 unit = config["samples"][wildcards["condition"]][wildcards["type"]][wildcards["sample"]],
-                                 suffix = ["bam", "bam.bai"])
+                                 unit = config["samples"][wildcards["condition"]][wildcards["type"]][wildcards["sample"] + "_" + wildcards["type"]],
+                                 suffix = ["bam"])
     output:
         protected("{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.bam")
     run:
@@ -120,14 +117,14 @@ rule all:
     input:
         expand("{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.bam",
                outdir = config["processed_dir"],
-               reference_version = config["references"][REF_GENOME]["version"],
+               reference_version = "GRCh37_hg19_UCSC",
                sample = config["samples"]["sample"],
                type = "Input",
                condition = "Total",
                suffix = ["bam"]),
         expand("{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.bam",
                outdir = config["processed_dir"],
-               reference_version = config["references"][REF_GENOME]["version"],
+               reference_version = "GRCh37_hg19_UCSC",
                sample = ["MCF10A_WT", "MCF10A_TGFb", "MCF10CA1a_WT"],
                type = "H2AZ",
                condition = "Total",
