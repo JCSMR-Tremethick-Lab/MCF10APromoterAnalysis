@@ -130,14 +130,14 @@ rule index_merged:
 
 rule all:
     input:
-        expand("{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.bam",
+        expand("{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.{suffix}",
                outdir = config["processed_dir"],
                reference_version = "GRCh37_hg19_UCSC",
                sample = config["samples"]["sample"],
                type = "Input",
                condition = "Total",
                suffix = ["bam", "bam.bai"]),
-        expand("{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.bam",
+        expand("{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.{suffix}",
                outdir = config["processed_dir"],
                reference_version = "GRCh37_hg19_UCSC",
                sample = ["MCF10A_WT", "MCF10A_TGFb", "MCF10CA1a_WT"],
