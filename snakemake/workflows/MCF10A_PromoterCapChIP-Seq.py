@@ -128,18 +128,51 @@ rule index_merged:
     shell:
         "samtools index {input} {output}"
 
+rule bamCoverage:
+    version:
+        0.2
+    params:
+        deepTools_dir = home + config["deepTools_dir"],
+        ignore = config["program_parameters"]["deepTools"]["ignoreForNormalization"],
+        program_parameters = cli_parameters_bamCoverage
+    threads:
+        8
+    input:
+        bam = "{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.bam",
+        index = "{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.bam.bai"
+    output:
+        protected("{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{sample}_{type}.{condition}.bw")
+    shell:
+        """
+        {params.deepTools_dir}/bamCoverage --bam {input.bam} \
+                                           --outFileName {output} \
+                                           --outFileFormat bigwig \
+                                           {params.program_parameters} \
+                                           --numberOfProcessors {threads} \
+                                           --normalizeUsingRPKM \
+                                           --ignoreForNormalization {params.ignore}
+        """
+
 rule all:
     input:
-        expand("{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.bam",
+        expand("{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{sample}_{type}.{condition}.bw",
                outdir = config["processed_dir"],
                reference_version = "GRCh37_hg19_UCSC",
+               application = "deepTools",
+               tool = "bamCoverage",
+               mode = "MNase",
+               normalization = "RPKM",
                sample = config["samples"]["sample"],
                type = "Input",
                condition = "Total",
                suffix = ["bam", "bam.bai"]),
-        expand("{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.bam",
+        expand("{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{sample}_{type}.{condition}.bw",
                outdir = config["processed_dir"],
                reference_version = "GRCh37_hg19_UCSC",
+               application = "deepTools",
+               tool = "bamCoverage",
+               mode = "MNase",
+               normalization = "RPKM",
                sample = ["MCF10A_WT", "MCF10A_TGFb", "MCF10CA1a_WT"],
                type = "H2AZ",
                condition = "Total",
