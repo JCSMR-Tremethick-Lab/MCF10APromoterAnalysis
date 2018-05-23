@@ -17,10 +17,11 @@ home = os.environ['HOME']
 wrapper_dir = home + "/Development/snakemake-wrappers/bio"
 
 include_prefix = home + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/rules/"
+common_prefix = home + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/common/"
 subworkflow_prefix = home + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/subworkflows/"
 
-#include:
-#    include_prefix + "run_fastp.py"
+include:
+    common_prefix + "functions.smk"
 
 # define global variables such as reference version of genome so that it can be accessed
 # throughout the whole worfklow
