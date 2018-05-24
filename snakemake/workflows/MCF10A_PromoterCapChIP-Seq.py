@@ -172,6 +172,7 @@ rule bigwigCompare_pooled_replicates:
                                                  --bigwig2 {input.input} \
                                                  --outFileName {output} \
                                                  --ratio {wildcards.ratio} \
+                                                 --binSize 10\
                                                  --numberOfProcessors {threads}
         """
 
