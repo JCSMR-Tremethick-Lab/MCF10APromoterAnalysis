@@ -163,8 +163,8 @@ rule bigwigCompare_pooled_replicates:
     threads:
         8
     input:
-        input = "{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{sample}_{input}.{condition}.bw",
-        chip = "{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{sample}_{chip}.{condition}.bw"
+        input = "{outdir}/{reference_version}/{application}/bamCoverage/{mode}/{normalization}/{sample}_{input}.{condition}.bw",
+        chip = "{outdir}/{reference_version}/{application}/bamCoverage/{mode}/{normalization}/{sample}_{chip}.{condition}.bw"
     output:
         "{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{ratio}/{sample}_{chip}_vs_{sample}_{input}_{condition}.bw"
     shell:
