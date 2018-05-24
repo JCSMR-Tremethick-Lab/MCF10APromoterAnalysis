@@ -142,7 +142,7 @@ rule bamCoverage:
         bam = "{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.bam",
         index = "{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.bam.bai"
     output:
-        protected("{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{sample}_{type}.{condition}.bw")
+        protected("{outdir}/{reference_version}/{application}/bamCoverage/{mode}/{normalization}/{sample}_{type}.{condition}.bw")
     shell:
         """
         {params.deepTools_dir}/bamCoverage --bam {input.bam} \
