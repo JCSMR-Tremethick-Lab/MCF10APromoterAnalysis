@@ -166,7 +166,7 @@ rule bigwigCompare_pooled_replicates:
         input = "{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{sample}_{input}.{condition}.bw",
         chip = "{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{sample}_{chip}.{condition}.bw"
     output:
-        "{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{sample}_{chip}_vs_{sample}_{input}_{condition}.{ratio}.bw"
+        "{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{ratio}/{sample}_{chip}_vs_{sample}_{input}_{condition}.bw"
     shell:
         """
             {params.deepTools_dir}/bigwigCompare --bigwig1 {input.chip} \
@@ -201,7 +201,7 @@ rule all:
                type = "H2AZ",
                condition = "Total",
                suffix = ["bam", "bam.bai"]),
-        expand("{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{sample}_H2AZ_vs_{sample}_Input_{condition}.{ratio}.bw",
+        expand("{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{ratio}/{sample}_H2AZ_vs_{sample}_Input_{condition}.bw",
                outdir = config["processed_dir"],
                reference_version = "GRCh37_hg19_UCSC",
                application = "deepTools",
