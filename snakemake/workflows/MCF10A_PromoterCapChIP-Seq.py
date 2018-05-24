@@ -205,7 +205,7 @@ rule all:
                outdir = config["processed_dir"],
                reference_version = "GRCh37_hg19_UCSC",
                application = "deepTools",
-               tool = "bamCompare",
+               tool = "bigwigCompare",
                mode = "MNase",
                normalization = "RPKM",
                sample = ["MCF10A_WT", "MCF10A_TGFb", "MCF10CA1a_WT"],
