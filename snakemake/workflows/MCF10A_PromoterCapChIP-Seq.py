@@ -154,6 +154,57 @@ rule bamCoverage:
                                            --ignoreForNormalization {params.ignore}
         """
 
+rule bamCompare_pooled_replicates:
+    version:
+        0.1
+    params:
+        deepTools_dir = home + config["deepTools_dir"],
+        ignore = config["program_parameters"]["deepTools"]["ignoreForNormalization"]
+    threads:
+        8
+    input:
+        input = "{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{sample}_{input}.{condition}.bw",
+        chip = "{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{sample}_{chip}.{condition}.bw"
+    output:
+        "{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{sample}_{chip}_vs_{sample}_{input}_{condition}.bw"
+    shell:
+        """
+            {params.deepTools_dir}/bamCompare --bamfile1 {input.chip} \
+                                              --bamfile2 {input.input} \
+                                              --outFileName {output} \
+                                              --scaleFactorsMethod {wildcards.scaleFactors} \
+                                              --ratio {wildcards.ratio} \
+                                              --numberOfProcessors {threads} \
+                                              --normalizeUsingRPKM \
+                                              --ignoreForNormalization {params.ignore}
+        """
+
+
+rule computeMatrix:
+    version:
+        0.2
+    params:
+        deepTools_dir = home + config["deepTools_dir"],
+        program_parameters = lambda wildcards: ' '.join("{!s}={!s}".format(key, val.strip("\\'")) for (key, val) in cli_parameters_computeMatrix(wildcards).items())
+    threads:
+        lambda wildcards: int(str(config["program_parameters"]["deepTools"]["threads"]).strip("['']"))
+    input:
+        file = get_computeMatrix_input,
+        region = lambda wildcards: home + config["program_parameters"]["deepTools"]["regionFiles"][wildcards.reference_version][wildcards.region]
+    output:
+        matrix_gz = "{assayID}/{runID}/{outdir}/{reference_version}/{application}/{tool}/{command}/{duplicates}/{referencePoint}/{region}_{mode}.matrix.gz"
+    shell:
+        """
+            {params.deepTools_dir}/computeMatrix {wildcards.command} \
+                                                 --regionsFileName {input.region} \
+                                                 --scoreFileName {input.file} \
+                                                 --missingDataAsZero \
+                                                 --skipZeros \
+                                                 --numberOfProcessors {threads} \
+                                                 {params.program_parameters} \
+                                                 --outFileName {output.matrix_gz}
+        """
+
 rule all:
     input:
         expand("{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{sample}_{type}.{condition}.bw",
@@ -178,3 +229,12 @@ rule all:
                type = "H2AZ",
                condition = "Total",
                suffix = ["bam", "bam.bai"]),
+        expand("{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{sample}_H2AZ_vs_{sample}_Input_{condition}.bw",
+               outdir = config["processed_dir"],
+               reference_version = "GRCh37_hg19_UCSC",
+               application = "deepTools",
+               tool = "bamCompare",
+               mode = "MNase",
+               normalization = "RPKM",
+               sample = ["MCF10A_WT", "MCF10A_TGFb", "MCF10CA1a_WT"],
+               condition = "Total")
