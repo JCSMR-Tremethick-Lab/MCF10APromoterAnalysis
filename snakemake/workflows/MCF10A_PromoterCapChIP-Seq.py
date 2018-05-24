@@ -158,8 +158,7 @@ rule bigwigCompare_pooled_replicates:
     version:
         0.1
     params:
-        deepTools_dir = home + config["deepTools_dir"],
-        ignore = config["program_parameters"]["deepTools"]["ignoreForNormalization"]
+        deepTools_dir = home + config["deepTools_dir"]
     threads:
         8
     input:
@@ -173,8 +172,7 @@ rule bigwigCompare_pooled_replicates:
                                                  --bigwig2 {input.input} \
                                                  --outFileName {output} \
                                                  --ratio {wildcards.ratio} \
-                                                 --numberOfProcessors {threads} \
-                                                 --ignoreForNormalization {params.ignore}
+                                                 --numberOfProcessors {threads}
         """
 
 rule all:
