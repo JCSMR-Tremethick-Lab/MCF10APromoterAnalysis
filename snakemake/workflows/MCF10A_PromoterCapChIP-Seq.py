@@ -129,6 +129,30 @@ rule index_merged:
     shell:
         "samtools index {input} {output}"
 
+rule sort_by_read_name:
+    version:
+        0.1
+    threads:
+        8
+    input:
+        rules.bam_merge.output
+    output:
+        temp("{outdir}/{reference_version}/bowtie2/merged/{sample}_{type}.{condition}.nsort.bam")
+    shell:
+        "samtools sort -n --threads {threads} {input} > {output}"
+
+rule convert_to_bedpe:
+    version:
+        0.1
+    threads:
+        8
+    input:
+        rules.sort_by_read_name.output
+    output:
+        protected("{outdir}/{reference_version}/bedtools/bedpe/{sample}_{type}.{condition}.bed")
+    shell:
+        "bedtools bamtobed -bedpe -i {input} > {output}"
+
 rule bamCoverage:
     version:
         0.2
@@ -178,6 +202,18 @@ rule bigwigCompare_pooled_replicates:
 
 rule all:
     input:
+        expand("{outdir}/{reference_version}/bedtools/bedpe/{sample}_{type}.{condition}.bed",
+               outdir = config["processed_dir"],
+               reference_version = "GRCh37_hg19_UCSC",
+               sample = config["samples"]["sample"],
+               type = "Input",
+               condition = "Total"),
+        expand("{outdir}/{reference_version}/bedtools/bedpe/{sample}_{type}.{condition}.bed",
+               outdir = config["processed_dir"],
+               reference_version = "GRCh37_hg19_UCSC",
+               sample = ["MCF10A_WT", "MCF10A_TGFb", "MCF10CA1a_WT"],
+               type = "H2AZ",
+               condition = "Total"),
         expand("{outdir}/{reference_version}/{application}/{tool}/{mode}/{normalization}/{sample}_{type}.{condition}.bw",
                outdir = config["processed_dir"],
                reference_version = "GRCh37_hg19_UCSC",
