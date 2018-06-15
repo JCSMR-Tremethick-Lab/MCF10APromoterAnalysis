@@ -14,19 +14,10 @@ prior to performing TFBS motif analysis.
 Stand alone workflow.
 """
 
-
-rule macs2_callpeak_dummy:
-    input:
-        expand("processed_data/hg38/macs2/callpeak/{digest}/{ChIP}_vs_{Input}/{sample}",
-               digest = "H",
-               ChIP = "H2AZ",
-               Input = "Input",
-               sample = config["samples"]["sample"])
-
 rule macs2_callpeak:
     params:
-        extsize = config["parameters"]["macs2"]["extsize"],
-        macs2_dir = "/home/sebastian/miniconda3/envs/py27/bin/macs2"
+        macs2_dir = "/home/sebastian/miniconda3/envs/py27/bin",
+        name = lambda wildcards: wildcards.smallFragments
     input:
         chip = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/{smallFragments}.bed"
     output:
@@ -36,7 +27,7 @@ rule macs2_callpeak:
             {params.macs2_dir}/macs2 callpeak -f BED \
                                               -g 40999507\
                                               -t {input.chip}\
-                                              -n {wildcards.smallFragments}\
+                                              -n {params.name}\
                                               --nomodel\
                                               --extsize 125\
                                               --outdir {output}\
@@ -48,10 +39,11 @@ rule macs2_callpeak:
 
 rule all:
     input:
-        ["TOTALcombined_A_H2AZ_000-125.bed",
+        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}"
+                smallFragments = ["TOTALcombined_A_H2AZ_000-125.bed",
         "TOTALcombined_A_Inp_000-125.bed",
         "TOTALcombined_A_TGFb_H2AZ_000-125.bed",
         "TOTALcombined_A_TGFb_Inp_000-125.bed",
         "TOTALcombined_CA1a_H2AZ_000-125.bed",
         "TOTALcombined_CA1a_Inp_000-125.bed",
-        "TOTALcombined_shH2AZ_Inp_000-125.bed"]
+        "TOTALcombined_shH2AZ_Inp_000-125.bed"])
