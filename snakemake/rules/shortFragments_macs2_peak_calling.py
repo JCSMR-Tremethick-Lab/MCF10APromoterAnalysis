@@ -37,9 +37,36 @@ rule macs2_callpeak:
                                               --trackline
         """
 
+rule sort_bedGraph:
+    input:
+        macs2output = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}",
+        bdg = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.bdg"
+    output:
+        temp("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.temp")
+    shell:
+        """
+            grep -v "chrM" {input.bdg} | grep -v "track" | sort -k1,1 -k2,2n - > {output}
+        """
+
+
+rule bdg_to_bigWig:
+    params:
+        macs2_dir = "/home/sebastian/miniconda3/envs/py27/bin",
+        name = lambda wildcards: wildcards.smallFragments,
+        chromSizes = "~/Data/References/Genomes/Homo_sapiens/GRCh37_hg19_UCSC/chromSizes.txt"
+    input:
+        macs2output = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}",
+        bdg = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.temp"
+    output:
+        bw = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.bw"
+    shell:
+        """
+            bedGraphToBigWig {input.bdg} {params.chromSizes} {output.bw}
+        """
+
 rule all:
     input:
-        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}",
+        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.bw",
                 smallFragments = ["TOTALcombined_A_H2AZ_000-125",
                                   "TOTALcombined_A_Inp_000-125",
                                   "TOTALcombined_A_TGFb_H2AZ_000-125",
