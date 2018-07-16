@@ -46,4 +46,11 @@ rule all:
                                   "TOTALcombined_A_TGFb_Inp_000-125",
                                   "TOTALcombined_CA1a_H2AZ_000-125",
                                   "TOTALcombined_CA1a_Inp_000-125",
-                                  "TOTALcombined_shH2AZ_Inp_000-125"])
+                                  "TOTALcombined_shH2AZ_Inp_000-125",
+                                  "TOTALcombined_A_H2AZ_000-100",
+                                  "TOTALcombined_A_Inp_000-100",
+                                  "TOTALcombined_A_TGFb_H2AZ_000-100",
+                                  "TOTALcombined_A_TGFb_Inp_000-100",
+                                  "TOTALcombined_CA1a_H2AZ_000-100",
+                                  "TOTALcombined_CA1a_Inp_000-100",
+                                  "TOTALcombined_shH2AZ_Inp_000-100"])

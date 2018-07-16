@@ -204,7 +204,7 @@
   "raw_dir" : "fastq",
   "trim_dir" : "trimmed",
   "alignment_quality" : "10",
-  "deepTools_dir" : "/miniconda3/envs/deepTools/bin",
+  "deepTools_dir" : "/miniconda3/envs/py27/bin",
   "macs2_dir" : "/miniconda3/envs/deepTools/bin",
   "picard" : "/bin/picard.jar",
   "temp_dir" : "/temp"
