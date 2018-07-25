@@ -82,7 +82,6 @@ rule run_tomtom:
 rule motif_summary:
     version:
         "1.0"
-    params:
     threads:
         1
     input:
