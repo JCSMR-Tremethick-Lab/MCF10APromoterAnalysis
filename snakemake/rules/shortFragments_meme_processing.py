@@ -70,17 +70,17 @@ rule motif_summary:
     input:
         home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}"
     output:
-        home + "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/summary/{smallFragments}/meme.summary.txt"
+        home + "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/summary/{smallFragments}"
     shell:
         """
-            grep "MOTIF" {input}/meme.txt > {output}
+            grep "MOTIF" {input}/meme.txt > {output}/meme_summary.txt
         """
 
 
 
 rule all:
     input:
-        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/summary/{smallFragments}/meme.summary.txt",
+        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/summary/{smallFragments}",
                 memeObjectiveFunction = ["cd", "ce"],
                 smallFragments = ["TOTALcombined_A_H2AZ_000-125",
                                   "TOTALcombined_A_Inp_000-125",
