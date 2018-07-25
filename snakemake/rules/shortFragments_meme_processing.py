@@ -79,9 +79,26 @@ rule run_tomtom:
             {params.tomtom} -oc {output.tomtom_out }{input.memeOutput} {motifDB}
         """
 
+rule motif_summary:
+    version:
+        "1.0"
+    params:
+    threads:
+        1
+    input:
+        home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}"
+    output:
+        home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}/meme.summary.txt"
+    shell:
+        """
+            grep "MOTIF" {input}/meme.txt > {output}
+        """
+
+
+
 rule all:
     input:
-        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/tomtom/{memeObjectiveFunction}/{smallFragments}",
+        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/tomtom/{memeObjectiveFunction}/{smallFragments}/meme.summary.txt",
                 memeObjectiveFunction = ["cd", "ce"],
                 smallFragments = ["TOTALcombined_A_H2AZ_000-125",
                                   "TOTALcombined_A_Inp_000-125",
