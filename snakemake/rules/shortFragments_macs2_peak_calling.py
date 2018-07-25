@@ -46,10 +46,10 @@ rule get_summit_sequences:
     version:
         "1.0"
     params:
-        summitsSeqWidth = "500", # recommended by MEME
-        peaksMinPileUp = "4",
-        peaksMinQval = "2",
-        BSgenome = "BSgenome.Hsapiens.UCSC.hg19::BSgenome.Hsapiens.UCSC.hg19"
+        summitsSeqWidth = 500, # recommended by MEME
+        peaksMinPileUp = 4,
+        peaksMinQval = 2,
+        BSgenome = "BSgenome.Hsapiens.UCSC.hg19"
     input:
         summits = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}_summits.bed",
         peaks = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}_peaks.xls"
