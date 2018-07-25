@@ -76,5 +76,17 @@ rule run_tomtom:
         tomtom_out = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/tomtom/{memeObjectiveFunction}/{smallFragments}"
     shell:
         """
-            {params.tomtom} -oc {input.memeOutput} {motifDB}
+            {params.tomtom} -oc {output.tomtom_out }{input.memeOutput} {motifDB}
         """
+
+rule all:
+    input:
+        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/tomtom/{memeObjectiveFunction}/{smallFragments}",
+                memeObjectiveFunction = ["cd", "ce"],
+                smallFragments = ["TOTALcombined_A_H2AZ_000-125",
+                                  "TOTALcombined_A_Inp_000-125",
+                                  "TOTALcombined_A_TGFb_H2AZ_000-125",
+                                  "TOTALcombined_A_TGFb_Inp_000-125",
+                                  "TOTALcombined_CA1a_H2AZ_000-125",
+                                  "TOTALcombined_CA1a_Inp_000-125",
+                                  "TOTALcombined_shH2AZ_Inp_000-125"])
