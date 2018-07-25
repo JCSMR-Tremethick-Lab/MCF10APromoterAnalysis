@@ -42,79 +42,12 @@ rule macs2_callpeak:
         """
 
 
-rule get_summit_sequences:
-    version:
-        "1.0"
-    params:
-        summitsSeqWidth = 500, # recommended by MEME
-        peaksMinPileUp = 4,
-        peaksMinQval = 2,
-        BSgenome = "BSgenome.Hsapiens.UCSC.hg19"
-    input:
-        summits = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_summits.bed",
-        peaks = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_peaks.xls"
-    output:
-        summitsSeqFile = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}_summits.fasta"
-    script:
-        home + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/scripts/prepare_summit_sequences.R"
-
-
-rule run_meme:
-    version:
-        "1.0"
-    params:
-        meme_bin = home + "/meme/bin/meme",
-        minw = 8,
-        maxw = 15,
-        nmotifs = 1000,
-        evt = 0.05, # e-value threshold
-        mod = "zoop"
-    threads:
-        10
-    input:
-        summitsSeqFile = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}_summits.fasta",
-        promotersHMM = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/promoterSequences.hmm"
-    output:
-        meme_out = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}",
-        memeOutput = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}/meme.html"
-    shell:
-        """
-            {params.meme_bin} -oc {output.meme_out}\
-                              -dna \
-                              -bfile {input.promotersHMM} \
-                              -minw {params.minw} \
-                              -maxw {params.maxw} \
-                              -nmotifs {params.nmotifs} \
-                              -evt {params.evt} \
-                              -p {threads} \
-                              -objfun {wildcards.memeObjectiveFunction} \
-                              -mod {params.mod} \
-                              {input.summitsSeqFile}
-        """
-
-rule run_tomtom:
-    version:
-        "1.0"
-    params:
-        tomtom_bin = home + "/meme/bin/tomtom"
-    threads:
-        1
-    input:
-        motifDB = home + "/Data/References/MEME/motif_databases/HUMAN/HOCOMOCOv11_full_HUMAN_mono_meme_format.meme",
-        memeOutput = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}/meme.html"
-    output:
-        tomtom_out = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/tomtom/{memeObjectiveFunction}/{smallFragments}"
-    shell:
-        """
-            {params.tomtom} -oc {input.memeOutput} {motifDB}
-        """
-
 rule sort_bedGraph:
     input:
         macs2output = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}",
-        bdg = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}/{smallFragments}_treat_pileup.bdg"
+        bdg = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.bdg"
     output:
-        temp("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}/{smallFragments}_treat_pileup.temp")
+        temp("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.temp")
     shell:
         """
             grep -v "chrM" {input.bdg} | grep -v "track" | sort -k1,1 -k2,2n - > {output}
@@ -128,42 +61,18 @@ rule bdg_to_bigWig:
         chromSizes = "~/Data/References/Genomes/Homo_sapiens/GRCh37_hg19_UCSC/chromSizes.txt"
     input:
         macs2output = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}",
-        bdg = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}/{smallFragments}_treat_pileup.temp"
+        bdg = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.temp"
     output:
-        bw = protected("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}/{smallFragments}_treat_pileup.bw")
+        bw = protected("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.bw")
     shell:
         """
             bedGraphToBigWig {input.bdg} {params.chromSizes} {output.bw}
         """
 
+
 rule all:
     input:
-        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}/{smallFragments}_treat_pileup.bw",
-                outDir = ["TOTALcombined_A_H2AZ_000-125",
-                          "TOTALcombined_A_Inp_000-125",
-                          "TOTALcombined_A_TGFb_H2AZ_000-125",
-                          "TOTALcombined_A_TGFb_Inp_000-125",
-                          "TOTALcombined_CA1a_H2AZ_000-125",
-                          "TOTALcombined_CA1a_Inp_000-125",
-                          "TOTALcombined_shH2AZ_Inp_000-125"],
-                smallFragments = ["TOTALcombined_A_H2AZ_000-125",
-                                  "TOTALcombined_A_Inp_000-125",
-                                  "TOTALcombined_A_TGFb_H2AZ_000-125",
-                                  "TOTALcombined_A_TGFb_Inp_000-125",
-                                  "TOTALcombined_CA1a_H2AZ_000-125",
-                                  "TOTALcombined_CA1a_Inp_000-125",
-                                  "TOTALcombined_shH2AZ_Inp_000-125"]),
-        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}_summits.fasta",
-                smallFragments = ["TOTALcombined_A_H2AZ_000-125",
-                                  "TOTALcombined_A_Inp_000-125",
-                                  "TOTALcombined_A_TGFb_H2AZ_000-125",
-                                  "TOTALcombined_A_TGFb_Inp_000-125",
-                                  "TOTALcombined_CA1a_H2AZ_000-125",
-                                  "TOTALcombined_CA1a_Inp_000-125",
-                                  "TOTALcombined_shH2AZ_Inp_000-125"]),
-        expand(home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/{meme_bin}/{memeObjectiveFunction}/{smallFragments}",
-                meme_bin = ["meme", "tomtom"],
-                memeObjectiveFunction = ["cd", "ce"],
+        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.bw",
                 smallFragments = ["TOTALcombined_A_H2AZ_000-125",
                                   "TOTALcombined_A_Inp_000-125",
                                   "TOTALcombined_A_TGFb_H2AZ_000-125",
