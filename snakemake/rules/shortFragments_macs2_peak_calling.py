@@ -69,10 +69,34 @@ rule bdg_to_bigWig:
             bedGraphToBigWig {input.bdg} {params.chromSizes} {output.bw}
         """
 
+rule get_summit_sequences:
+    version:
+        "1.0"
+    params:
+        summitsSeqWidth = 500, # recommended by MEME
+        peaksMinPileUp = 4,
+        peaksMinQval = 2,
+        BSgenome = "BSgenome.Hsapiens.UCSC.hg19"
+    input:
+        summits = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_summits.bed",
+        peaks = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_peaks.xls"
+    output:
+        summitsSeqFile = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}_summits.fasta"
+    script:
+        home + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/scripts/prepare_summit_sequences.R"
+
 
 rule all:
     input:
         expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.bw",
+                smallFragments = ["TOTALcombined_A_H2AZ_000-125",
+                                  "TOTALcombined_A_Inp_000-125",
+                                  "TOTALcombined_A_TGFb_H2AZ_000-125",
+                                  "TOTALcombined_A_TGFb_Inp_000-125",
+                                  "TOTALcombined_CA1a_H2AZ_000-125",
+                                  "TOTALcombined_CA1a_Inp_000-125",
+                                  "TOTALcombined_shH2AZ_Inp_000-125"]),
+        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}_summits.fasta",
                 smallFragments = ["TOTALcombined_A_H2AZ_000-125",
                                   "TOTALcombined_A_Inp_000-125",
                                   "TOTALcombined_A_TGFb_H2AZ_000-125",

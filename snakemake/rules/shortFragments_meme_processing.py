@@ -12,23 +12,6 @@ Rules for running MEME
 import os
 home = os.environ['HOME']
 
-rule get_summit_sequences:
-    version:
-        "1.0"
-    params:
-        summitsSeqWidth = 500, # recommended by MEME
-        peaksMinPileUp = 4,
-        peaksMinQval = 2,
-        BSgenome = "BSgenome.Hsapiens.UCSC.hg19"
-    input:
-        summits = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_summits.bed",
-        peaks = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_peaks.xls"
-    output:
-        summitsSeqFile = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}_summits.fasta"
-    script:
-        home + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/scripts/prepare_summit_sequences.R"
-
-
 rule run_meme:
     version:
         "1.0"
@@ -38,7 +21,7 @@ rule run_meme:
         maxw = 15,
         nmotifs = 1000,
         evt = 0.05, # e-value threshold
-        mod = "zoops"
+        mod = "zoop"
     threads:
         10
     input:
@@ -66,7 +49,7 @@ rule run_tomtom:
     version:
         "1.0"
     params:
-        tomtom = home + "/meme/bin/tomtom"
+        tomtom_bin = home + "/meme/bin/tomtom"
     threads:
         1
     input:
@@ -76,13 +59,12 @@ rule run_tomtom:
         tomtom_out = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/tomtom/{memeObjectiveFunction}/{smallFragments}"
     shell:
         """
-            {params.tomtom} -oc {output.tomtom_out} {input.memeOutput} {input.motifDB}
+            {params.tomtom} -oc {output.tomtom_out }{input.memeOutput} {motifDB}
         """
 
 rule motif_summary:
     version:
         "1.0"
-    params:
     threads:
         1
     input:
