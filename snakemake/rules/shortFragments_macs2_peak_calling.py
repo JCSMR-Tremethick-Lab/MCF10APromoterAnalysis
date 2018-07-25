@@ -21,7 +21,7 @@ rule macs2_callpeak:
         macs2_dir = "/home/sebastian/miniconda3/envs/py27/bin",
         name = lambda wildcards: wildcards.smallFragments
     input:
-        chip = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/{smallFragments}.bed"
+        chip = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/BEDs/{smallFragments}.bed"
     output:
         "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}",
         "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_summits.bed",
