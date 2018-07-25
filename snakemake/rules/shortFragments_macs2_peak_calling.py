@@ -21,7 +21,9 @@ rule macs2_callpeak:
     input:
         chip = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/{smallFragments}.bed"
     output:
-        "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}"
+        "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}",
+        "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}_summits.bed",
+        "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}_peaks.xls"
     shell:
         """
             {params.macs2_dir}/macs2 callpeak -f BED \
@@ -30,12 +32,29 @@ rule macs2_callpeak:
                                               -n {params.name}\
                                               --nomodel\
                                               --extsize 125\
-                                              --outdir {output}\
+                                              --outdir {output[0]}\
                                               --call-summits\
                                               -p 0.1\
                                               --bdg\
                                               --trackline
         """
+
+
+rule get_summit_sequences:
+    version:
+        "1.0"
+    params:
+        summitSeqWidth = "500", # recommended by MEME
+        peakMinPileUp = "4",
+        peakMinQval = "2",
+        BSgenome = "BSgenome.Hsapiens.UCSC.hg19::BSgenome.Hsapiens.UCSC.hg19"
+    input:
+        summits = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}_summits.bed",
+        peaks = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}_peaks.xls",,
+    output:
+        summitsSeqFile = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}_summits.fasta",
+    script:
+        home + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/scripts/prepare_summit_sequences.R"
 
 rule sort_bedGraph:
     input:
@@ -66,11 +85,12 @@ rule bdg_to_bigWig:
 
 rule all:
     input:
-        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.bw",
+        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}{suffix}",
                 smallFragments = ["TOTALcombined_A_H2AZ_000-125",
                                   "TOTALcombined_A_Inp_000-125",
                                   "TOTALcombined_A_TGFb_H2AZ_000-125",
                                   "TOTALcombined_A_TGFb_Inp_000-125",
                                   "TOTALcombined_CA1a_H2AZ_000-125",
                                   "TOTALcombined_CA1a_Inp_000-125",
-                                  "TOTALcombined_shH2AZ_Inp_000-125"])
+                                  "TOTALcombined_shH2AZ_Inp_000-125"],
+                suffix = ["_treat_pileup.bw", "_summits.fasta"])
