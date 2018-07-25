@@ -18,14 +18,14 @@ home = os.environ['HOME']
 
 rule macs2_callpeak:
     params:
-        macs2_dir = "/home/sebastian/miniconda3/envs/py27/bin",
+        macs2_dir = home + "/miniconda3/envs/py27/bin",
         name = lambda wildcards: wildcards.smallFragments
     input:
-        chip = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/BEDs/{smallFragments}.bed"
+        chip = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/BEDs/{smallFragments}.bed"
     output:
-        "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}",
-        "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_summits.bed",
-        "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_peaks.xls"
+        home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}",
+        home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}/{smallFragments}_summits.bed",
+        home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}/{smallFragments}_peaks.xls"
     shell:
         """
             {params.macs2_dir}/macs2 callpeak -f BED \
@@ -51,8 +51,8 @@ rule get_summit_sequences:
         peaksMinQval = 2,
         BSgenome = "BSgenome.Hsapiens.UCSC.hg19"
     input:
-        summits = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_summits.bed",
-        peaks = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_peaks.xls"
+        summits = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}/{smallFragments}_summits.bed",
+        peaks = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}/{smallFragments}_peaks.xls"
     output:
         summitsSeqFile = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}_summits.fasta"
     script:
@@ -112,9 +112,9 @@ rule run_tomtom:
 rule sort_bedGraph:
     input:
         macs2output = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}",
-        bdg = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.bdg"
+        bdg = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}/{smallFragments}_treat_pileup.bdg"
     output:
-        temp("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.temp")
+        temp("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}/{smallFragments}_treat_pileup.temp")
     shell:
         """
             grep -v "chrM" {input.bdg} | grep -v "track" | sort -k1,1 -k2,2n - > {output}
@@ -128,9 +128,9 @@ rule bdg_to_bigWig:
         chromSizes = "~/Data/References/Genomes/Homo_sapiens/GRCh37_hg19_UCSC/chromSizes.txt"
     input:
         macs2output = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}",
-        bdg = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.temp"
+        bdg = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}/{smallFragments}_treat_pileup.temp"
     output:
-        bw = protected("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.bw")
+        bw = protected("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}/{smallFragments}_treat_pileup.bw")
     shell:
         """
             bedGraphToBigWig {input.bdg} {params.chromSizes} {output.bw}
@@ -138,7 +138,14 @@ rule bdg_to_bigWig:
 
 rule all:
     input:
-        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.bw",
+        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}/{smallFragments}_treat_pileup.bw",
+                outDir = ["TOTALcombined_A_H2AZ_000-125",
+                          "TOTALcombined_A_Inp_000-125",
+                          "TOTALcombined_A_TGFb_H2AZ_000-125",
+                          "TOTALcombined_A_TGFb_Inp_000-125",
+                          "TOTALcombined_CA1a_H2AZ_000-125",
+                          "TOTALcombined_CA1a_Inp_000-125",
+                          "TOTALcombined_shH2AZ_Inp_000-125"]),
                 smallFragments = ["TOTALcombined_A_H2AZ_000-125",
                                   "TOTALcombined_A_Inp_000-125",
                                   "TOTALcombined_A_TGFb_H2AZ_000-125",
@@ -146,7 +153,7 @@ rule all:
                                   "TOTALcombined_CA1a_H2AZ_000-125",
                                   "TOTALcombined_CA1a_Inp_000-125",
                                   "TOTALcombined_shH2AZ_Inp_000-125"]),
-        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}/{smallFragments}_summits.fasta",
+        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}_summits.fasta",
                 smallFragments = ["TOTALcombined_A_H2AZ_000-125",
                                   "TOTALcombined_A_Inp_000-125",
                                   "TOTALcombined_A_TGFb_H2AZ_000-125",
