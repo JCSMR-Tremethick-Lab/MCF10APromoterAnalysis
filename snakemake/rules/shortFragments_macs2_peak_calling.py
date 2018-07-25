@@ -54,7 +54,7 @@ rule get_summit_sequences:
         summits = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}_summits.bed",
         peaks = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}_peaks.xls"
     output:
-        summitsSeqFile = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}_summits.fasta"
+        summitsSeqFile = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}_summits.fasta"
     script:
         home + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/scripts/prepare_summit_sequences.R"
 
@@ -72,7 +72,7 @@ rule run_meme:
     threads:
         10
     input:
-        summitsSeqFile = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}_summits.fasta",
+        summitsSeqFile = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}_summits.fasta",
         promotersHMM = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/promoterSequences.hmm"
     output:
         meme_out = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}",
@@ -138,15 +138,22 @@ rule bdg_to_bigWig:
 
 rule all:
     input:
-        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}{suffix}",
+        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.bw",
                 smallFragments = ["TOTALcombined_A_H2AZ_000-125",
                                   "TOTALcombined_A_Inp_000-125",
                                   "TOTALcombined_A_TGFb_H2AZ_000-125",
                                   "TOTALcombined_A_TGFb_Inp_000-125",
                                   "TOTALcombined_CA1a_H2AZ_000-125",
                                   "TOTALcombined_CA1a_Inp_000-125",
-                                  "TOTALcombined_shH2AZ_Inp_000-125"],
-                suffix = ["_treat_pileup.bw", "_summits.fasta"]),
+                                  "TOTALcombined_shH2AZ_Inp_000-125"]),
+        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}/{smallFragments}_summits.fasta",
+                smallFragments = ["TOTALcombined_A_H2AZ_000-125",
+                                  "TOTALcombined_A_Inp_000-125",
+                                  "TOTALcombined_A_TGFb_H2AZ_000-125",
+                                  "TOTALcombined_A_TGFb_Inp_000-125",
+                                  "TOTALcombined_CA1a_H2AZ_000-125",
+                                  "TOTALcombined_CA1a_Inp_000-125",
+                                  "TOTALcombined_shH2AZ_Inp_000-125"]),
         expand(home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/{meme_bin}/{memeObjectiveFunction}/{smallFragments}",
                 meme_bin = ["meme", "tomtom"],
                 memeObjectiveFunction = ["cd", "ce"],
