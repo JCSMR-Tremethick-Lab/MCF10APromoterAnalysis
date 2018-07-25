@@ -23,9 +23,9 @@ rule macs2_callpeak:
     input:
         chip = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/BEDs/{smallFragments}.bed"
     output:
-        home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}",
-        home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}/{smallFragments}_summits.bed",
-        home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}/{smallFragments}_peaks.xls"
+        outDir = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}",
+        bed = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_summits.bed",
+        xls = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_peaks.xls"
     shell:
         """
             {params.macs2_dir}/macs2 callpeak -f BED \
@@ -34,7 +34,7 @@ rule macs2_callpeak:
                                               -n {params.name}\
                                               --nomodel\
                                               --extsize 125\
-                                              --outdir {output[0]}\
+                                              --outdir {output.outDir}\
                                               --call-summits\
                                               -p 0.1\
                                               --bdg\
@@ -51,8 +51,8 @@ rule get_summit_sequences:
         peaksMinQval = 2,
         BSgenome = "BSgenome.Hsapiens.UCSC.hg19"
     input:
-        summits = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}/{smallFragments}_summits.bed",
-        peaks = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{outDir}/{smallFragments}_peaks.xls"
+        summits = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_summits.bed",
+        peaks = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_peaks.xls"
     output:
         summitsSeqFile = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}_summits.fasta"
     script:
@@ -145,7 +145,7 @@ rule all:
                           "TOTALcombined_A_TGFb_Inp_000-125",
                           "TOTALcombined_CA1a_H2AZ_000-125",
                           "TOTALcombined_CA1a_Inp_000-125",
-                          "TOTALcombined_shH2AZ_Inp_000-125"]),
+                          "TOTALcombined_shH2AZ_Inp_000-125"],
                 smallFragments = ["TOTALcombined_A_H2AZ_000-125",
                                   "TOTALcombined_A_Inp_000-125",
                                   "TOTALcombined_A_TGFb_H2AZ_000-125",
