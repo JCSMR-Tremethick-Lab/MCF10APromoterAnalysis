@@ -89,7 +89,7 @@ rule run_meme:
                               -p {threads} \
                               -objfun {wildcards.memeObjectiveFunction} \
                               -mod {params.mod} \
-                              {input.summitSeqFile}
+                              {input.summitsSeqFile}
         """
 
 rule run_tomtom:
