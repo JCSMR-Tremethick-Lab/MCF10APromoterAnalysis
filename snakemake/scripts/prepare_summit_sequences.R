@@ -1,5 +1,5 @@
 # external snakemake script to extract summit sequences prior to meme processing
-prepare_summit_sequences <- function(summitsFile, peaksFile, summitsSeqFile, summitsSeqWidth, peaksMinPileUp, peaksMinQval) {
+prepare_summit_sequences <- function(summitsFile, genomePackage, peaksFile, summitsSeqFile, summitsSeqWidth, peaksMinPileUp, peaksMinQval) {
   genome <- genomePackage
   summits <- rtracklayer::import(summitsFile)
   summits <- GenomeInfoDb::sortSeqlevels(summits, X.is.sexchrom = T)
@@ -12,11 +12,11 @@ prepare_summit_sequences <- function(summitsFile, peaksFile, summitsSeqFile, sum
   summitsSeqs <- BSgenome::getSeq(genome, resize(summits[significantPeaks$name], summitsSeqWidth, fix = "center"))
   rtracklayer::export(summitsSeqs, con = summitsSeqFile, format = "fasta")
 }
-
+save.image()
 prepare_summit_sequences(summitsFile = snakemake@input[["summits"]],
                          peaksFile = snakemake@input[["peaks"]],
                          summitsSeqFile = snakemake@output[[1]],
-                         genomePackage = snakemake@params[["BSgenome"]]
-                         summitSeqWidth = snakemake@params[["summitSeqWidth"]],
-                         peakMinPileUp = snakemake@params[["peakMinPileUp"]],
-                         peakMinQval = snakemake@params[["peakMinQval"]])
+                         genomePackage = snakemake@params[["BSgenome"]],
+                         summitsSeqWidth = snakemake@params[["summitsSeqWidth"]],
+                         peaksMinPileUp = snakemake@params[["peaksMinPileUp"]],
+                         peaksMinQval = snakemake@params[["peaksMinQval"]])
