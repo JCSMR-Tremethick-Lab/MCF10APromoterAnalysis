@@ -38,7 +38,7 @@ rule run_meme:
         maxw = 15,
         nmotifs = 1000,
         evt = 0.05, # e-value threshold
-        mod = "zoop"
+        mod = "zoops"
     threads:
         10
     input:
@@ -66,7 +66,7 @@ rule run_tomtom:
     version:
         "1.0"
     params:
-        tomtom_bin = home + "/meme/bin/tomtom"
+        tomtom = home + "/meme/bin/tomtom"
     threads:
         1
     input:
@@ -76,7 +76,7 @@ rule run_tomtom:
         tomtom_out = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/tomtom/{memeObjectiveFunction}/{smallFragments}"
     shell:
         """
-            {params.tomtom} -oc {output.tomtom_out }{input.memeOutput} {motifDB}
+            {params.tomtom} -oc {output.tomtom_out} {input.memeOutput} {input.motifDB}
         """
 
 rule all:
