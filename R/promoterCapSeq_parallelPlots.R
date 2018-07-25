@@ -1,15 +1,15 @@
 library(data.table)
 library(ggparallel)
 
-setwd("~/Data/Collaborations/FSU/PromoterSeqCap/Clusters/indep_log2ratio_kmeans7/")
-sourceDirs <- list.dirs(".", recursive = F)
-sourceFiles <- sapply(sourceDirs, function(x) list.files(x, pattern = ".tsv"))
 
-dataList <- lapply(1:length(sourceFiles), function(x){
-  tab <- data.table::fread(paste(names(sourceFiles[x]), sourceFiles[x], sep = "/"))
+# Figure 1 ----------------------------------------------------------------
+setwd("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/sortingTSVS for Tremethick paper /Figure 1/")
+sourceFiles <- list.files(".", pattern = ".tsv")
+dataList <- lapply(sourceFiles, function(x){
+  tab <- data.table::fread(x)
   return(tab)
 })
-names(dataList) <- sourceFiles
+names(dataList) <- unlist(lapply(strsplit(sourceFiles, "\\."), function(x) x[1]))
 d1 <- do.call("data.table", dataList)
 
 d1 <- subset(d1, select = c(1, grep("group1", colnames(d1))))

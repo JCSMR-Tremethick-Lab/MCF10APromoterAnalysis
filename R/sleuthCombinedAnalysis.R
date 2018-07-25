@@ -10,7 +10,11 @@ t2gHsap <- data.table(select(Hsap,
                       columns = c("TXNAME", "SYMBOL", "ENSEMBL", "GENEID"),
                       keytype = "TXNAME"))
 t2gHsap <- t2gHsap[!is.na(t2gHsap$SYMBOL)]
-t2gHsap <- dplyr::rename(t2gHsap, target_id = TXNAME, gene_id = GENEID, external_gene_name = SYMBOL, ensembl_gene_id = ENSEMBL)
+t2gHsap <- dplyr::rename(t2gHsap, 
+                         target_id = TXNAME, 
+                         gene_id = GENEID, 
+                         external_gene_name = SYMBOL, 
+                         ensembl_gene_id = ENSEMBL)
 t2gHsap <- t2gHsap[!duplicated(t2gHsap$target_id)]
 t2gHsap[is.na(external_gene_name)]$external_gene_name <- t2gHsap[is.na(external_gene_name)]$target_id
 
@@ -62,7 +66,7 @@ sleuth_resultsCompressed_file <- paste("sleuthResultsCompressed_", annotationVer
 
 # preparing annotation data from Ensembl ----------------------------------
 if (length(grep("UCSC", annotationVersion)) > 0) {
-  t2g_file <- paste(annotationDataPath, "t2g_", annotationVersion, ".rda", sep = "")
+  t2g_file <- paste(annotationDataPath, "/t2g_", annotationVersion, ".rda", sep = "")
   mart <- biomaRt::useEnsembl(biomart = biomart, dataset = dataset, host = ensemblHost)
   annotationDataPath <- paste("~/Data/References/Annotations/Homo_sapiens/", annotationVersion, "/", sep = "")
   ucscTranscripts_file <- paste(annotationDataPath, "ucscTranscripts_", annotationVersion, ".rda", sep = "")
@@ -89,8 +93,7 @@ if (length(grep("UCSC", annotationVersion)) > 0) {
 }
 
 # load kallisto data with tximport and inspect via PCA -------------------------
-base_dir <- paste(pathPrefix, 
-                  "Data/Tremethick/Breast",
+base_dir <- paste("~/Data/Tremethick/Breast",
                   runNo, 
                   runID, 
                   "processed_data",
@@ -139,11 +142,13 @@ s2c <- s2c[condition != "MCF10Ca1a_shZ"]
 s2c$condition <- droplevels(s2c$condition)
 table(s2c$condition)
 
+
 filter_function <- function(row, min_reads = 2, min_prop = 0.47) {
   mean(row >= min_reads) >= min_prop
 }
 log2_transform <- function(x) {log2(x + 0.5)}
 
+t2g <- t2gHsap
 
 if(!file.exists(sleuth_results_output)){
   design <- model.matrix(~ condition, data = s2c)
@@ -241,10 +246,10 @@ volcanoData$qval <- -log10(volcanoData$qval)
 volcanoData <- dplyr::rename(volcanoData, "-log10qval" = qval, logFC = b)
 pTGFb <- ggplot(volcanoData[experiment == "TGFb"], aes(x = logFC, y = `-log10qval`, color = epi_mes)) + geom_point() + ggtitle("TGFb vs WT")
 pshZ <- ggplot(volcanoData[experiment == "H2A.Z KD"], aes(x = logFC, y = `-log10qval`, color = epi_mes)) + geom_point() + ggtitle("shZ vs WT")
-table(volcanoData[experiment == "H2A.Z KD" & logFC > 0 & `-log10qval` > 1.5]$epi_mes)
-table(volcanoData[experiment == "H2A.Z KD" & logFC < 0 & `-log10qval` > 1.5]$epi_mes)
-table(volcanoData[experiment == "TGFb" & logFC > 0 & `-log10qval` > 1.5]$epi_mes)
-table(volcanoData[experiment == "TGFb" & logFC < 0 & `-log10qval` > 1.5]$epi_mes)
+table(volcanoData[experiment == "H2A.Z KD" & logFC > 0 ]$epi_mes)
+table(volcanoData[experiment == "H2A.Z KD" & logFC < 0 ]$epi_mes)
+table(volcanoData[experiment == "TGFb" & logFC > 1 & `-log10qval`]$epi_mes)
+table(volcanoData[experiment == "TGFb" & logFC < -1 & `-log10qval`]$epi_mes)
 table(volcanoData[experiment == "H2A.Z KD"]$epi_mes)
 
 plot(EMT.TGFb$b, -log10(EMT.TGFb$qval))
@@ -329,4 +334,14 @@ ggplot(data = plotData, aes(x = target_id, y = tpm)) +
   geom_boxplot(aes(colour = condition)) +
   facet_wrap(~Group + condition, scales = "free_x", ncol = 6) +
   theme(axis.text = element_text(angle = 45), legend.position = "none")
+
+
+# plot all TGFB* genes ----------------------------------------------------
+plotData <- na.omit(kt.gene[grep("TGFB", kt.gene$target_id)])
+ggplot(data = plotData, aes(x = target_id, y = log2(tpm + 1))) + 
+  geom_boxplot(aes(colour = condition)) +
+  facet_wrap(~condition, scales = "free_x", ncol = 6) +
+  theme(axis.text = element_text(angle = 45), legend.position = "none")
+
+
 

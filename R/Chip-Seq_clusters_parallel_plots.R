@@ -6,8 +6,8 @@ median.quartile <- function(x){
 }
 
 
-dataDir <- "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/Clusters/"
-l1 <- lapply(list.files(path = dataDir,pattern=".tsv"), function(x){
+dataDir <- "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/sortingTSVS for Tremethick paper /Figure 1/"
+l1 <- lapply(list.files(path = dataDir, pattern=".tsv"), function(x){
   dt <- data.table::fread(paste(dataDir, x, sep = "/"))
   return(dt)
 })
@@ -19,19 +19,22 @@ l1 <- lapply(l1, function(x) {
   extGene <- unlist(lapply(strsplit(x$gene, ";"), function(x) x[6]))
   x$ucscID <- ucscID
   x$extGene <- extGene
+  x$chr <-  unlist(lapply(strsplit(x$gene, ";"), function(x) x[1]))
+  x$start <-  unlist(lapply(strsplit(x$gene, ";"), function(x) x[2]))
+  x$end <-  unlist(lapply(strsplit(x$gene, ";"), function(x) x[3]))
   return(x)
 })
 l1
+gr.promoters <- GenomicRanges::makeGRangesFromDataFrame(l1$Total_10A, ignore.strand = T, keep.extra.columns = T)
 
 rm(dt1)
-dt1 <- merge(subset(l1$log2ratio_10A, select = c("extGene", "group1")), subset(l1$log2ratio_TGFb, select = c("extGene", "group1")), by.x = "extGene", by.y = "extGene")
+dt1 <- merge(subset(l1$Total_10A, select = c("extGene", "group1")), subset(l1$Total_TGFb, select = c("extGene", "group1")), by.x = "extGene", by.y = "extGene")
 colnames(dt1)[2:3] <- c("MCF10A_WT", "MCF10A_TGFb")
-dt1 <- merge(dt1, subset(l1$log2ratio_shZ, select = c("extGene", "group1")), by.x = "extGene", by.y = "extGene")
-dt1 <- merge(dt1, subset(l1$log2ratio_CA1a, select = c("extGene", "group1")), by.x = "extGene", by.y = "extGene")
+dt1 <- merge(dt1, subset(l1$Total_shZ, select = c("extGene", "group1")), by.x = "extGene", by.y = "extGene")
+dt1 <- merge(dt1, subset(l1$Total_CA1a, select = c("extGene", "group1")), by.x = "extGene", by.y = "extGene")
 colnames(dt1)[4:5] <- c("MCF10A_shZ", "MCF10CA1A")
 colnames(dt1)
 
-ggparallel::ggparallel(list("MCF10A_WT", "MCF10A_TGFb", "MCF10A_shZ", "MCF10CA1A"), data = dt1)
 
 # For input (figure 1)
 # We have decided on the following classes 
@@ -80,6 +83,11 @@ factor(dt1$MCF10A_TGFb.category)
 table(dt1$MCF10A_WT.category) 
 table(dt1$MCF10A_TGFb.category)
 table("WT" = dt1$MCF10A_WT.category, "TGFb" = dt1$MCF10A_TGFb.category)
+table("WT" = dt1$MCF10A_WT.category, "shZ" = dt1$MCF10A_shZ.category)
+table("WT" = dt1$MCF10A_WT.category, "WT" = dt1$MCF10A_WT.category)
+table("TGFb" = dt1$MCF10A_TGFb.category, "TGFb" = dt1$MCF10A_TGFb.category)
+
+levels(dt1$MCF10A_shZ.category)
 
 ## gather table
 Fig2Categories <- dt1[, c("extGene", "MCF10A_WT.category", "MCF10A_TGFb.category", "MCF10A_shZ.category", "MCF10CA1A.category")]
@@ -217,4 +225,36 @@ median(log2(kt1D6[s1][condition == "MCF10A_TGFb"]$tpm + 1))
 median(log2(kt1D6[condition == "MCF10A_wt"]$tpm + 1))
 median(log2(kt1D6[condition == "MCF10A_TGFb"]$tpm + 1))
 
+
+# EMT genes-specific parallel plots ---------------------------------------
+ggparallel::ggparallel(list("MCF10A_WT.category", "MCF10A_shZ.category"), #, , "MCF10CA1A.category"), 
+                       data = dt1[unique(ucscTranscriptsSigEMTCells[epi_mes == "epi"]$target_id)],
+                       label.size = 4,
+                       text.angle = 0, label.colour= "black", same.level = F) + ggtitle("shZ - EPI")
+"ParallelPlot_WT-shZ_EPI_Genes.pdf"
+
+
+ggparallel::ggparallel(list("MCF10A_WT.category", "MCF10A_shZ.category"), #, , "MCF10CA1A.category"), 
+                       data = dt1[unique(ucscTranscriptsSigEMTCells[epi_mes == "mes"]$target_id)],
+                       label.size = 4,
+                       text.angle = 0, label.colour= "black", same.level = F) + ggtitle("shZ - MES")
+"ParallelPlot_WT-shZ_MES_Genes.pdf"
+
+#----- TGFb
+ggparallel::ggparallel(list("MCF10A_WT.category", "MCF10A_TGFb.category"), #, , "MCF10CA1A.category"), 
+                       data = dt1[unique(ucscTranscriptsSigEMTCells$target_id)],
+                       label.size = 4,
+                       text.angle = 0, label.colour= "black", same.level = F)
+
+ggparallel::ggparallel(list("MCF10A_WT.category", "MCF10A_TGFb.category"), #, , "MCF10CA1A.category"), 
+                       data = dt1[unique(ucscTranscriptsSigEMTCells[epi_mes == "epi"]$target_id)],
+                       label.size = 4,
+                       text.angle = 0, label.colour= "black", same.level = F) + ggtitle("TGFb - EPI")
+"ParallelPlot_WT-TGFb_EPI_Genes.pdf"
+
+ggparallel::ggparallel(list("MCF10A_WT.category", "MCF10A_TGFb.category"), #, , "MCF10CA1A.category"), 
+                       data = dt1[unique(ucscTranscriptsSigEMTCells[epi_mes == "mes"]$target_id)],
+                       label.size = 4,
+                       text.angle = 0, label.colour= "black", same.level = F) + ggtitle("TGFb - MES")
+"ParallelPlot_WT-TGFb_MES_Genes.pdf"
 

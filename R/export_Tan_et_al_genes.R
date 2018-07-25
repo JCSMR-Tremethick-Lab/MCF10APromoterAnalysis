@@ -1,5 +1,5 @@
 txdb <- AnnotationDbi::loadDb("~/Data/References/Annotations/Homo_sapiens/GRCh37_hg19_ensembl75/hsapiens_gene_ensembl_GRCh37_TxDB.sqlite")
-sigEMTCells <- readr::read_tsv("~/Data/References/Annotations/Literature/Tan_et_al_2014/Thiery_generic_EMT_sig_cellLine.txt")
+sigEMTCells <- data.table::fread("~/Data/References/Annotations/Literature/Tan_et_al_2014/Thiery_generic_EMT_sig_cellLine.txt")
 
 # load data from Ensembl
 ensemblHost <- "grch37.ensembl.org"
