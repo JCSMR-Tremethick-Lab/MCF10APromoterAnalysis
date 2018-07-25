@@ -79,7 +79,7 @@ rule bdg_to_bigWig:
         macs2output = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}",
         bdg = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.temp"
     output:
-        bw = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.bw"
+        bw = protected("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_treat_pileup.bw")
     shell:
         """
             bedGraphToBigWig {input.bdg} {params.chromSizes} {output.bw}
