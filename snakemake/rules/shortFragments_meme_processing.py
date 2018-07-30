@@ -4,7 +4,9 @@ __date__ = "2018-06-15"
 
 # vim: syntax=python tabstop=4 expandtab
 # coding: utf-8
+from snakemake.utils import min_version
 
+min_version("5.0")
 
 """
 Rules for running MEME
