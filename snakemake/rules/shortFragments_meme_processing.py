@@ -4,7 +4,9 @@ __date__ = "2018-06-15"
 
 # vim: syntax=python tabstop=4 expandtab
 # coding: utf-8
+from snakemake.utils import min_version
 
+min_version("5.0")
 
 """
 Rules for running MEME
@@ -105,7 +107,7 @@ rule run_fimo: # to get sequences in which motifs can be found
 
 rule all:
     input:
-        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme_summary/{memeObjectiveFunction}/{smallFragments}/summary.txt",
+        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/fimo/{memeObjectiveFunction}/{smallFragments}",
                 memeObjectiveFunction = ["cd", "ce"],
                 smallFragments = ["TOTALcombined_A_H2AZ_000-125",
                                   "TOTALcombined_A_Inp_000-125",
