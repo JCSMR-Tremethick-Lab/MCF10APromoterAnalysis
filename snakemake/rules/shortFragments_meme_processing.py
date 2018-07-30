@@ -12,6 +12,7 @@ Rules for running MEME
 import os
 home = os.environ['HOME']
 
+
 rule run_meme:
     version:
         "1.0"
@@ -29,7 +30,7 @@ rule run_meme:
         summitsSeqFile = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}_summits.fasta",
         promotersHMM = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/promoterSequences.hmm"
     output:
-        meme_out = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}",
+        meme_out = directory(home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}"),
         memeOutput = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}/meme.html"
     shell:
         """
@@ -47,6 +48,7 @@ rule run_meme:
                               {input.summitsSeqFile}
         """
 
+
 rule run_tomtom:
     version:
         "1.0"
@@ -58,11 +60,12 @@ rule run_tomtom:
         motifDB = home + "/Data/References/MEME/motif_databases/HUMAN/HOCOMOCOv11_full_HUMAN_mono_meme_format.meme",
         memeOutput = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}/meme.html"
     output:
-        tomtom_out = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/tomtom/{memeObjectiveFunction}/{smallFragments}"
+        tomtom_out = directory(home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/tomtom/{memeObjectiveFunction}/{smallFragments}")
     shell:
         """
-            {params.tomtom} -oc {output.tomtom_out }{input.memeOutput} {motifDB}
+            {params.tomtom_bin} -oc {output.tomtom_out} {input.memeOutput} {motifDB}
         """
+
 
 rule motif_summary:
     version:
@@ -78,6 +81,26 @@ rule motif_summary:
             grep "MOTIF" {input}/meme.txt > {output}
         """
 
+
+rule run_fimo: # to get sequences in which motifs can be found
+    version:
+        "1.0"
+    params:
+        bfile = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/promoterSequences.hmm"
+    threads:
+        1
+    input:
+        meme = rules.run_meme.output.memeOutput,
+        fasta = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}_summits.fasta"
+    output:
+        directory(home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/fimo/{memeObjectiveFunction}/{smallFragments}")
+    shell:
+        """
+             ~/meme/bin/fimo -bfile {params.bfile} \
+                             -oc {output} \
+                             {input.meme} \
+                             {input.fasta}
+        """
 
 
 rule all:
