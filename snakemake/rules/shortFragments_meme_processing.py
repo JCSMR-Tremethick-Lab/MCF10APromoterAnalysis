@@ -30,11 +30,11 @@ rule run_meme:
         summitsSeqFile = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}_summits.fasta",
         promotersHMM = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/promoterSequences.hmm"
     output:
-        meme_out = directory(home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}"),
+        directory(home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}"),
         memeOutput = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}/meme.html"
     shell:
         """
-            {params.meme_bin} -oc {output.meme_out}\
+            {params.meme_bin} -oc {output[0]}\
                               -dna \
                               -bfile {input.promotersHMM} \
                               -minw {params.minw} \
@@ -60,10 +60,10 @@ rule run_tomtom:
         motifDB = home + "/Data/References/MEME/motif_databases/HUMAN/HOCOMOCOv11_full_HUMAN_mono_meme_format.meme",
         memeOutput = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}/meme.html"
     output:
-        tomtom_out = directory(home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/tomtom/{memeObjectiveFunction}/{smallFragments}")
+        directory(home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/tomtom/{memeObjectiveFunction}/{smallFragments}")
     shell:
         """
-            {params.tomtom_bin} -oc {output.tomtom_out} {input.memeOutput} {motifDB}
+            {params.tomtom_bin} -oc {output[0]} {input.memeOutput} {motifDB}
         """
 
 
@@ -105,7 +105,7 @@ rule run_fimo: # to get sequences in which motifs can be found
 
 rule all:
     input:
-        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme_summary/{memeObjectiveFunction}/{smallFragments}/summary.txt",
+        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/fimo/{memeObjectiveFunction}/{smallFragments}",
                 memeObjectiveFunction = ["cd", "ce"],
                 smallFragments = ["TOTALcombined_A_H2AZ_000-125",
                                   "TOTALcombined_A_Inp_000-125",
