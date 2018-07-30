@@ -21,7 +21,8 @@ rule run_meme:
         maxw = 15,
         nmotifs = 1000,
         evt = 0.05, # e-value threshold
-        mod = "zoop"
+        mod = "zoops",
+        nbrief = 2000
     threads:
         10
     input:
@@ -42,6 +43,7 @@ rule run_meme:
                               -p {threads} \
                               -objfun {wildcards.memeObjectiveFunction} \
                               -mod {params.mod} \
+                              -brief {params.nbrief} \
                               {input.summitsSeqFile}
         """
 
@@ -70,17 +72,17 @@ rule motif_summary:
     input:
         home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}"
     output:
-        home + "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/summary/{memeObjectiveFunction}/{smallFragments}"
+        home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme_summary/{memeObjectiveFunction}/{smallFragments}/summary.txt"
     shell:
         """
-            grep "MOTIF" {input}/meme.txt > {output}/meme_summary.txt
+            grep "MOTIF" {input}/meme.txt > {output}
         """
 
 
 
 rule all:
     input:
-        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/summary/{memeObjectiveFunction}/{smallFragments}",
+        expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme_summary/{memeObjectiveFunction}/{smallFragments}/summary.txt",
                 memeObjectiveFunction = ["cd", "ce"],
                 smallFragments = ["TOTALcombined_A_H2AZ_000-125",
                                   "TOTALcombined_A_Inp_000-125",

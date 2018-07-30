@@ -15,9 +15,11 @@ prepare_summit_sequences <- function(summitsFile,
     summits <- GenomeInfoDb::sortSeqlevels(summits, X.is.sexchrom = T)
     GenomeInfoDb::seqlevels(summits) <- GenomeInfoDb::seqlevels(genome)
     GenomeInfoDb::seqinfo(summits) <- GenomeInfoDb::seqinfo(genome)
-    names(summits) <- unlist(lapply(strsplit(summits$name, "_"), function(x) paste(x[c(2,5:6)], collapse = "_")))
+    names(summits) <- gsub("TOTALcombined_", "", summits$name)
+    names(summits) <- gsub("_000-125", "", names(summits)) 
     peaks <- data.table::fread(peaksFile)
-    peaks$name <- unlist(lapply(strsplit(peaks$name, "_"), function(x) paste(x[c(2,5:6)], collapse = "_")))
+    peaks$name <- gsub("TOTALcombined_", "", peaks$name)
+    peaks$name <- gsub("_000-125", "", peaks$name)
     significantPeaks <-peaks[which(peaks$pileup > peaksMinPileUp & peaks$`-log10(qvalue)` > peaksMinQval)]
     summitsSeqs <- BSgenome::getSeq(genome, 
                                     GenomicRanges::resize(summits[significantPeaks$name], 
@@ -27,7 +29,7 @@ prepare_summit_sequences <- function(summitsFile,
                         con = summitsSeqFile, 
                         format = "fasta")
 }
-#save.image()
+save.image()
 prepare_summit_sequences(summitsFile = snakemake@input[["summits"]],
                          peaksFile = snakemake@input[["peaks"]],
                          summitsSeqFile = snakemake@output[[1]],
