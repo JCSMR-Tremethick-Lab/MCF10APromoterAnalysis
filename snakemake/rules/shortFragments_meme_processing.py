@@ -5,7 +5,6 @@ __date__ = "2018-06-15"
 # vim: syntax=python tabstop=4 expandtab
 # coding: utf-8
 from snakemake.utils import min_version
-
 min_version("5.0")
 
 """
@@ -32,8 +31,8 @@ rule run_meme:
         summitsSeqFile = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}_summits.fasta",
         promotersHMM = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/promoterSequences.hmm"
     output:
-        directory(home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}"),
-        memeOutput = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}/meme.html"
+        directory(home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}")
+#        memeOutput = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}/meme.html"
     shell:
         """
             {params.meme_bin} -oc {output[0]}\
@@ -92,7 +91,7 @@ rule run_fimo: # to get sequences in which motifs can be found
     threads:
         1
     input:
-        meme = rules.run_meme.output.memeOutput,
+        meme = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}/meme.html",
         fasta = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}_summits.fasta"
     output:
         directory(home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/fimo/{memeObjectiveFunction}/{smallFragments}")
