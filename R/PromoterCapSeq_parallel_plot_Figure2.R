@@ -1,23 +1,27 @@
-## local functions
+## load libraries
+library(data.table)
+library(ggparallel)
+library(alluvial)
+library(tidyverse)
 # Figure S2 (supplement for Figure 2)
 # remove all variables from environment
 rm(list = ls())
 
 
 # load expression data ----------------------------------------------------
-RDAs <- list.files("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/sortingTSVS for Tremethick paper /", 
+RDAs <- list.files("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/PublicationFigures", 
                    pattern = "*.rda", 
                    full.names = T)
 for (i in RDAs){
   load(i)
 }
-setkey(rT.MCF10Ca1a, "target_id")
 setkey(rT.shH2AZ, "target_id")
+setkey(rT.MCF10Ca1a, "target_id")
 setkey(rT.TGFbD6, "target_id")
 setkey(kT1, "target_id")
 
 # load parallel plot data -------------------------------------------------
-dataDir <- "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/sortingTSVS for Tremethick paper /Figure 2/"
+dataDir <- "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/PublicationFigures/Figure_2"
 l2 <- lapply(list.files(path = dataDir, pattern=".tsv"), function(x){
   dt <- data.table::fread(paste(dataDir, x, sep = "/"))
   return(dt)
@@ -83,6 +87,7 @@ mcf10atgfbCategories <- data.table::data.table(cat = c(
                                                          6,
                                                          7))
 mcf10atgfbCategories$cat <- factor(mcf10atgfbCategories$cat, levels = mcf10atgfbCategories$cat, ordered = T)
+mcf10awtCategories <- merge(mcf10awtCategories, unique(l2$log2ratio_10A[, c("group1", "color")]), by.x = "group", by.y = "group1", all.x = F, all.y = F)
 
 # shH2AZ
 # can't have duplicate categories so separated Strong +1 in to a & b
@@ -103,6 +108,7 @@ mcf10ashh2azCategories <- data.table::data.table(cat = c(
                                                            6,
                                                            7))
 mcf10ashh2azCategories$cat <- factor(mcf10ashh2azCategories$cat, levels = mcf10ashh2azCategories$cat, ordered = T)
+mcf10ashh2azCategories <- merge(mcf10ashh2azCategories, unique(l2$log2ratio_shZ[, c("group1", "color")]), by.x = "group", by.y = "group1", all.x = F, all.y = F)
 
 # Ca1a
 mcf10ca1aCategories <- data.table::data.table(cat = c(
@@ -123,6 +129,7 @@ mcf10ca1aCategories <- data.table::data.table(cat = c(
                                                         7))
 
 mcf10ca1aCategories$cat <- factor(mcf10ca1aCategories$cat, levels = mcf10ca1aCategories$cat, ordered = T)
+mcf10ca1aCategories <- merge(mcf10ca1aCategories, unique(l2$log2ratio_CA1a[, c("group1", "color")]), by.x = "group", by.y = "group1", all.x = F, all.y = F)
 
 
 # merge clusters and categories -------------------------------------------
@@ -141,23 +148,54 @@ lapply(names(l2), function(x){
 
 
 # merge all tables into single data.table ---------------------------------
-dt2 <- l2$log2ratio_10A[!duplicated(extGene), c("extGene", "left.MCF10A_WT.category")]
-dt2 <- merge(dt2, l2$log2ratio_TGFb[!duplicated(extGene), c("extGene", "right.MCF10A_TGFb.category")], by.x = "extGene", by.y = "extGene")
-dt2 <- merge(dt2, l2$log2ratio_shZ[!duplicated(extGene), c("extGene", "right.MCF10A_shZ.category")], by.x = "extGene", by.y = "extGene")
-dt2 <- merge(dt2, l2$log2ratio_CA1a[!duplicated(extGene), c("extGene", "right.MCF10CA1A.category")], by.x = "extGene", by.y = "extGene")
-colnames(dt2)
-
+dt2 <- l2$log2ratio_10A[!duplicated(extGene), c("extGene", "left.MCF10A_WT.category" ,"group1")]
+colnames(dt2)[3] <- "wt.group"
+dt2 <- merge(dt2, l2$log2ratio_TGFb[!duplicated(extGene), c("extGene", "right.MCF10A_TGFb.category", "group1")], by.x = "extGene", by.y = "extGene")
+colnames(dt2)[length(colnames(dt2))] <- "tgfb.group"
+dt2 <- merge(dt2, l2$log2ratio_shZ[!duplicated(extGene), c("extGene", "right.MCF10A_shZ.category", "group1")], by.x = "extGene", by.y = "extGene")
+colnames(dt2)[length(colnames(dt2))] <- "shZ.group"
+dt2 <- merge(dt2, l2$log2ratio_CA1a[!duplicated(extGene), c("extGene", "right.MCF10CA1A.category", "group1")], by.x = "extGene", by.y = "extGene")
+colnames(dt2)[length(colnames(dt2))] <- "CA1a.group"
+dt2
 FigS2Data <- dt2
 save(FigS2Data, file = file.path(dataDir, "FigS2Data.rda"))
 write.csv(FigS2Data, file = file.path(dataDir, "FigS2Data.csv"))
 
+# Using alluvial plots insted. --------------------------------------------
+tab1 <- data.table::as.data.table(table(FigS2Data$wt.group, FigS2Data$tgfb.group))
+tab1 %>% group_by(V1, V2) %>% summarise(n = sum(N)) -> tab2
+FigS2aTab <- data.table::as.data.table(table("WT" = FigS2Data$wt.group, "TGFb" = FigS2Data$tgfb.group))
+FigS2aTab %>% group_by(WT, TGFb) %>% summarise(n = sum(N)) -> FigS2aTab1
+pdf(file = file.path(dataDir, "AlluvialPlotS2a.pdf"), paper = "a4r")
+alluvial(FigS2aTab1[,c(1:2)], freq = FigS2aTab1$n,
+         col = mcf10awtCategories$color[match(as.integer(tab2$V1), mcf10awtCategories$group)])
+dev.off()
+
+tab1 <- data.table::as.data.table(table(FigS2Data$wt.group, FigS2Data$shZ.group))
+tab1 %>% group_by(V1, V2) %>% summarise(n = sum(N)) -> tab2
+FigS2bTab <- data.table::as.data.table(table("WT" = FigS2Data$wt.group, "shH2AZ" = FigS2Data$shZ.group))
+FigS2bTab %>% group_by(WT, shH2AZ) %>% summarise(n = sum(N)) -> FigS2bTab1
+pdf(file = file.path(dataDir, "AlluvialPlotS2b.pdf"), paper = "a4r")
+alluvial(FigS2bTab1[,c(1:2)], freq = FigS2bTab1$n,
+         col = mcf10awtCategories$color[match(as.integer(tab2$V1), mcf10awtCategories$group)])
+dev.off()
+
+tab1 <- data.table::as.data.table(table(FigS2Data$wt.group, FigS2Data$CA1a.group))
+tab1 %>% group_by(V1, V2) %>% summarise(n = sum(N)) -> tab2
+FigS2cTab <- data.table::as.data.table(table("WT" = FigS2Data$wt.group, "CA1a" = FigS2Data$CA1a.group))
+FigS2cTab %>% group_by(WT, CA1a) %>% summarise(n = sum(N)) -> FigS2cTab1
+pdf(file = file.path(dataDir, "AlluvialPlotS2c.pdf"), paper = "a4r")
+alluvial(FigS2cTab1[,c(1:2)], freq = FigS2cTab1$n,
+         col = mcf10awtCategories$color[match(as.integer(tab2$V1), mcf10awtCategories$group)])
+dev.off()
+
 #
 apply(dt2[,c("left.MCF10A_WT.category", "right.MCF10A_TGFb.category", "right.MCF10A_shZ.category", "right.MCF10CA1A.category")], 2, function(x) table(x, useNA = "always"))
-
 
 # Parallel plots ----------------------------------------------------------
 FigS2a <- ggparallel::ggparallel(list("left.MCF10A_WT.category", "right.MCF10A_TGFb.category"), #, "right.MCF10A_shZ.category", "right.MCF10CA1A.category"), 
                        data = dt2[!is.na(right.MCF10CA1A.category) & !is.na(right.MCF10A_TGFb.category) ],
+                       order = 0,
                        label.size = 4,
                        text.angle = 0, label.colour= "black", same.level = F) +
   ggtitle("MCF10A WT -> TGFb (Figure 2)") +
@@ -165,6 +203,7 @@ FigS2a <- ggparallel::ggparallel(list("left.MCF10A_WT.category", "right.MCF10A_T
 
 FigS2b <- ggparallel::ggparallel(list("left.MCF10A_WT.category", "right.MCF10A_shZ.category"), #, , "right.MCF10CA1A.category"), 
                        data = dt2[!is.na(right.MCF10CA1A.category) & !is.na(right.MCF10A_shZ.category) ],
+                       order = 0,
                        label.size = 4,
                        text.angle = 0, label.colour= "black", same.level = F) +
   ggtitle("MCF10A WT -> shH2AZ (Figure 2)") +
@@ -172,8 +211,10 @@ FigS2b <- ggparallel::ggparallel(list("left.MCF10A_WT.category", "right.MCF10A_s
 
 FigS2c <- ggparallel::ggparallel(list("left.MCF10A_WT.category", "right.MCF10CA1A.category"), #, , ), 
                        data = dt2[!is.na(right.MCF10CA1A.category) & !is.na(right.MCF10CA1A.category) ],
+                       order = 0,
                        label.size = 4,
                        text.angle = 0, label.colour= "black", same.level = F, text.offset = 0.1) +
+                       scale_fill_manual(values = c(mcf10awtCategories$color, mcf10ca1aCategories$color)) +
   ggtitle("MCF10A WT -> CA1A (Figure 2)") +
   theme(legend.position = "none")
 
@@ -454,42 +495,3 @@ write.csv(table("WT" = emtData[epi_mes == "mes"]$left.MCF10A_WT.category, "CA1A"
           file = "~/Data/Collaborations/FSU/PromoterSeqCap/sortingTSVS for Tremethick paper /Figure 2/Fig2_WT_CA1A_counts_EMTmes.csv")
 
 
-# add GO analysis of MCF10A WT clusters -----------------------------------
-library("clusterProfiler")
-library("org.Hs.eg.db")
-
-keyType <- "SYMBOL"
-ontologies <- c("MF", "BP", "CC")
-pAdjust <- "fdr"
-pCutoff <- 0.25
-analysis <- "clusterProfiler"
-
-geneUniverse <- dt2$extGene
-
-GO.MCF10A_WT.clusters <- lapply(levels(dt2$left.MCF10A_WT.category), function(x){
-  geneList <- dt2[left.MCF10A_WT.category == x]$extGene
-  MF <- enrichGO(gene = geneList,
-                 universe = geneUniverse,
-                 OrgDb = org.Hs.eg.db,
-                 keyType = keyType,
-                 ont = "MF",
-                 pAdjustMethod = pAdjust,
-                 pvalueCutoff = pCutoff)
-  BP <- enrichGO(gene = geneList,
-                 universe = geneUniverse,
-                 OrgDb = org.Hs.eg.db,
-                 keyType = keyType,
-                 ont = "BP",
-                 pAdjustMethod = pAdjust,
-                 pvalueCutoff = pCutoff)
-  CC <- enrichGO(gene = geneList,
-                 universe = geneUniverse,
-                 OrgDb = org.Hs.eg.db,
-                 keyType = keyType,
-                 ont = "CC",
-                 pAdjustMethod = pAdjust,
-                 pvalueCutoff = pCutoff)
-  return(list(MF = MF, CC = CC, BP = BP))
-})
-
-names(GO.MCF10A_WT.clusters) <- levels(dt2$left.MCF10A_WT.category)

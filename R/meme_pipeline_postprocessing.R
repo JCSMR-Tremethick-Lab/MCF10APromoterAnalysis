@@ -1,28 +1,84 @@
 # MEME pipeline post-processing
 library(data.table)
 library(XML)
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 
 # load reference data -----------------------------------------------------
 genome <- BSgenome.Hsapiens.UCSC.hg19
 TxDbUCSC <- TxDb.Hsapiens.UCSC.hg19.knownGene
-knownGenes <- genes(TxDbUCSC)
+knownGenes <- genes(Hsap, columns = "SYMBOL")
 knownExons <- exonsBy(TxDbUCSC, by = "gene")
 
 
-# basic routine for loading and extracting MEME XML data ------------------
+# basic routine for loading and extracting MEME CE XML data ------------------
 memeResultsFile <- "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/ce/TOTALcombined_shH2AZ_Inp_000-125/meme.xml"
-memeResults <- XML::xmlToList(memeResultsFile)
-l1 <- lapply(memeResults$motifs, function(x) {
+memeResultsCE <- XML::xmlToList(memeResultsFile)
+l1 <- lapply(memeResultsCE$motifs, function(x) {
   r <- data.frame(lapply(x$.attrs, type.convert), stringsAsFactors=FALSE) # converts vector to DF
   return(r)
 })
-memeResults <- do.call(rbind, lapply(l1, as.data.table))
-setkey(memeResults, alt)
+l2 <- lapply(memeResultsCE$training_set[which(names(memeResultsCE$training_set) == "sequence")], function(x) {
+  r <- data.frame(lapply(x, type.convert), stringsAsFactors=FALSE) # converts vector to DF
+  return(r)
+})
+l3 <- lapply(memeResultsCE$motifs, function(x) {
+  motifName <- x$.attrs["name"]
+  y <- x$contributing_sites
+  l4 <- lapply(y, function(z){
+    r <- as.data.table(lapply(z$`.attrs`, type.convert), stringsAsFactors = F)
+    return(r)
+  })
+  tab1 <- do.call(rbind, lapply(l4, as.data.table))
+  tab1$motifName <- motifName
+  return(tab1)
+})
+
+memeResultsCETab <- do.call(rbind, lapply(l1, as.data.table))
+setkey(memeResultsCETab, name)
+memeResultsCESequences <- do.call(rbind, lapply(l2, as.data.table))
+memeResultsCESites <- do.call(rbind, lapply(l3, as.data.table))
+rm(l1, l2, l3)
+
+# basic routine for loading and extracting MEME CD XML data ------------------
+memeResultsFile <- "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/cd/TOTALcombined_shH2AZ_Inp_000-125/meme.xml"
+memeResultsCD <- XML::xmlToList(memeResultsFile)
+l1 <- lapply(memeResultsCD$motifs, function(x) {
+  r <- data.frame(lapply(x$.attrs, type.convert), stringsAsFactors=FALSE) # converts vector to DF
+  return(r)
+})
+l2 <- lapply(memeResultsCD$training_set[which(names(memeResultsCD$training_set) == "sequence")], function(x) {
+  r <- data.frame(lapply(x, type.convert), stringsAsFactors=FALSE) # converts vector to DF
+  return(r)
+})
+l3 <- lapply(memeResultsCD$motifs, function(x) {
+  motifName <- x$.attrs["name"]
+  y <- x$contributing_sites
+  l4 <- lapply(y, function(z){
+    r <- as.data.table(lapply(z$`.attrs`, type.convert), stringsAsFactors = F)
+    return(r)
+  })
+  tab1 <- do.call(rbind, lapply(l4, as.data.table))
+  tab1$motifName <- motifName
+  return(tab1)
+})
+
+memeResultsCDTab <- do.call(rbind, lapply(l1, as.data.table))
+setkey(memeResultsCDTab, name)
+memeResultsCDSequences <- do.call(rbind, lapply(l2, as.data.table))
+memeResultsCDSites <- do.call(rbind, lapply(l3, as.data.table))
+rm(l1, l2, l3)
+
+memeResults <- rbind(memeResultsCETab,
+                     memeResultsCDTab[!intersect(memeResultsCDTab$name, memeResultsCETab$name)])
 
 # load FIMO results -------------------------------------------------------
-fimoResultsFile <- "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/fimo/ce/TOTALcombined_shH2AZ_Inp_000-125/fimo.tsv"
-fimoResults <- data.table::fread(fimoResultsFile)
-setkey(fimoResults, motif_alt_id)
+fimoResultsFile <- "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/fimo/ce/TOTALcombined_shH2AZ_Inp_000-125_first_run/fimo.tsv"
+fimoResultsCE <- data.table::fread(fimoResultsFile)
+fimoResultsFile <- "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/fimo/cd/TOTALcombined_shH2AZ_Inp_000-125_first_run/fimo.tsv"
+fimoResultsCD <- data.table::fread(fimoResultsFile)
+setkey(fimoResultsCE, motif_alt_id)
+setkey(fimoResultsCD, motif_alt_id)
 
 # load TOMTOM results -----------------------------------------------------
 tomtomResultsFile <- "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/tomtom/ce/TOTALcombined_shH2AZ_Inp_000-125/tomtom.tsv"
