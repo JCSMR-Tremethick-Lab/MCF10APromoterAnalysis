@@ -192,75 +192,20 @@ dev.off()
 #
 apply(dt2[,c("left.MCF10A_WT.category", "right.MCF10A_TGFb.category", "right.MCF10A_shZ.category", "right.MCF10CA1A.category")], 2, function(x) table(x, useNA = "always"))
 
-# Parallel plots ----------------------------------------------------------
-FigS2a <- ggparallel::ggparallel(list("left.MCF10A_WT.category", "right.MCF10A_TGFb.category"), #, "right.MCF10A_shZ.category", "right.MCF10CA1A.category"), 
-                       data = dt2[!is.na(right.MCF10CA1A.category) & !is.na(right.MCF10A_TGFb.category) ],
-                       order = 0,
-                       label.size = 4,
-                       text.angle = 0, label.colour= "black", same.level = F) +
-  ggtitle("MCF10A WT -> TGFb (Figure 2)") +
-  theme(legend.position = "none")
-
-FigS2b <- ggparallel::ggparallel(list("left.MCF10A_WT.category", "right.MCF10A_shZ.category"), #, , "right.MCF10CA1A.category"), 
-                       data = dt2[!is.na(right.MCF10CA1A.category) & !is.na(right.MCF10A_shZ.category) ],
-                       order = 0,
-                       label.size = 4,
-                       text.angle = 0, label.colour= "black", same.level = F) +
-  ggtitle("MCF10A WT -> shH2AZ (Figure 2)") +
-  theme(legend.position = "none")
-
-FigS2c <- ggparallel::ggparallel(list("left.MCF10A_WT.category", "right.MCF10CA1A.category"), #, , ), 
-                       data = dt2[!is.na(right.MCF10CA1A.category) & !is.na(right.MCF10CA1A.category) ],
-                       order = 0,
-                       label.size = 4,
-                       text.angle = 0, label.colour= "black", same.level = F, text.offset = 0.1) +
-                       scale_fill_manual(values = c(mcf10awtCategories$color, mcf10ca1aCategories$color)) +
-  ggtitle("MCF10A WT -> CA1A (Figure 2)") +
-  theme(legend.position = "none")
-
-lapply(list(FigS2a, FigS2b, FigS2c), function(x){
-  x$layers[[3]]$data$labels <- ""
-  x$layers[[4]]$aes_params$colour <- "black"
-})
-
-ggsave(plot = FigS2a, 
-       filename = "~/Data/Collaborations/FSU/PromoterSeqCap/sortingTSVS for Tremethick paper /Figure 2/FigS2a_parallelPlots.pdf", 
-       device = "pdf",
-       height = 300,
-       width = 400,
-       units = "mm")
-
-ggsave(plot = FigS2b, 
-       filename = "~/Data/Collaborations/FSU/PromoterSeqCap/sortingTSVS for Tremethick paper /Figure 2/FigS2b_parallelPlots.pdf", 
-       device = "pdf",
-       height = 300,
-       width = 400,
-       units = "mm")
-
-ggsave(plot = FigS2c, 
-       filename = "~/Data/Collaborations/FSU/PromoterSeqCap/sortingTSVS for Tremethick paper /Figure 2/FigS2c_parallelPlots.pdf", 
-       device = "pdf",
-       height = 300,
-       width = 400,
-       units = "mm")
-
-write.csv(table("WT" = dt2$left.MCF10A_WT.category, "TGFb" = dt2$right.MCF10A_TGFb.category), 
-          file = "~/Data/Collaborations/FSU/PromoterSeqCap/sortingTSVS for Tremethick paper /Figure 2/Fig2_WT_TGFb_counts.csv")
-write.csv(table("WT" = dt2$left.MCF10A_WT.category, "shZ" = dt2$right.MCF10A_shZ.category),
-          file = "~/Data/Collaborations/FSU/PromoterSeqCap/sortingTSVS for Tremethick paper /Figure 2/Fig2_WT_shZ_counts.csv")
-write.csv(table("WT" = dt2$left.MCF10A_WT.category, "CA1A" = dt2$right.MCF10CA1A.category),
-          file = "~/Data/Collaborations/FSU/PromoterSeqCap/sortingTSVS for Tremethick paper /Figure 2/Fig2_WT_CA1A_counts.csv")
-
-
-
 # re-run analysis with EMT genes only -------------------------------------
-sigEMTCells <- data.table::fread("~/Data/References/Annotations/Literature/Tan_et_al_2014/Thiery_generic_EMT_sig_cellLine.txt")
+sigEMTCells <- data.table::fread("/Data/References/Annotations/GeneSets/Literature/Tan_et_al_2014/Thiery_generic_EMT_sig_cellLine.txt")
+sigEMTTumor <- data.table::fread("/Data/References/Annotations/GeneSets/Literature/Tan_et_al_2014/Thiery_generic_EMT_sig_tumor.txt")
+colnames(sigEMTCells)[1] <- "gene_symbol"
+colnames(sigEMTTumor)[1] <- "gene_symbol"
+setkey(sigEMTTumor, "gene_symbol")
+sigEMT <- rbind(sigEMTCells,
+                sigEMTTumor[!intersect(sigEMTCells$gene_symbol, sigEMTTumor$gene_symbol)])
 setkey(dt2, "extGene")
-emtData <- dt2[sigEMTCells$cellLine_sig][!is.na(left.MCF10A_WT.category)]
+emtData <- dt2[sigEMT$gene_symbol][!is.na(left.MCF10A_WT.category)]
 emtData <- merge(emtData, 
                  sigEMTCells, 
                  by.x = "extGene", 
-                 by.y = "cellLine_sig", 
+                 by.y = "gene_symbol", 
                  all.x = T, 
                  all.y = F)
 
