@@ -7,7 +7,7 @@ __date__ = "2018-06-15"
 
 
 """
-Rules for running MACS2 for ChIP peak on shor fragments BED files.
+Rules for running MACS2 for ChIP peak on short fragments BED files.
 This workflow does not include Input as control but rather uses a low stringency
 setting in order to detect as many sites of potential short fragment enrichment
 prior to performing TFBS motif analysis.
