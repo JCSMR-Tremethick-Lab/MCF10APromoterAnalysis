@@ -1,0 +1,38 @@
+GeneOntologyEnrichment
+========================================================
+author: Sebastian Kurscheid
+date: 2018-10-16
+autosize: true
+
+Summary
+========================================================
+
+Purpose of the analysis:
+
+- perform GO enrichment for each identified cluster in each of the MCF10A samples
+- visual presentation of the results using ClusterProfiler
+
+Slide With Code
+========================================================
+
+```{r}
+dataDir <- "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/PublicationFigures/Figure_2"
+load(file.path(dataDir, "GOAnalysisObjects.rda"))
+lapply(names(GOs$MCF10A_WT.clusters), function(x) {
+  plotTitle <- x
+  z <- GOs$MCF10A_WT.clusters[[x]]
+  lapply(names(z), function(y){
+    if(nrow(z[[y]]) > 0){
+      clusterName <- y
+      clusterProfiler::dotplot(z[[y]], title = paste(plotTitle, "-", clusterName, par(cex = 0.5)))
+    }
+  })
+})
+```
+
+Slide With Plot
+========================================================
+
+```{r, echo=FALSE}
+plot(cars)
+```

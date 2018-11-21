@@ -6,9 +6,7 @@ library(biomaRt)
 library(tidyr)
 library(RColorBrewer)
 library(tibble)
-library(snowfall)
 library(sleuth)
-library(tibble)
 library(tximport)
 library(readr)
 library(GenomicRanges)
@@ -24,11 +22,11 @@ lDir <- function(x, y){
 }
 
 # get snakemake run configuration -----------------------------------------
-runConfig <- jsonlite::fromJSON("~/Development/JCSMR-Tremethick-Lab/Breast/snakemake/configs/config_RNA-Seq.json")
-runNo <- names(runConfig$samples)[1]
+runConfig <- jsonlite::fromJSON("~/Development/JCSMR-Tremethick-Lab/MCF10APromoterAnalysis/snakemake/configs/config_RNA-Seq.json")
+runNo <- names(runConfig$samples)[2]
 refVersion <- "hg19"
 annotationVersion <- runConfig$references[[refVersion]]$version
-annotationVersion <- annotationVersion[1]
+annotationVersion <- annotationVersion[3]
 runID <- "NB501086_0082_RDomaschenz_JCSMR_mRNAseq" # second run
 #runID <- "NB501086_0067_RDomaschenz_JCSMR_RNASeq" # first run
 

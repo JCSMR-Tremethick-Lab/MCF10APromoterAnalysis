@@ -24,7 +24,7 @@ rule run_meme:
         nmotifs = 1000,
         evt = 0.05, # e-value threshold
         mod = "zoops",
-        nbrief = 2000
+        nbrief = 8000
     threads:
         10
     input:
@@ -32,7 +32,6 @@ rule run_meme:
         promotersHMM = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/promoterSequences.hmm"
     output:
         directory(home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}")
-#        memeOutput = home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}/meme.html"
     shell:
         """
             {params.meme_bin} -oc {output[0]}\
@@ -68,19 +67,19 @@ rule run_tomtom:
         """
 
 
-rule motif_summary:
-    version:
-        "1.0"
-    threads:
-        1
-    input:
-        home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}"
-    output:
-        home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme_summary/{memeObjectiveFunction}/{smallFragments}/summary.txt"
-    shell:
-        """
-            grep "MOTIF" {input}/meme.txt > {output}
-        """
+#rule motif_summary:
+#    version:
+#        "1.0"
+#    threads:
+#        1
+#    input:
+#        home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme/{memeObjectiveFunction}/{smallFragments}"
+#    output:
+#        home + "/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/meme_summary/{memeObjectiveFunction}/{smallFragments}/summary.txt"
+#    shell:
+#        """
+#            grep "MOTIF" {input}/meme.txt > {output}
+#        """
 
 
 rule run_fimo: # to get sequences in which motifs can be found
@@ -108,10 +107,11 @@ rule all:
     input:
         expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/fimo/{memeObjectiveFunction}/{smallFragments}",
                 memeObjectiveFunction = ["cd", "ce"],
-                smallFragments = ["TOTALcombined_A_H2AZ_000-125",
-                                  "TOTALcombined_A_Inp_000-125",
-                                  "TOTALcombined_A_TGFb_H2AZ_000-125",
-                                  "TOTALcombined_A_TGFb_Inp_000-125",
-                                  "TOTALcombined_CA1a_H2AZ_000-125",
-                                  "TOTALcombined_CA1a_Inp_000-125",
-                                  "TOTALcombined_shH2AZ_Inp_000-125"])
+                smallFragments = ["TOTALcombined_shH2AZ_Inp_000-125"])
+                                  #"TOTALcombined_A_H2AZ_000-125",
+                                  #"TOTALcombined_A_Inp_000-125",
+                                  #"TOTALcombined_A_TGFb_H2AZ_000-125",
+                                  #"TOTALcombined_A_TGFb_Inp_000-125",
+                                  #"TOTALcombined_CA1a_H2AZ_000-125",
+                                  #"TOTALcombined_CA1a_Inp_000-125",
+                                  #"TOTALcombined_shH2AZ_Inp_000-125"])
