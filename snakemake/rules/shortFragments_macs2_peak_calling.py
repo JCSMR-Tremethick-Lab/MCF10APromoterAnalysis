@@ -75,7 +75,7 @@ rule get_summit_sequences:
     params:
         summitsSeqWidth = 500, # recommended by MEME
         peaksMinPileUp = 4,
-        peaksMinQval = 2,
+        peaksMinQval = 2, # as -log^10
         BSgenome = "BSgenome.Hsapiens.UCSC.hg19"
     input:
         summits = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling/{smallFragments}/{smallFragments}_summits.bed",
@@ -98,10 +98,3 @@ rule all:
                                   "TOTALcombined_shH2AZ_Inp_000-125"]),
         expand("/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/summitSequences/{smallFragments}_summits.fasta",
                 smallFragments = ["TOTALcombined_shH2AZ_Inp_000-125"])
-                                  #"TOTALcombined_A_H2AZ_000-125",
-                                  #"TOTALcombined_A_Inp_000-125",
-                                  #"TOTALcombined_A_TGFb_H2AZ_000-125",
-                                  #"TOTALcombined_A_TGFb_Inp_000-125",
-                                  #"TOTALcombined_CA1a_H2AZ_000-125",
-                                  #"TOTALcombined_CA1a_Inp_000-125",
-                                  #"TOTALcombined_shH2AZ_Inp_000-125"])
