@@ -100,7 +100,16 @@ rule rename_fastq:
        expand("{assayID}/{runID}/fastq/{unit}_{suffix}.fastq.gz",
               assayID = "RNA-Seq",
               runID = "NB501086_0067_RDomaschenz_JCSMR_RNASeq",
-              unit = config["samples"]["RNA-Seq"],
+              unit = ["MCF10A_wt_rep1",
+"MCF10A_wt_rep2",
+"MCF10A_shZ_rep1",
+"MCF10A_shZ_rep2",
+"MCF10A_TGFb_rep1",
+"MCF10A_TGFb_rep2",
+"MCF10Ca1a_wt_rep1",
+"MCF10Ca1a_wt_rep2",
+"MCF10Ca1a_shZ_rep1",
+"MCF10Ca1a_shZ_rep2"],
               suffix = ["R1_001", "R2_001"])
 
 rule all:
