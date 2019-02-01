@@ -30,10 +30,10 @@ rule make_meaningful_filenames:
 
 rule cutadapt_pe:
     params:
-        trim_params = config["program_parameters"]["cutadapt"]["trim_params"],
+        trim_params = config["trim_params"],
         trim_data = config["trim_dir"],
         raw_data = config["raw_dir"],
-        cutadapt_dir = home + config["cutadapt_dir"]
+        cutadapt_dir = config["cutadapt_dir"]
     input:
         read1 = rules.make_meaningful_filenames.output.renamed_read1,
         read2 = rules.make_meaningful_filenames.output.renamed_read2

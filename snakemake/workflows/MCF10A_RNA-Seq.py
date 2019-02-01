@@ -13,7 +13,7 @@ localrules:
 
 wrapper_dir = os.environ['HOME'] + "/Development/snakemake-wrappers/bio"
 
-include_prefix= os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/Breast/snakemake/rules/"
+include_prefix= os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/MCF10APromoterAnalysis/snakemake/rules/"
 
 include:
      include_prefix + "perform_fastqc.py"
@@ -96,12 +96,12 @@ rule run_cutadapt:
                suffix = ["R1_001", "R2_001"])
 
 rule rename_fastq:
-       input:
-           expand("{assayID}/{runID}/fastq/{unit}_{suffix}.fastq.gz",
+   input:
+       expand("{assayID}/{runID}/fastq/{unit}_{suffix}.fastq.gz",
               assayID = "RNA-Seq",
               runID = "NB501086_0067_RDomaschenz_JCSMR_RNASeq",
               unit = config["samples"]["RNA-Seq"],
-              suffix = ["R1_001", "R2_001"]))
+              suffix = ["R1_001", "R2_001"])
 
 rule all:
     input:

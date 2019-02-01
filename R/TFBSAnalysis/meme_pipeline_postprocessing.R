@@ -3,8 +3,11 @@ library(data.table)
 library(XML)
 library(BSgenome.Hsapiens.UCSC.hg19)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library("Homo.sapiens")
+library(gtools)
 
 # load reference data -----------------------------------------------------
+Hsap <- Homo.sapiens
 genome <- BSgenome.Hsapiens.UCSC.hg19
 TxDbUCSC <- TxDb.Hsapiens.UCSC.hg19.knownGene
 knownGenes <- genes(Hsap, columns = "SYMBOL")
@@ -37,7 +40,9 @@ l3 <- lapply(memeResultsCE$motifs, function(x) {
 memeResultsCETab <- do.call(rbind, lapply(l1, as.data.table))
 setkey(memeResultsCETab, name)
 memeResultsCESequences <- do.call(rbind, lapply(l2, as.data.table))
+setkey(memeResultsCESequences, "name")
 memeResultsCESites <- do.call(rbind, lapply(l3, as.data.table))
+setkey(memeResultsCESites, "sequence_id")
 rm(l1, l2, l3)
 
 # basic routine for loading and extracting MEME CD XML data ------------------
@@ -66,11 +71,22 @@ l3 <- lapply(memeResultsCD$motifs, function(x) {
 memeResultsCDTab <- do.call(rbind, lapply(l1, as.data.table))
 setkey(memeResultsCDTab, name)
 memeResultsCDSequences <- do.call(rbind, lapply(l2, as.data.table))
+setkey(memeResultsCDSequences, "name")
 memeResultsCDSites <- do.call(rbind, lapply(l3, as.data.table))
+setkey(memeResultsCDSites, "sequence_id")
 rm(l1, l2, l3)
 
 memeResults <- rbind(memeResultsCETab,
                      memeResultsCDTab[!intersect(memeResultsCDTab$name, memeResultsCETab$name)])
+# fixing column type in place
+memeResults[, name := as.character(name)]
+memeResults[, id := as.character(id)]
+memeResults[, alt := as.character(alt)]
+
+memeResultsCDTab[, name := as.character(name)]
+memeResultsCDTab[, id := as.character(id)]
+memeResultsCDTab[, alt := as.character(alt)]
+memeResultsCDTab <- memeResultsCDTab[mixedorder(alt, decreasing = T)]
 
 # load FIMO results -------------------------------------------------------
 fimoResultsFile <- "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/fimo/ce/TOTALcombined_shH2AZ_Inp_000-125_first_run/fimo.tsv"
@@ -79,6 +95,9 @@ fimoResultsFile <- "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/Small
 fimoResultsCD <- data.table::fread(fimoResultsFile)
 setkey(fimoResultsCE, motif_alt_id)
 setkey(fimoResultsCD, motif_alt_id)
+
+
+
 
 # load TOMTOM results -----------------------------------------------------
 tomtomResultsFile <- "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/tomtom/ce/TOTALcombined_shH2AZ_Inp_000-125/tomtom.tsv"

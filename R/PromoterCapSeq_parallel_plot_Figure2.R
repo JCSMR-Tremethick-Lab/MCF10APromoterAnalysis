@@ -1,6 +1,5 @@
 ## load libraries
 library(data.table)
-library(ggparallel)
 library(alluvial)
 library(tidyverse)
 # Figure S2 (supplement for Figure 2)
