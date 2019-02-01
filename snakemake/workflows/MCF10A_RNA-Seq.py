@@ -95,6 +95,14 @@ rule run_cutadapt:
                unit = config["samples"]["RNA-Seq_run2"],
                suffix = ["R1_001", "R2_001"])
 
+rule rename_fastq:
+       input:
+           expand("{assayID}/{runID}/fastq/{unit}_{suffix}.fastq.gz",
+              assayID = "RNA-Seq",
+              runID = "NB501086_0067_RDomaschenz_JCSMR_RNASeq",
+              unit = config["samples"]["RNA-Seq"],
+              suffix = ["R1_001", "R2_001"]))
+
 rule all:
     input:
         expand("{assayID}/{runID}/{outdir}/{trim_data}/{unit}_{suffix}.QT.CA.fastq.gz",
