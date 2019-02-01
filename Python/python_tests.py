@@ -29,6 +29,9 @@ with open("/Users/u1001407/Development/JCSMR-Tremethick-Lab/H2AZ_EMT/snakemake/c
 with open("config.json") as data_file:
     config = json.load(data_file)
 
+with open("snakemake/configs/config_RNA-Seq.json") as data_file:
+    config = json.load(data_file)
+
 
 ' '.join("{!s}={!r}".format(key, val) for (key, val) in cli_parameters(wildcards).items())
 
@@ -77,6 +80,9 @@ wildcards = {"mode" : "normal", "tool" : "bamCoverage", "application" : "deepToo
 
 wildcards = {"referencePoint" : "TSS", "mode" : "reference-point"}
 wildcards = {"ChIP-Seq" : "NB501086_0086_DSTremethick_JCSMR_MCF10A_ChIPseq"}
+
+wildcards = {"assayID" : "RNA-Seq", "runID" : "NB501086_0067_RDomaschenz_JCSMR_RNASeq", "unit" : "MCF10A_wt_rep1"}
+
 def get_sample_labels(wildcards):
     fn = []
     runIDs = config["samples"]["ChIP-Seq"].keys()

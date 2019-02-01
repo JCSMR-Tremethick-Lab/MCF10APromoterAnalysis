@@ -17,8 +17,8 @@ rule make_meaningful_filenames:
     params:
         raw_data = config["raw_dir"],
     input:
-        read1 = lambda wildcards: wildcards.assayID + "/" + wildcards.runID + "/fastq/" + config["samples"][wildcards.assayID][wildcards.runID][wildcards.unit][0],
-        read2 = lambda wildcards: wildcards.assayID + "/" + wildcards.runID + "/fastq/" + config["samples"][wildcards.assayID][wildcards.runID][wildcards.unit][1]
+        read1 = lambda wildcards: wildcards["assayID"] + "/" + wildcards["runID"] + "/fastq/" + config["samples"][wildcards["assayID"]][wildcards["runID"]][wildcards["unit"]][0],
+        read2 = lambda wildcards: wildcards["assayID"] + "/" + wildcards["runID"] + "/fastq/" + config["samples"][wildcards["assayID"]][wildcards["runID"]][wildcards["unit"]][1],
     output:
         renamed_read1 = "{assayID}/{runID}/fastq/{unit}_R1_001.fastq.gz",
         renamed_read2 = "{assayID}/{runID}/fastq/{unit}_R2_001.fastq.gz"
