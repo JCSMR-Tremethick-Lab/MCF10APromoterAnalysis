@@ -5,3 +5,5 @@
 - [x] numerical approach: calculate coverage for promoter regions
 
 This illustrates that for a given sequencing depth, the capture approach yields x-fold more coverage in promoter regions, i.e. increased sensitivity(?)/resolution
+
+## address question regarding G/C bias
