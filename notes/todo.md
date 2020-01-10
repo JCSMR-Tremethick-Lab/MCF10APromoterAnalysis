@@ -7,3 +7,11 @@
 This illustrates that for a given sequencing depth, the capture approach yields x-fold more coverage in promoter regions, i.e. increased sensitivity(?)/resolution
 
 ## address question regarding G/C bias
+- [x] covered by Lauren
+ 
+# Prepare information for reporting summary
+##
+- [] list of tools and versions
+- [] parameters used in different steps of the pipeline
+- [] tidy up repository (deprecate unused scripts etc)
+- [] provide requested statistics about peak calling
