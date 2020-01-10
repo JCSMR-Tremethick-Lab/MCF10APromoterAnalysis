@@ -11,7 +11,7 @@ This illustrates that for a given sequencing depth, the capture approach yields 
  
 # Prepare information for reporting summary
 ##
-- [] list of tools and versions
-- [] parameters used in different steps of the pipeline
-- [] tidy up repository (deprecate unused scripts etc)
-- [] provide requested statistics about peak calling
+- [ ] list of tools and versions
+- [ ] parameters used in different steps of the pipeline
+- [ ] tidy up repository (deprecate unused scripts etc)
+- [ ] provide requested statistics about peak calling
