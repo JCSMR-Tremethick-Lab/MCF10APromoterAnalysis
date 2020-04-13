@@ -96,9 +96,6 @@ fimoResultsCD <- data.table::fread(fimoResultsFile)
 setkey(fimoResultsCE, motif_alt_id)
 setkey(fimoResultsCD, motif_alt_id)
 
-
-
-
 # load TOMTOM results -----------------------------------------------------
 tomtomResultsFile <- "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/tomtom/ce/TOTALcombined_shH2AZ_Inp_000-125/tomtom.tsv"
 tomtomResults <- data.table::fread(tomtomResultsFile)

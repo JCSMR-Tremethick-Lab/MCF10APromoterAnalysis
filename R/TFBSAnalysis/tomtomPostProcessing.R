@@ -83,8 +83,27 @@ grPromoters[subjectHits(expressedTFPromoters)]
 
 # todo --------------------------------------------------------------------
 # determine how many TFBS in small fragment sites overlapping H2A.Z peaks are recognized by EXPRESSED TFs
+setkey(tomtom, "extGene")
+
+expressedTFBSmotifs <- unique(tomtom[extGenes]$Query_ID)
+memeResultsSites <- rbind(memeResultsCDSites, memeResultsCESites)
+memeResultsSites[, sequence_id := as.character(sequence_id)]
+setkey(memeResultsSites, motifName)
+
+memeResultsSequences <- rbind(memeResultsCDSequences, memeResultsCESequences)
+memeResultsSequences[, id := as.character(id)]
+memeResultsSequences[, name := as.character(name)]
+setkey(memeResultsSequences, id)
+
+memeResultsSequences[unique(memeResultsSites[expressedTFBSmotifs]$sequence_id)]
+TFBSpeakIDs <- unique(memeResultsSequences[unique(memeResultsSites[expressedTFBSmotifs]$sequence_id)]$name)
+smallFragmentsSummits[TFBSpeakIDs]
+
+TFBSH2AZHits <- findOverlaps(smallFragmentsSummits[peakIDs], grNPIDRFiltered, minoverlap = 100)
 
 
+
+# other stuff -------------------------------------------------------------
 expressedTFTargets <- ggplot(data = rTshH2AZ, 
                           aes(x = b, y = -(log10(qval)))) +
   geom_point(color = "grey", size = 0.6) +

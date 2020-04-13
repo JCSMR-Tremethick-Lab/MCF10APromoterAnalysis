@@ -190,4 +190,3 @@ shH2AZNegativeControls2 <- DNAStringSetList(lapply(maskList, function(x) as(x, "
 rtracklayer::export(unlist(shH2AZNegativeControls2), 
                     con = "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/SmallFragments/macs2PeakCalling//TOTALcombined_shH2AZ_Inp_000-125/shH2AZNegativeControlPeakFreePromoterSequences.fa",
                     format = "fasta")
-l

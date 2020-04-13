@@ -9,7 +9,7 @@ smallFragmentPeaks <- lapply(smallFragmentPeaks, function(x) {dT <- data.table::
 names(smallFragmentPeaks) <- unlist(lapply(strsplit(list.files(smallFragmentsDir, recursive = T, full.names = F, pattern = "peaks.xls"), "/"), function(x) x[1]))
 grlSallFragmentPeaks <- lapply(smallFragmentPeaks, function(x) gr <- makeGRangesFromDataFrame(x, keep.extra.columns = T))
 
-sfp <- smallFragmentPeaks$`TOTALcombined_shH2AZ_Inp_000-125`[(fold_enrichment > 3 & `-log10(qvalue)` > 2)]
+sfp <- smallFragmentPeaks$`TOTALcombined_shH2AZ_Inp_000-125`[(fold_enrichment > 4 & `-log10(qvalue)` > 2)]
 grSfp <- makeGRangesFromDataFrame(sfp, keep.extra.columns = T)
 names(grSfp) <- unlist(lapply(strsplit(grSfp$name, "_"), function(x) paste(x[c(2,3,5,6)], collapse = "_")))
 
