@@ -1,10 +1,8 @@
 library(ggplot2)
-
 # just to make sure that no remnants of previous plot remain
 # Figure S1 (supplement to Figure 1)
 rm(list = ls())
 ## local functions
-
 dataDir <- "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/sortingTSVS for Tremethick paper /Figure 1/"
 l1 <- lapply(list.files(path = dataDir, pattern=".tsv"), function(x){
   dt <- data.table::fread(paste(dataDir, x, sep = "/"))

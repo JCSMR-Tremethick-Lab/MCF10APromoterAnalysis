@@ -1,4 +1,5 @@
 ## load libraries
+<<<<<<< HEAD
 library(ggparallel)
 library(alluvial)
 library(tidyverse)
