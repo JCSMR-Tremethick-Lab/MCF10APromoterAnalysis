@@ -23,7 +23,7 @@ lDir <- function(x, y){
 
 # get snakemake run configuration -----------------------------------------
 runConfig <- jsonlite::fromJSON("~/Development/JCSMR-Tremethick-Lab/MCF10APromoterAnalysis/snakemake/configs/config_RNA-Seq.json")
-runNo <- names(runConfig$samples)[2]
+runNo <- names(runConfig$samples$`RNA-Seq`)[2]
 refVersion <- "hg19"
 annotationVersion <- runConfig$references[[refVersion]]$version
 annotationVersion <- annotationVersion[3]
@@ -54,9 +54,9 @@ if (amILocal("JCSMR027564ML")){
 options(mc.cores = cpus)
 
 setwd(lDir(pathPrefix, 
-           paste("Data/Tremethick/Breast/", runNo,"/", runID,"/R_Analysis/", sep = "")))
+           paste("Data/Tremethick/Breast/RNA-Seq/", runID,"/R_Analysis/", sep = "")))
 devPath <- "~/Development"
-annotationDataPath <- paste("~/Data/Tremethick/Breast/", runNo,"/", runID ,"/R_Analysis/", sep = "")
+annotationDataPath <- paste("~/Data/Tremethick/Breast/RNA-Seq/", runNo,"/", runID ,"/R_Analysis/", sep = "")
 getwd()
 list.files()
 
