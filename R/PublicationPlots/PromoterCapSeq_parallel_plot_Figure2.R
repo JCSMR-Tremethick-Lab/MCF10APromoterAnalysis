@@ -3,7 +3,7 @@ library(ggparallel)
 library(alluvial)
 library(tidyverse)
 library(data.table)
-# Figure S2 (supplement for Figure 2)
+# alluvial plots
 # remove all variables from environment
 rm(list = ls())
 
@@ -21,7 +21,7 @@ setkey(rT.TGFbD6, "target_id")
 setkey(kT1, "target_id")
 
 # load parallel plot data -------------------------------------------------
-dataDir <- "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/PublicationFigures/Figure_2"
+dataDir <- "/home/sebastian/Data/Collaborations/FSU/PromoterSeqCap/PublicationFigures/NatComms_revisions/"
 l2 <- lapply(list.files(path = dataDir, pattern=".tsv"), function(x){
   dt <- data.table::fread(paste(dataDir, x, sep = "/"))
   return(dt)
