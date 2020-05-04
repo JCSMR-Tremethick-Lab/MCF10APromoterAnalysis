@@ -126,21 +126,4 @@ rT2 <- rT2[!is.na(pval)]
 write.csv(rT2, file = file.path(dataDir, 'diffGenes_WT_2_5_shH2AZ_not_6.csv'))
 
 
-# alluvial plots WT -> TGFb ---------------------------------
-fig_wt_tgfb <- data.table::as.data.table(table("WT" = dt1$wt.group, "TGFb" = dt1$tgfb.group))
-fig_wt_tgfb %>% group_by(WT, TGFb) %>% summarise(n = sum(N)) -> fig_wt_tgfb
-pdf(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_tgfb.pdf"))
-alluvial(fig_wt_tgfb[,c(1:2)], freq = fig_wt_tgfb$n,
-         col = mcf10awtCategories$color[match(as.integer(fig_wt_tgfb$WT), mcf10awtCategories$group)])
-dev.off()
-
-# alluvial plots WT -> CA1A ---------------------------------
-fig_wt_ca1a <- data.table::as.data.table(table("WT" = dt1$wt.group, "Ca1a" = dt1$CA1a.group))
-fig_wt_ca1a %>% group_by(WT, Ca1a) %>% summarise(n = sum(N)) -> fig_wt_ca1a
-png(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_ca1a.png"))
-alluvial(fig_wt_ca1a[,c(1:2)], freq = fig_wt_ca1a$n,
-         col = mcf10awtCategories$color[match(as.integer(fig_wt_ca1a$WT), mcf10awtCategories$group)])
-dev.off()
-
-
 
