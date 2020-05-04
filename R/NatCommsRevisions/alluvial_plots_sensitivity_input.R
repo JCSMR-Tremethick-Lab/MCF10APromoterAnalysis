@@ -109,7 +109,7 @@ fig_wt_shz <- data.table::as.data.table(table("WT" = dt1$wt.group, "shH2AZ" = dt
 fig_wt_shz %>% group_by(WT, shH2AZ) %>% summarise(n = sum(N)) -> fig_wt_shz
 png(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_active_shz_inactive.png"))
 alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$n,
-         col = mcf10awtCategories$color[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)],
+         col = mcf10awtCategories$color4[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)],
          hide = !fig_wt_shz$shH2AZ == 6)
 dev.off()
 
