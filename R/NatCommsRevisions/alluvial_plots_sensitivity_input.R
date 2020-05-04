@@ -76,6 +76,47 @@ colnames(dt1)[length(colnames(dt1))] <- "CA1a.group"
 dt1
 save(dt1, file = file.path(dataDir, "alluvialPlotSensitivityInputData.rda"))
 
+# alluvial plots WT -> shH2AZ -------------------------------
+tab <- table("WT" = dt1$wt.group, "shH2AZ" = dt1$shZ.group)
+rownames(tab) <- paste('WT_cluster_', c(1:7), sep = '')
+colnames(tab) <- paste('shH2AZ_cluster_', c(1:7), sep = '')
+write.csv(tab, file = file.path(dataDir, "cross_table_WT_shH2AZ.csv"))
+
+fig_wt_shz <- data.table::as.data.table(table("WT" = dt1$wt.group, "shH2AZ" = dt1$shZ.group))
+fig_wt_shz %>% group_by(WT, shH2AZ) %>% summarise(n = sum(N)) -> fig_wt_shz
+png(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_shz.png"))
+alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$N,
+         col = mcf10awtCategories$color[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)])
+dev.off()
+
+
+# alluvial plots WT -> shH2AZ inactive only --------------------
+# changed 2020-05-04
+fig_wt_shz <- data.table::as.data.table(table("WT" = dt1$wt.group, "shH2AZ" = dt1$shZ.group))
+fig_wt_shz %>% group_by(WT, shH2AZ) %>% summarise(n = sum(N)) -> fig_wt_shz
+png(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_active_shz_inactive.png"))
+alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$N,
+         col = mcf10awtCategories$color4[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)],
+         hide = !fig_wt_shz$shH2AZ == 6)
+dev.off()
+# add table of genes going from 2 & 5 WT to 6 shZ
+dt1[dt1$shZ.group == 6 & (dt1$wt.group %in% c(2,5))]$extGene # list of genes
+# differential expression of these
+rT1 <- rT.shH2AZ[dt1[dt1$shZ.group == 6 & (dt1$wt.group %in% c(2,5))]$extGene]
+rT1 <- rT1[!is.na(pval)]
+write.csv(rT1, file = file.path(dataDir, 'diffGenes_WT_2_5_shH2AZ_6.csv'))
+
+
+# alluvial plots WT inactive (2 & 5) -> shH2AZ active only, leave out 6
+fig_wt_shz <- data.table::as.data.table(table("WT" = dt1$wt.group, "shH2AZ" = dt1$shZ.group))
+fig_wt_shz %>% group_by(WT, shH2AZ) %>% summarise(n = sum(N)) -> fig_wt_shz
+png(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_inactive_shz_active.png"))
+alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$N,
+         col = mcf10awtCategories$color[match(as.integer(fig_wt_shz$shH2AZ), mcf10awtCategories$group)],
+         hide = (!fig_wt_shz$WT %in% c(2,5) | fig_wt_shz$shH2AZ == 6))
+dev.off()
+
+
 
 # alluvial plots WT -> TGFb ---------------------------------
 fig_wt_tgfb <- data.table::as.data.table(table("WT" = dt1$wt.group, "TGFb" = dt1$tgfb.group))
@@ -84,16 +125,6 @@ pdf(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_tgfb.pdf"))
 alluvial(fig_wt_tgfb[,c(1:2)], freq = fig_wt_tgfb$n,
          col = mcf10awtCategories$color[match(as.integer(fig_wt_tgfb$WT), mcf10awtCategories$group)])
 dev.off()
-
-
-# alluvial plots WT -> shH2AZ -------------------------------
-fig_wt_shz <- data.table::as.data.table(table("WT" = dt1$wt.group, "shH2AZ" = dt1$shZ.group))
-fig_wt_shz %>% group_by(WT, shH2AZ) %>% summarise(n = sum(N)) -> fig_wt_shz
-png(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_shz.png"))
-alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$n,
-         col = mcf10awtCategories$color[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)])
-dev.off()
-
 
 # alluvial plots WT -> CA1A ---------------------------------
 fig_wt_ca1a <- data.table::as.data.table(table("WT" = dt1$wt.group, "Ca1a" = dt1$CA1a.group))
@@ -104,29 +135,4 @@ alluvial(fig_wt_ca1a[,c(1:2)], freq = fig_wt_ca1a$n,
 dev.off()
 
 
-# alluvial plots WT -> shH2AZ, active to inactive only
-# changed 2020-05-04
-fig_wt_shz <- data.table::as.data.table(table("WT" = dt1$wt.group, "shH2AZ" = dt1$shZ.group))
-fig_wt_shz %>% group_by(WT, shH2AZ) %>% summarise(n = sum(N)) -> fig_wt_shz
-png(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_active_shz_inactive.png"))
-alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$n,
-         col = mcf10awtCategories$color4[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)],
-         hide = !fig_wt_shz$shH2AZ == 6)
-dev.off()
-
-# add table of genes going from 2 & 5 WT to 6 shZ
-dt1[dt1$shZ.group == 6 & (dt1$wt.group %in% c(2,5))]$extGene # list of genes
-# differential expression of these
-rT1 <- rT.shH2AZ[dt1[dt1$shZ.group == 6 & (dt1$wt.group %in% c(2,5))]$extGene]
-rT1 <- rT1[!is.na(pval)]
-write.csv(rT1, file = file.path(dataDir, 'diffGenes_WT_2_5_shH2AZ_6.csv'))
-
-# alluvial plots WT -> shH2AZ, inactive to active only
-fig_wt_shz <- data.table::as.data.table(table("WT" = dt1$wt.group, "shH2AZ" = dt1$shZ.group))
-fig_wt_shz %>% group_by(WT, shH2AZ) %>% summarise(n = sum(N)) -> fig_wt_shz
-png(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_inactive_shz_active.png"))
-alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$n,
-         col = mcf10awtCategories$color[match(as.integer(fig_wt_shz$shH2AZ), mcf10awtCategories$group)],
-         hide = !fig_wt_shz$WT == 2)
-dev.off()
 
