@@ -51,18 +51,6 @@ lapply(names(l2), function(x){
 })
 mcf10awtCategories <- unique(l2$WT_Inp[,c('group1', 'color')])
 mcf10awtCategories <- mcf10awtCategories[order(group1)]
-mcf10awtCategories$status <- c('active', 'inactive', 'active', 'active', 'active', 'active', 'active')
-mcf10awtCategories$color2 <- mcf10awtCategories$color
-mcf10awtCategories[mcf10awtCategories$status == 'inactive']$color2 <- 'grey'
-mcf10awtCategories$color3 <- mcf10awtCategories$color
-mcf10awtCategories[mcf10awtCategories$status == 'active']$color3 <- 'grey'
-mcf10awtCategories$color4 <- c('grey', 'green', 'grey', 'grey', 'green', 'grey', 'grey')
-
-mcf10ashzCategories <- unique(l2$shZ_k7[,c('group1', 'color')])
-mcf10ashzCategories <- mcf10ashzCategories[order(group1)]
-mcf10ashzCategories$status <- c('active', 'active', 'active', 'active', 'active', 'inactive', 'active')
-mcf10ashzCategories$color2 <- mcf10ashzCategories$color
-mcf10ashzCategories[mcf10ashzCategories$status == 'active']$color2 <- 'grey'
 
 # merge all tables into single data.table ---------------------------------
 dt1 <- l2$WT_Inp[!duplicated(extGene), c("extGene" ,"group1")]
@@ -96,7 +84,7 @@ fig_wt_shz <- data.table::as.data.table(table("WT" = dt1$wt.group, "shH2AZ" = dt
 fig_wt_shz %>% group_by(WT, shH2AZ) %>% summarise(n = sum(N)) -> fig_wt_shz
 png(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_active_shz_inactive.png"))
 alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$N,
-         col = mcf10awtCategories$color4[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)],
+         col = mcf10awtCategories$color2[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)],
          hide = !fig_wt_shz$shH2AZ == 6)
 dev.off()
 # add table of genes going from 2 & 5 WT to 6 shZ
@@ -110,14 +98,22 @@ rT1 <- rT1[!is.na(pval)]
 write.csv(rT1, file = file.path(dataDir, 'diffGenes_WT_2_5_shH2AZ_6.csv'))
 
 
-# alluvial plots WT inactive (2 & 5) -> shH2AZ active only, w/o 6 --------
-fig_wt_shz <- data.table::as.data.table(table("WT" = dt1$wt.group, "shH2AZ" = dt1$shZ.group))
-fig_wt_shz %>% group_by(WT, shH2AZ) %>% summarise(n = sum(N)) -> fig_wt_shz
-png(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_inactive_shz_active.png"))
-alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$N,
-         col = mcf10awtCategories$color[match(as.integer(fig_wt_shz$shH2AZ), mcf10awtCategories$group)],
-         hide = (!fig_wt_shz$WT %in% c(2,5) | fig_wt_shz$shH2AZ == 6))
+# alluvial plots WT -> shH2AZ --------
+# 1,4,6,7  to 6
+mcf10awtCategories$color2 -> mcf10awtCategories$color
+mcf10awtCategories[!mcf10awtCategories$group1 %in% c(1,4,6,7)]$color2 <- 'grey'
+mcf10awtCategories$alpha2 <- 1
+mcf10awtCategories[!mcf10awtCategories$group1 %in% c(1,4,6,7)]$alpha2 <- 0.1
+
+png(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_1_4_6_7_shz_6.png"))
+alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$n,
+         col = mcf10awtCategories$color2[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)],
+         alpha = mcf10awtCategories$alpha2[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)],
+         hide = !fig_wt_shz$shH2AZ %in% c(6))
 dev.off()
+
+
+
 geneTable2 <- select(org.Hs.eg.db, keys = dt1[(dt1$wt.group %in% c(2,5) & !dt1$shZ.group == 6)]$extGene, keytype = 'SYMBOL', columns = c('SYMBOL', 'GENENAME'))
 write.csv(geneTable2, file = file.path(dataDir, 'gene_table_sensitivity_input_wt_inactive_shz_active.csv'))
 
