@@ -20,6 +20,15 @@ setkey(rT.MCF10Ca1a, "target_id")
 setkey(rT.TGFbD6, "target_id")
 setkey(kT1, "target_id")
 
+kT1[, 'condition' := NULL]
+cond <- data.table(sample = unique(kT1$sample), 
+                   condition = c('shZ', 'shZ', 'TGFb', 'TGFb', 'WT', 'WT', 'WT', 'WT', 'WT', 'WT', 'WT', 'WT', 'shZ', 'shZ', 'shZ', 'TGFb', 'TGFb', 'TGFb', 'Ca1a', 'Ca1a'),
+                   experiment = c(rep('run_1', 6), rep('run_2', 12), rep('run_1', 2)))
+setkey(cond, sample)
+
+kT1 <- merge(kT1, cond, by.x = 'sample', by.y = 'sample')                   
+kT1Mean <- kT1[, lapply(.SD, mean), by = list(condition, target_id), .SDcols='tpm']
+
 # load parallel plot data -------------------------------------------------
 dataDir <- "./alluvial_plots_sensitivity_input/"
 l2 <- lapply(list.files(path = dataDir, pattern="Log2"), function(x){
@@ -73,7 +82,7 @@ write.csv(tab, file = file.path(dataDir, "cross_table_WT_shH2AZ.csv"))
 fig_wt_shz <- data.table::as.data.table(table("WT" = dt1$wt.group, "shH2AZ" = dt1$shZ.group))
 fig_wt_shz %>% group_by(WT, shH2AZ) %>% summarise(n = sum(N)) -> fig_wt_shz
 png(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_shz.png"))
-alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$N,
+alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$n,
          col = mcf10awtCategories$color[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)])
 dev.off()
 
