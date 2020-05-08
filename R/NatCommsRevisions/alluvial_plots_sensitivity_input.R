@@ -149,6 +149,7 @@ dotplot(em1)
 dev.off()
 
 write.csv(rT1[rT1$qval < 0.1 & rT1$b > 0, .(target_id, b, qval, mean_obs),][order(b, decreasing = T)], file = file.path(dataDir, 'upregulated_genes_sensitivit_input_wt_2_5_shz_1_2_3_4_7.csv'))
+write.csv(geneTable1[qval < 0.1 & b > 0], file = file.path(dataDir, 'gene_table_sensitivity_input_wt_2_5_shz_1_2_3_4_7_upregulated.csv'))
 
 # alluvial plots WT -> shH2AZ --------
 # 1,4,6,7  to 6
@@ -206,4 +207,5 @@ dotplot(em2)
 dev.off()
 
 write.csv(rT2[rT2$qval < 0.1 & rT2$b < 0, .(target_id, b, qval, mean_obs),][order(b, decreasing = T)], file = file.path(dataDir, 'downregulated_genes_sensitivity_input_wt_1_4_6_7_shz_6_downregulated.csv'))
+write.csv(geneTable2[qval < 0.1 & b < 0], file = file.path(dataDir, 'gene_table_sensitivity_input_wt_1_4_6_7_shz_6_downregulated.csv'))
 

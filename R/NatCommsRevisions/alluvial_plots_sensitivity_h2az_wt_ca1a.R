@@ -24,6 +24,7 @@ setkey(rT, target_id)
 kT <- sleuth::kallisto_table(so, normalized = T, include_covariates = T)                  
 setDT(kT)
 kTMean <- kT[, lapply(.SD, mean), by = list(condition, target_id), .SDcols='tpm']
+kTMeanWide <- dcast(kTMean, target_id ~ condition, value.var = 'tpm')
 
 # load parallel plot data -------------------------------------------------
 l1 <- lapply(list.files(path = dataDir, pattern="Log2"), function(x){
@@ -91,8 +92,13 @@ selectedGenes1 <- dt1[dt1$ca1a.group %in% c(1,3,7) & (dt1$wt.group %in% c(5,7))]
 geneTable1 <- AnnotationDbi::select(org.Hs.eg.db, keys = selectedGenes1, keytype = 'SYMBOL', columns = c('SYMBOL', 'GENENAME'))
 setDT(geneTable1)
 geneTable1 <- merge(dt1[,.(extGene, wt.group, ca1a.group)], geneTable1, by.x = 'extGene', by.y = 'SYMBOL')
+geneTable1 <- merge(geneTable1, kTMeanWide, by.x = 'extGene', by.y = 'target_id', all.x = T, all.y = F)
+geneTable1 <- merge(geneTable1, rT[,.(target_id, b, qval)], by.x = 'extGene', by.y = 'target_id', all.x = T, all.y = F)
+
 table(geneTable1$ca1a.group)
+table(geneTable1$wt.group)
 write.csv(geneTable1, file = file.path(dataDir, 'gene_table_sensitivity_h2az_wt_5_7_ca1a_1_3_7.csv'))
+write.csv(geneTable1[(qval <= 0.1 & b > 0)], file = file.path(dataDir, 'gene_table_sensitivity_h2az_wt_5_7_ca1a_1_3_7_upregulated.csv'))
 
 # differential expression of these
 rT1 <- rT[selectedGenes1]
@@ -152,7 +158,12 @@ selectedGenes2 <- dt1[dt1$ca1a.group %in% c(4,6) & (dt1$wt.group %in% c(1,3,4,6)
 geneTable2 <- AnnotationDbi::select(org.Hs.eg.db, keys = selectedGenes2, keytype = 'SYMBOL', columns = c('SYMBOL', 'GENENAME'))
 setDT(geneTable2)
 geneTable2 <- merge(dt1[,.(extGene, wt.group, ca1a.group)], geneTable2, by.x = 'extGene', by.y = 'SYMBOL')
+geneTable2 <- merge(geneTable2, kTMeanWide, by.x = 'extGene', by.y = 'target_id', all.x = T, all.y = F)
+geneTable2 <- merge(geneTable2, rT[,.(target_id, b, qval)], by.x = 'extGene', by.y = 'target_id', all.x = T, all.y = F)
+table(geneTable2$wt.group)
+table(geneTable2$ca1a.group)
 write.csv(geneTable2, file = file.path(dataDir, 'gene_table_sensitivity_h2az_wt_1_3_4_6_ca1a_4_6.csv'))
+write.csv(geneTable2[(qval <= 0.1 & b < 0)], file = file.path(dataDir, 'gene_table_sensitivity_h2az_wt_1_3_4_6_ca1a_4_6_downregulated.csv'))
 
 # differential expression of these
 rT2 <- rT[selectedGenes2]
@@ -191,6 +202,7 @@ png(file = file.path(dataDir, "msigdb_dotplot_sensitivity_h2az_wt_1_3_4_6_ca1a_4
 dotplot(em2)
 dev.off()
 
+merge(rT2[rT2$qval < 0.1 & rT2$b < 0, .(target_id, b, qval, mean_obs),][order(b, decreasing = T)], 
 write.csv(rT2[rT2$qval < 0.1 & rT2$b < 0, .(target_id, b, qval, mean_obs),][order(b, decreasing = T)], 
           file = file.path(dataDir, 'downregulated_genes_sensitivity_h2az_wt_1_3_4_6_ca1a_4_6.csv'))
 

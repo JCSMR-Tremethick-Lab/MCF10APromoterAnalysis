@@ -135,6 +135,7 @@ dotplot(em1)
 dev.off()
 
 write.csv(rT1[rT1$qval < 0.1 & rT1$b > 0, .(target_id, b, qval, mean_obs),][order(b, decreasing = T)], file = file.path(dataDir, 'upregulated_genes_sensitivity_h2az_wt_5_7_tgfb_1_2_6.csv'))
+write.csv(geneTable1[qval < 0.1 & b > 0], file = file.path(dataDir, 'gene_table_sensitivity_h2az_wt_5_7_tgfb_1_2_6_upregulated.csv'))
 
 # 1,3,4,6    to     5,7 (just chose 2) ------------------------------------
 mcf10awtCategories$color3 <- mcf10awtCategories$color
@@ -196,3 +197,4 @@ dotplot(em2)
 dev.off()
 
 write.csv(rT2[rT2$qval < 0.1 & rT2$b < 0, .(target_id, b, qval, mean_obs),][order(b, decreasing = T)], file = file.path(dataDir, 'downregulated_genes_sensitivity_h2az_wt_1_3_4_6_tgfb_5_7.csv'))
+write.csv(geneTable2[qval < 0.1 & b < 0], file = file.path(dataDir, 'gene_table_sensitivity_h2az_wt_1_3_4_6_tgfb_5_7_downregulated.csv'))
