@@ -24,9 +24,9 @@ setkey(rT, target_id)
 kT <- sleuth::kallisto_table(so, normalized = T, include_covariates = T)                  
 setDT(kT)
 kTMean <- kT[, lapply(.SD, mean), by = list(condition, target_id), .SDcols='tpm']
+kTMeanWide <- dcast(kTMean, target_id ~ condition, value.var = 'tpm')
 
 # load parallel plot data -------------------------------------------------
-dataDir <- "./alluvial_plots_sensitivity_h2az/"
 l1 <- lapply(list.files(path = dataDir, pattern="Log2"), function(x){
   dt1 <- data.table::fread(paste(dataDir, x, sep = "/"))
   return(dt1)
@@ -72,11 +72,6 @@ rownames(tab.tgfb) <- paste('WT_H2AZ_cluster_', c(1:7), sep = '')
 colnames(tab.tgfb) <- paste('TGFb_H2AZ_cluster_', c(1:7), sep = '')
 write.csv(tab.tgfb, file = file.path(dataDir, "cross_table_WT_TGFb.csv"))
 
-tab.ca1a <- table("WT" = dt1$wt.group, "TGFb" = dt1$ca1a.group)
-rownames(tab.ca1a) <- paste('WT_H2AZ_cluster_', c(1:7), sep = '')
-colnames(tab.ca1a) <- paste('Ca1a_H2AZ_cluster_', c(1:7), sep = '')
-write.csv(tab.ca1a, file = file.path(dataDir, "cross_table_WT_Ca1a.csv"))
-
 # alluvial plots WT -> TGFb ---------------------------------
 # 5,7 to 1,2,6
 mcf10awtCategories$color2 <- mcf10awtCategories$color
@@ -96,6 +91,10 @@ dev.off()
 selectedGenes1 <- dt1[dt1$tgfb.group %in% c(1,2,6) & (dt1$wt.group %in% c(5,7))]$extGene # list of genes
 geneTable1 <- AnnotationDbi::select(org.Hs.eg.db, keys = selectedGenes1, keytype = 'SYMBOL', columns = c('SYMBOL', 'GENENAME'))
 setDT(geneTable1)
+geneTable1 <- merge(dt1[,.(extGene, wt.group, tgfb.group)], geneTable1, by.x = 'extGene', by.y = 'SYMBOL')
+geneTable1 <- merge(geneTable1, kTMeanWide, by.x = 'extGene', by.y = 'target_id', all.x = T, all.y = F)
+geneTable1 <- merge(geneTable1, rT[,.(target_id, b, qval)], by.x = 'extGene', by.y = 'target_id', all.x = T, all.y = F)
+
 write.csv(geneTable1, file = file.path(dataDir, 'gene_table_sensitivity_h2az_wt_5_7_tgfb_1_2_6.csv'))
 
 # differential expression of these
@@ -153,6 +152,10 @@ dev.off()
 selectedGenes2 <- dt1[dt1$tgfb.group %in% c(5,7) & (dt1$wt.group %in% c(1,3,4,6))]$extGene # list of genes
 geneTable2 <- AnnotationDbi::select(org.Hs.eg.db, keys = selectedGenes2, keytype = 'SYMBOL', columns = c('SYMBOL', 'GENENAME'))
 setDT(geneTable2)
+geneTable2 <- merge(dt1[,.(extGene, wt.group, tgfb.group)], geneTable2, by.x = 'extGene', by.y = 'SYMBOL')
+geneTable2 <- merge(geneTable2, kTMeanWide, by.x = 'extGene', by.y = 'target_id', all.x = T, all.y = F)
+geneTable2 <- merge(geneTable2, rT[,.(target_id, b, qval)], by.x = 'extGene', by.y = 'target_id', all.x = T, all.y = F)
+
 write.csv(geneTable2, file = file.path(dataDir, 'gene_table_sensitivity_h2az_wt_1_3_4_6_tgfb_5_7.csv'))
 
 # differential expression of these
@@ -192,35 +195,4 @@ png(file = file.path(dataDir, "msigdb_dotplot_sensitivity_h2az__wt_1_3_4_6_tgfb_
 dotplot(em2)
 dev.off()
 
-write.csv(rT2[rT2$qval < 0.1 & rT2$b < 0, .(target_id, b, qval, mean_obs),][order(b, decreasing = T)], file = file.path(dataDir, 'upregulated_genes_sensitivity_h2az_wt_5_7_tgfb_1_2_6.csv'))
-
-# alluvial plots WT -> CA1A ---------------------------------
-# 5,7 to 1,3,7
-fig_wt_ca1a <- data.table::as.data.table(table("WT" = dt1$wt.group, "Ca1a" = dt1$ca1a.group))
-fig_wt_ca1a %>% group_by(WT, Ca1a) %>% summarise(n = sum(N)) -> fig_wt_ca1a
-
-mcf10awtCategories$color4 <- mcf10awtCategories$color
-mcf10awtCategories[!mcf10awtCategories$group1 %in% c(5,7)]$color4 <- "grey"
-mcf10awtCategories$alpha4 <- 1
-mcf10awtCategories[!mcf10awtCategories$group1 %in% c(5,7)]$alpha4 <- 0.1
-
-
-png(file = file.path(dataDir, "alluvial_plot_sensitivity_h2az_wt_5_7_ca1a_1_3_7.png"))
-alluvial(fig_wt_ca1a[,c(1:2)], freq = fig_wt_ca1a$n,
-         col = mcf10awtCategories$color4[match(as.integer(fig_wt_ca1a$WT), mcf10awtCategories$group)],
-         hide = !fig_wt_ca1a$Ca1a %in% c(1,3,7),
-         alpha = mcf10awtCategories$alpha4[match(as.integer(fig_wt_ca1a$WT), mcf10awtCategories$group)])
-dev.off()
-
-# 1,3,4,6 to 4,6
-mcf10awtCategories$color5 <- mcf10awtCategories$color
-mcf10awtCategories[!mcf10awtCategories$group1 %in% c(1,3,4,6)]$color5 <- "grey"
-mcf10awtCategories$alpha5 <- 1
-mcf10awtCategories[!mcf10awtCategories$group1 %in% c(1,3,4,6)]$alpha5 <- 0.1
-
-png(file = file.path(dataDir, "alluvial_plot_sensitivity_h2az_wt_1_3_4_6_ca1a_4_6.png"))
-alluvial(fig_wt_ca1a[,c(1:2)], freq = fig_wt_ca1a$n,
-         col = mcf10awtCategories$color5[match(as.integer(fig_wt_ca1a$WT), mcf10awtCategories$group)],
-         hide = !fig_wt_ca1a$Ca1a %in% c(4,6),
-         alpha = mcf10awtCategories$alpha5[match(as.integer(fig_wt_ca1a$WT), mcf10awtCategories$group)])
-dev.off()
+write.csv(rT2[rT2$qval < 0.1 & rT2$b < 0, .(target_id, b, qval, mean_obs),][order(b, decreasing = T)], file = file.path(dataDir, 'downregulated_genes_sensitivity_h2az_wt_1_3_4_6_tgfb_5_7.csv'))
