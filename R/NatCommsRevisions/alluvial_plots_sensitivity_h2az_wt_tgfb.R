@@ -80,7 +80,15 @@ mcf10awtCategories$alpha2 <- 1
 mcf10awtCategories[!mcf10awtCategories$group1 %in% c(5,7)]$alpha2 <- 0.1
 fig_wt_tgfb <- data.table::as.data.table(table("WT" = dt1$wt.group, "TGFb" = dt1$tgfb.group))
 fig_wt_tgfb %>% group_by(WT, TGFb) %>% summarise(n = sum(N)) -> fig_wt_tgfb
+
 png(file = file.path(dataDir, "alluvial_plot_sensitivity_h2az_wt_5_7_tgfb_1_2_6.png"))
+alluvial(fig_wt_tgfb[,c(1:2)], freq = fig_wt_tgfb$n,
+         col = mcf10awtCategories$color2[match(as.integer(fig_wt_tgfb$WT), mcf10awtCategories$group)],
+         hide = !fig_wt_tgfb$TGFb %in% c(1,2,6),
+         alpha = mcf10awtCategories$alpha2[match(as.integer(fig_wt_tgfb$WT), mcf10awtCategories$group)])
+dev.off()
+
+pdf(file = file.path(dataDir, "alluvial_plot_sensitivity_h2az_wt_5_7_tgfb_1_2_6.pdf"))
 alluvial(fig_wt_tgfb[,c(1:2)], freq = fig_wt_tgfb$n,
          col = mcf10awtCategories$color2[match(as.integer(fig_wt_tgfb$WT), mcf10awtCategories$group)],
          hide = !fig_wt_tgfb$TGFb %in% c(1,2,6),
@@ -134,6 +142,10 @@ png(file = file.path(dataDir, "msigdb_dotplot_sensitivity_h2az_wt_5_7_tgfb_1_2_6
 dotplot(em1)
 dev.off()
 
+pdf(file = file.path(dataDir, "msigdb_dotplot_sensitivity_h2az_wt_5_7_tgfb_1_2_6_upregulated.pdf"), height = 14, width = 20)
+dotplot(em1)
+dev.off()
+
 write.csv(rT1[rT1$qval < 0.1 & rT1$b > 0, .(target_id, b, qval, mean_obs),][order(b, decreasing = T)], file = file.path(dataDir, 'upregulated_genes_sensitivity_h2az_wt_5_7_tgfb_1_2_6.csv'))
 write.csv(geneTable1[qval < 0.1 & b > 0], file = file.path(dataDir, 'gene_table_sensitivity_h2az_wt_5_7_tgfb_1_2_6_upregulated.csv'))
 
@@ -143,6 +155,13 @@ mcf10awtCategories[!mcf10awtCategories$group1 %in% c(1,3,4,6)]$color3 <- "grey"
 mcf10awtCategories$alpha3 <- 1
 mcf10awtCategories[!mcf10awtCategories$group1 %in% c(1,3,4,6)]$alpha3 <- 0.1
 png(file = file.path(dataDir, "alluvial_plot_sensitivity_h2az_wt_1_3_4_6_tgfb_5_7.png"))
+alluvial(fig_wt_tgfb[,c(1:2)], freq = fig_wt_tgfb$n,
+         col = mcf10awtCategories$color3[match(as.integer(fig_wt_tgfb$WT), mcf10awtCategories$group)],
+         hide = !fig_wt_tgfb$TGFb %in% c(5,7),
+         alpha = mcf10awtCategories$alpha3[match(as.integer(fig_wt_tgfb$WT), mcf10awtCategories$group)])
+dev.off()
+
+pdf(file = file.path(dataDir, "alluvial_plot_sensitivity_h2az_wt_1_3_4_6_tgfb_5_7.pdf"))
 alluvial(fig_wt_tgfb[,c(1:2)], freq = fig_wt_tgfb$n,
          col = mcf10awtCategories$color3[match(as.integer(fig_wt_tgfb$WT), mcf10awtCategories$group)],
          hide = !fig_wt_tgfb$TGFb %in% c(5,7),
@@ -195,6 +214,11 @@ em2 <- enricher(rT2[rT2$qval < 0.1 & rT2$b < 0]$target_id, pvalueCutoff = 0.01, 
 png(file = file.path(dataDir, "msigdb_dotplot_sensitivity_h2az__wt_1_3_4_6_tgfb_5_7_downregulated.png"), height = 1024, width = 768)
 dotplot(em2)
 dev.off()
+
+pdf(file = file.path(dataDir, "msigdb_dotplot_sensitivity_h2az__wt_1_3_4_6_tgfb_5_7_downregulated.pdf"), height = 14, width = 20)
+dotplot(em2)
+dev.off()
+
 
 write.csv(rT2[rT2$qval < 0.1 & rT2$b < 0, .(target_id, b, qval, mean_obs),][order(b, decreasing = T)], file = file.path(dataDir, 'downregulated_genes_sensitivity_h2az_wt_1_3_4_6_tgfb_5_7.csv'))
 write.csv(geneTable2[qval < 0.1 & b < 0], file = file.path(dataDir, 'gene_table_sensitivity_h2az_wt_1_3_4_6_tgfb_5_7_downregulated.csv'))

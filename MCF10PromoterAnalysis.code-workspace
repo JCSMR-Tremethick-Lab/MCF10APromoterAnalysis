@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "../../../Data/Tremethick/Breast/sub_sampling_analysis"
 		}
 	],
 	"settings": {}

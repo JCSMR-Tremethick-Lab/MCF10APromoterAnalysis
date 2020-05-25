@@ -88,6 +88,13 @@ alluvial(fig_wt_ca1a[,c(1:2)], freq = fig_wt_ca1a$n,
          alpha = mcf10awtCategories$alpha4[match(as.integer(fig_wt_ca1a$WT), mcf10awtCategories$group)])
 dev.off()
 
+pdf(file = file.path(dataDir, "alluvial_plot_sensitivity_h2az_wt_5_7_ca1a_1_3_7.pdf"))
+alluvial(fig_wt_ca1a[,c(1:2)], freq = fig_wt_ca1a$n,
+         col = mcf10awtCategories$color4[match(as.integer(fig_wt_ca1a$WT), mcf10awtCategories$group)],
+         hide = !fig_wt_ca1a$Ca1a %in% c(1,3,7),
+         alpha = mcf10awtCategories$alpha4[match(as.integer(fig_wt_ca1a$WT), mcf10awtCategories$group)])
+dev.off()
+
 selectedGenes1 <- dt1[dt1$ca1a.group %in% c(1,3,7) & (dt1$wt.group %in% c(5,7))]$extGene # list of genes
 geneTable1 <- AnnotationDbi::select(org.Hs.eg.db, keys = selectedGenes1, keytype = 'SYMBOL', columns = c('SYMBOL', 'GENENAME'))
 setDT(geneTable1)
@@ -137,6 +144,10 @@ png(file = file.path(dataDir, "msigdb_dotplot_sensitivity_h2az_wt_5_7_ca1a_1_3_7
 dotplot(em1)
 dev.off()
 
+pdf(file = file.path(dataDir, "msigdb_dotplot_sensitivity_h2az_wt_5_7_ca1a_1_3_7_upregulated.pdf"), height = 15, width = 20)
+dotplot(em1)
+dev.off()
+
 write.csv(rT1[rT1$qval < 0.1 & rT1$b > 0, .(target_id, b, qval, mean_obs),][order(b, decreasing = T)], 
           file = file.path(dataDir, 'upregulated_genes_sensitivity_h2az_wt_5_7_ca1a_1_3_7.csv'))
 
@@ -148,6 +159,13 @@ mcf10awtCategories$alpha5 <- 1
 mcf10awtCategories[!mcf10awtCategories$group1 %in% c(1,3,4,6)]$alpha5 <- 0.1
 
 png(file = file.path(dataDir, "alluvial_plot_sensitivity_h2az_wt_1_3_4_6_ca1a_4_6.png"))
+alluvial(fig_wt_ca1a[,c(1:2)], freq = fig_wt_ca1a$n,
+         col = mcf10awtCategories$color5[match(as.integer(fig_wt_ca1a$WT), mcf10awtCategories$group)],
+         hide = !fig_wt_ca1a$Ca1a %in% c(4,6),
+         alpha = mcf10awtCategories$alpha5[match(as.integer(fig_wt_ca1a$WT), mcf10awtCategories$group)])
+dev.off()
+
+pdf(file = file.path(dataDir, "alluvial_plot_sensitivity_h2az_wt_1_3_4_6_ca1a_4_6.pdf"))
 alluvial(fig_wt_ca1a[,c(1:2)], freq = fig_wt_ca1a$n,
          col = mcf10awtCategories$color5[match(as.integer(fig_wt_ca1a$WT), mcf10awtCategories$group)],
          hide = !fig_wt_ca1a$Ca1a %in% c(4,6),
@@ -199,6 +217,10 @@ gene <- geneList[abs(geneList) > 0.5]
 
 em2 <- enricher(rT2[rT2$qval < 0.1 & rT2$b < 0]$target_id, pvalueCutoff = 0.01, TERM2GENE = m_t2g)
 png(file = file.path(dataDir, "msigdb_dotplot_sensitivity_h2az_wt_1_3_4_6_ca1a_4_6_downregulated.png"), height = 1024, width = 768)
+dotplot(em2)
+dev.off()
+
+pdf(file = file.path(dataDir, "msigdb_dotplot_sensitivity_h2az_wt_1_3_4_6_ca1a_4_6_downregulated.pdf"), height = 14, width = 20)
 dotplot(em2)
 dev.off()
 

@@ -85,6 +85,12 @@ alluvial::alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$n,
          col = mcf10awtCategories$color[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)])
 dev.off()
 
+pdf(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_shz.pdf"))
+alluvial::alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$n,
+                   col = mcf10awtCategories$color[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)])
+dev.off()
+
+
 # alluvial plots WT -> shH2AZ --------------------
 # 2,5 to 1,2,3,4,7 - generally: inactive to active
 #fig_wt_shz <- data.table::as.data.table(table("WT" = dt1$wt.group, "shH2AZ" = dt1$shZ.group))
@@ -101,6 +107,14 @@ alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$n,
          alpha = mcf10awtCategories$alpha1[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group1)],
          hide = fig_wt_shz$shH2AZ %in% c(5,6))
 dev.off()
+
+pdf(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_2_5_shz_1_2_3_4_7.pdf"))
+alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$n,
+         col = mcf10awtCategories$color1[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group1)],
+         alpha = mcf10awtCategories$alpha1[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group1)],
+         hide = fig_wt_shz$shH2AZ %in% c(5,6))
+dev.off()
+
 
 # add table of genes going from 2 & 5 WT to 1,2,3,4,7 shZ
 selectedGenes1 <- dt1[dt1$shZ.group %in% c(1,2,3,4,7) & (dt1$wt.group %in% c(2,5))]$extGene # list of genes
@@ -148,6 +162,10 @@ png(file = file.path(dataDir, "msigdb_dotplot_sensitivity_input_wt_2_5_shz_1_2_3
 dotplot(em1)
 dev.off()
 
+pdf(file = file.path(dataDir, "msigdb_dotplot_sensitivity_input_wt_2_5_shz_1_2_3_4_7_upregulated.pdf"), height = 14, width = 20)
+dotplot(em1)
+dev.off()
+
 write.csv(rT1[rT1$qval < 0.1 & rT1$b > 0, .(target_id, b, qval, mean_obs),][order(b, decreasing = T)], file = file.path(dataDir, 'upregulated_genes_sensitivit_input_wt_2_5_shz_1_2_3_4_7.csv'))
 write.csv(geneTable1[qval < 0.1 & b > 0], file = file.path(dataDir, 'gene_table_sensitivity_input_wt_2_5_shz_1_2_3_4_7_upregulated.csv'))
 
@@ -160,6 +178,20 @@ mcf10awtCategories$alpha2 <- 1
 mcf10awtCategories[!mcf10awtCategories$group1 %in% c(1,4,6,7)]$alpha2 <- 0.1
 
 png(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_1_4_6_7_shz_6.png"))
+alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$n,
+         col = mcf10awtCategories$color2[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)],
+         alpha = mcf10awtCategories$alpha2[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)],
+         hide = !fig_wt_shz$shH2AZ %in% c(6))
+dev.off()
+
+png(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_1_4_6_7_shz_6.png"))
+alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$n,
+         col = mcf10awtCategories$color2[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)],
+         alpha = mcf10awtCategories$alpha2[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)],
+         hide = !fig_wt_shz$shH2AZ %in% c(6))
+dev.off()
+
+pdf(file = file.path(dataDir, "alluvial_plot_sensitivity_input_wt_1_4_6_7_shz_6.pdf"))
 alluvial(fig_wt_shz[,c(1:2)], freq = fig_wt_shz$n,
          col = mcf10awtCategories$color2[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)],
          alpha = mcf10awtCategories$alpha2[match(as.integer(fig_wt_shz$WT), mcf10awtCategories$group)],
@@ -205,6 +237,11 @@ em2 <- enricher(rT2[rT2$qval < 0.1 & rT2$b < 0]$target_id, pvalueCutoff = 0.01, 
 png(file = file.path(dataDir, "msigdb_dotplot_sensitivity_input_wt_1_4_6_7_shz_6_downregulated.png"), height = 1024, width = 768)
 dotplot(em2)
 dev.off()
+
+pdf(file = file.path(dataDir, "msigdb_dotplot_sensitivity_input_wt_1_4_6_7_shz_6_downregulated.pdf"), height = 14, width = 20)
+dotplot(em2)
+dev.off()
+
 
 write.csv(rT2[rT2$qval < 0.1 & rT2$b < 0, .(target_id, b, qval, mean_obs),][order(b, decreasing = T)], file = file.path(dataDir, 'downregulated_genes_sensitivity_input_wt_1_4_6_7_shz_6_downregulated.csv'))
 write.csv(geneTable2[qval < 0.1 & b < 0], file = file.path(dataDir, 'gene_table_sensitivity_input_wt_1_4_6_7_shz_6_downregulated.csv'))
